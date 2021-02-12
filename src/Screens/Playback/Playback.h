@@ -5,7 +5,8 @@
 #include <UI/Image.h>
 #include <UI/LinearLayout.h>
 #include <UI/TextElement.h>
-#include "SongName.hpp"
+#include "SongName.h"
+#include "Buttons.h"
 
 class Playback : public Context {
 public:
@@ -27,6 +28,10 @@ private:
 	LinearLayout buttonLayout;
 
 	std::vector<SongName *> song;
+
+	std::vector<Buttons *> playOrPause;
+
+
 
 	void buildUI();
 
