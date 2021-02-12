@@ -33,6 +33,7 @@ include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.0/libraries/Wire
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.0/tools/sdk/include/freertos)
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.0/tools/sdk/include/freertos/freertos)
 include_directories(${ArduinoLibs}/CircuitOS/src)
+include_directories(${ArduinoLibs}/JayD-Library/src/InputLib)
 
 
 include_directories(${ArduinoLibs}/TFT_eSPI)
