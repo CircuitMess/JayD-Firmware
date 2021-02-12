@@ -1,5 +1,5 @@
-#ifndef JAYD_FIRMWARE_SONGNAME_HPP
-#define JAYD_FIRMWARE_SONGNAME_HPP
+#ifndef JAYD_FIRMWARE_SONGNAME_H
+#define JAYD_FIRMWARE_SONGNAME_H
 
 #include <UI/CustomElement.h>
 
@@ -13,4 +13,4 @@ private:
 
 };
 
-#endif //JAYD_FIRMWARE_SONGNAME_HPP
+#endif //JAYD_FIRMWARE_SONGNAME_H
