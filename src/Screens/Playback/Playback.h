@@ -7,6 +7,7 @@
 #include <UI/TextElement.h>
 #include "SongName.h"
 #include "PlayPause.h"
+#include "TrackCounter.hpp"
 
 class Playback : public Context {
 public:
@@ -30,6 +31,8 @@ private:
 	std::vector<SongName *> song;
 
 	std::vector<PlayPause *> playOrPause;
+
+	std::vector<TrackCounter *> trackCount;
 
 	void buildUI();
 
