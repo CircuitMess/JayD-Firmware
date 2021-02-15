@@ -12,6 +12,6 @@ void SongName::draw(){
 	getSprite()->setTextSize(2);
 	getSprite()->setTextFont(1);
 	getSprite()->setCursor(getTotalX(), getTotalY());
-	getSprite()->printCenter("CAVOGLAVE");
+	getSprite()->printCenter("PJESMA");
 
 }
