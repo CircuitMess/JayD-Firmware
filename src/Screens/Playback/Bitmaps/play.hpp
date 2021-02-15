@@ -4,7 +4,10 @@
 // Dimensions    : 14x18 pixels
 // Size          : 504 Bytes
 
-#include <avr/pgmspace.h>
+#include <pgmspace.h>
+#ifndef PROGMEM
+#define PROGMEM
+#endif
 
 const unsigned short play[0xFC] PROGMEM ={
 0x0000, 0x0540, 0x0540, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0540, 0x0540,   // 0x0010 (16)
