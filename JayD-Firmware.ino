@@ -7,7 +7,7 @@
 #include <Loop/LoopListener.h>
 #include <Loop/LoopManager.h>
 #include "src/Screens/Playback/Playback.h"
-
+#include <JayD.h>
 #define blPin 25
 
 Display display(160,128,-1,-1);
