@@ -23,7 +23,12 @@ void Playback::start(){
 	draw();
 	screen.commit();
 	InputJayD::getInstance()->setBtnPressCallback(3, [](){
-		instance->playOrPause[0]->checkIfPlaying();
+		instance->playOrPause[0]->togglePlaying();
+		instance->draw();
+		instance->screen.commit();
+	});
+	InputJayD::getInstance()->setEncoderMovedCallback(1, [](int8_t value){
+		instance->trackCount[0]->setCurrentDuration(value);
 		instance->draw();
 		instance->screen.commit();
 	});
