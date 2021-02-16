@@ -8,6 +8,8 @@
 #include <Loop/LoopManager.h>
 #include "src/Screens/Playback/Playback.h"
 #include <JayD.h>
+#include <InputLib/InputJayD.h>
+
 #define blPin 25
 
 Display display(160,128,-1,-1);
@@ -18,6 +20,7 @@ void setup(){
 	pinMode(blPin,OUTPUT);
 	digitalWrite(blPin,LOW);
 	display.begin();
+	LoopManager::addListener(new InputJayD());
 	playback=new Playback(display);
 	playback->unpack();
 	playback->start();
@@ -25,4 +28,5 @@ void setup(){
 }
 
 void loop(){
+	LoopManager::loop();
 }
