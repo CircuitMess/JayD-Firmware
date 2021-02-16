@@ -7,11 +7,7 @@ class TrackCounter : public CustomElement {
 public:
 	TrackCounter(ElementContainer *parent);
 
-	void checkIfPlaying();
-
 	void draw();
-
-	void counter();
 
 private:
 
