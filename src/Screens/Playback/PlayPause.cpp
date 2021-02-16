@@ -8,11 +8,11 @@ PlayPause::PlayPause(ElementContainer *parent) : CustomElement(parent, 10, 10){
 
 }
 
-void PlayPause::checkIfPlaying(){
-	if(!pressed){
-		pressed = true;
-	}else if(pressed){
-		pressed = false;
+void PlayPause::togglePlaying(){
+	if(!playing){
+		playing = true;
+	}else if(playing){
+		playing = false;
 	}
 }
 
@@ -21,11 +21,15 @@ void PlayPause::draw(){
 	getSprite()->setTextColor(TFT_WHITE);
 	getSprite()->setTextSize(2);
 	getSprite()->drawCircle(78, 93, 17, TFT_WHITE);
-	if(pressed){
+	if(playing){
 		getSprite()->drawIcon(play, 73, 84, 14, 18, 1, TFT_BLACK);
-	}else if(!pressed){
+	}else if(!playing){
 		getSprite()->drawIcon(pauza, 72, 84, 14, 18, 1, TFT_BLACK);
 	}
 	getSprite()->drawIcon(rew, 44, 90, 10, 8, 1, TFT_BLACK);
 	getSprite()->drawIcon(fw, 102, 90, 10, 8, 1, TFT_BLACK);
+}
+
+void PlayPause::setPlaying(bool playing){
+	PlayPause::playing = playing;
 }

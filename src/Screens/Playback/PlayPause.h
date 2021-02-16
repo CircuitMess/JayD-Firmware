@@ -2,17 +2,22 @@
 #define JAYD_FIRMWARE_PLAYPAUSE_H
 
 #include <UI/CustomElement.h>
+#include <Loop/LoopListener.h>
+
 
 class PlayPause : public CustomElement {
 public:
 	PlayPause(ElementContainer *parent);
 
-	void checkIfPlaying();
+	void togglePlaying();
 
 	void draw();
 
+	void setPlaying(bool playing);
+
+
 private:
-	bool pressed = false;
+	bool playing = false;
 };
 
 
