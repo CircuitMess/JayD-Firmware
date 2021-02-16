@@ -9,11 +9,13 @@ public:
 
 	void draw();
 
-private:
+	void setTotalDuration(int totalDuration);
 
-	int minutes = 0;
-	int seconds = 0;
-	bool pressed = false;
+	void setCurrentDuration(int currentDuration);
+
+private:
+	int totalDuration = 0;
+	int currentDuration = 0;
 
 };
 
