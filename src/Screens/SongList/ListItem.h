@@ -9,8 +9,10 @@ public:
 
 	void draw();
 
-private:
+	void setSelected(bool selected);
 
+private:
+	bool selected=false;
 };
 
 #endif //JAYD_FIRMWARE_LISTITEM_H
