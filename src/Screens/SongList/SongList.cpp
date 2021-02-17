@@ -7,7 +7,7 @@ SongList::SongList(Display &display) : Context(display), screenLayout(&screen, V
 									   list(&scrollLayout, VERTICAL){
 
 	for(int i = 0; i < 10; i++){
-		songs.push_back(new ListItem(&list));
+		song.push_back(new ListItem(&list));
 	}
 
 	instance = this;
@@ -20,7 +20,6 @@ void SongList::start(){
 	screen.commit();
 	InputJayD::getInstance()->setEncoderMovedCallback(1, [](int8_t value){
 		int scrollVal = value * 20;
-
 		if(value == 0) return;
 		if((instance->scrollLayout.getScrollY() >= instance->scrollLayout.getMaxScrollY()) && (value > 0) ||
 		   ((instance->scrollLayout.getScrollY() == 0) && value < 0)){
@@ -56,8 +55,8 @@ void SongList::buildUI(){
 	list.setPadding(5);
 	list.setGutter(10);
 	//list.setBorder(1, TFT_RED);
-	for(int i=0;i<songs.size();i++){
-		list.addChild(songs[i]);
+	for(int i=0; i < song.size(); i++){
+		list.addChild(song[i]);
 	}
 
 	screenLayout.reflow();

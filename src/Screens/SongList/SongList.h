@@ -28,7 +28,7 @@ private:
 	ScrollLayout scrollLayout;
 	LinearLayout list;
 
-	std::vector<ListItem *> songs;
+	std::vector<ListItem *> song;
 
 	void buildUI();
 };
