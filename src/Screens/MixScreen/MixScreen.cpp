@@ -6,6 +6,9 @@ MixScreen::MixScreen(Display &display) : Context(display), screenLayout(&screen,
 										 leftLayout(&screenLayout, VERTICAL), rightLayout(&screenLayout, VERTICAL){
 
 
+	leftSeekBar.push_back(new LeftSeekBar(&leftLayout));
+	rightSeekBar.push_back(new RightSeekBar(&rightLayout));
+
 	instance = this;
 	buildUI();
 
@@ -32,15 +35,19 @@ void MixScreen::buildUI(){
 	screenLayout.addChild(&leftLayout);
 	screenLayout.addChild(&rightLayout);
 
-	leftLayout.setWHType(FIXED,PARENT);
+	leftLayout.setWHType(FIXED, PARENT);
 	leftLayout.setWidth(77);
 	leftLayout.setGutter(5);
 	leftLayout.setPadding(2);
 
-	rightLayout.setWHType(FIXED,PARENT);
+	leftLayout.addChild(leftSeekBar[0]);
+
+	rightLayout.setWHType(FIXED, PARENT);
 	rightLayout.setWidth(77);
 	rightLayout.setGutter(5);
 	rightLayout.setPadding(2);
+
+	rightLayout.addChild(rightSeekBar[0]);
 
 	screenLayout.reflow();
 	leftLayout.reflow();

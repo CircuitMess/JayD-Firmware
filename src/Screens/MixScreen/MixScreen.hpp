@@ -3,6 +3,8 @@
 
 #include <Support/Context.h>
 #include <UI/LinearLayout.h>
+#include "LeftSeekBar.hpp"
+#include "RightSeekBar.hpp"
 
 class MixScreen : public Context {
 public:
@@ -22,7 +24,8 @@ private:
 	LinearLayout leftLayout;
 	LinearLayout rightLayout;
 
-
+	std::vector<LeftSeekBar *> leftSeekBar;
+	std::vector<RightSeekBar *> rightSeekBar;
 
 	void buildUI();
 
