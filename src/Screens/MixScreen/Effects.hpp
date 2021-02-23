@@ -18,11 +18,11 @@ namespace MixScreen {
 
 		void setIntensity(uint8_t intensity);
 
-		bool mirrored ;
 
 	private:
 		Effect effect;
 		uint8_t intensity;
+		bool mirrored=false;
 
 	};
 
