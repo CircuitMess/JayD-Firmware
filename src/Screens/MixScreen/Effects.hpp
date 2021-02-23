@@ -10,7 +10,7 @@ enum Effect {
 namespace MixScreen {
 	class Effects : public CustomElement {
 	public:
-		Effects(ElementContainer *parent,bool mirrored);
+		Effects(ElementContainer *parent, bool mirrored);
 
 		void draw();
 
@@ -18,12 +18,13 @@ namespace MixScreen {
 
 		void setIntensity(uint8_t intensity);
 
+		void setSelected(bool selected);
 
 	private:
 		Effect effect;
-		uint8_t intensity;
-		bool mirrored=false;
-
+		uint8_t intensity = 0;
+		bool mirrored = false;
+		bool selected = false;
 	};
 
 }
