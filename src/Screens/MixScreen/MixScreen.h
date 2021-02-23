@@ -37,7 +37,7 @@ namespace MixScreen {
 
 		bool isPlaying = false;
 
-		bool isSelected[6];
+		bool isSelected[6] ;
 
 		uint8_t effects[6];
 

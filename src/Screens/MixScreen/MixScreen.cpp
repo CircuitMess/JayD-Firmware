@@ -16,6 +16,9 @@ MixScreen::MixScreen::MixScreen(Display &display) : Context(display), screenLayo
 	for(int i = 0; i < 3; i++){
 		effectsRight.push_back(new Effects(&rightLayout, true));
 	}
+	for(int i = 0; i < 5; ++i){
+		isSelected[i] = false;
+	}
 
 	instance = this;
 	buildUI();
@@ -87,7 +90,7 @@ void MixScreen::MixScreen::start(){
 	});
 	InputJayD::getInstance()->setBtnPressCallback(5, [](){
 		if(!instance->isSelected[4]){
-			instance->isSelected[4]= true;
+			instance->isSelected[4] = true;
 		}else{
 			instance->isSelected[4] = false;
 		}
@@ -97,7 +100,7 @@ void MixScreen::MixScreen::start(){
 	});
 	InputJayD::getInstance()->setBtnPressCallback(4, [](){
 		if(!instance->isSelected[5]){
-			instance->isSelected[5]= true;
+			instance->isSelected[5] = true;
 		}else{
 			instance->isSelected[5] = false;
 		}
@@ -108,7 +111,7 @@ void MixScreen::MixScreen::start(){
 	});
 	InputJayD::getInstance()->setEncoderMovedCallback(1, [](int8_t value){
 		if(instance->isSelected[0]){
-			instance->effects[0]=instance->effects[0]+value;
+			instance->effects[0] = instance->effects[0] + value;
 			instance->effectsLeft[0]->setEffect(static_cast<Effect>(instance->effects[0]));
 		}
 		if(!instance->isSelected[0]){
@@ -121,7 +124,7 @@ void MixScreen::MixScreen::start(){
 	});
 	InputJayD::getInstance()->setEncoderMovedCallback(6, [](int8_t value){
 		if(instance->isSelected[1]){
-			instance->effects[1]=instance->effects[1]+value;
+			instance->effects[1] = instance->effects[1] + value;
 			instance->effectsLeft[1]->setEffect(static_cast<Effect>(instance->effects[1]));
 		}
 		if(!instance->isSelected[1]){
@@ -133,7 +136,7 @@ void MixScreen::MixScreen::start(){
 	});
 	InputJayD::getInstance()->setEncoderMovedCallback(5, [](int8_t value){
 		if(instance->isSelected[2]){
-			instance->effects[2]=instance->effects[2]+value;
+			instance->effects[2] = instance->effects[2] + value;
 			instance->effectsLeft[2]->setEffect(static_cast<Effect>(instance->effects[2]));
 		}
 		if(!instance->isSelected[2]){
@@ -145,7 +148,7 @@ void MixScreen::MixScreen::start(){
 	});
 	InputJayD::getInstance()->setEncoderMovedCallback(4, [](int8_t value){
 		if(instance->isSelected[3]){
-			instance->effects[3]=instance->effects[3]+value;
+			instance->effects[3] = instance->effects[3] + value;
 			instance->effectsRight[0]->setEffect(static_cast<Effect>(instance->effects[3]));
 		}
 		if(!instance->isSelected[3]){
@@ -157,7 +160,7 @@ void MixScreen::MixScreen::start(){
 	});
 	InputJayD::getInstance()->setEncoderMovedCallback(3, [](int8_t value){
 		if(instance->isSelected[4]){
-			instance->effects[4]=instance->effects[4]+value;
+			instance->effects[4] = instance->effects[4] + value;
 			instance->effectsRight[1]->setEffect(static_cast<Effect>(instance->effects[4]));
 		}
 		if(!instance->isSelected[4]){
@@ -169,7 +172,7 @@ void MixScreen::MixScreen::start(){
 	});
 	InputJayD::getInstance()->setEncoderMovedCallback(2, [](int8_t value){
 		if(instance->isSelected[5]){
-			instance->effects[5]=instance->effects[5]+value;
+			instance->effects[5] = instance->effects[5] + value;
 			instance->effectsRight[2]->setEffect(static_cast<Effect>(instance->effects[5]));
 		}
 		if(!instance->isSelected[5]){
