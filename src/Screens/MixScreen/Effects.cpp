@@ -14,9 +14,11 @@ MixScreen::Effects::Effects(ElementContainer *parent, bool mirrored) : CustomEle
 uint16_t *ikone[] = {lowpass, highpass, speed, reverb, bitcrusher};
 
 void MixScreen::Effects::setEffect(Effect effect){
-	if(effect > 4 || effect < 0){
+	if(effect == 0){
 		Effects::effect = static_cast<Effect>(0);
-	}else{
+	}else if(effect == 4 ){
+		Effects::effect = static_cast<Effect>(4);
+	}else if(effect > 0 && effect < 4){
 		Effects::effect = effect;
 	}
 }
