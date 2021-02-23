@@ -25,28 +25,119 @@ MixScreen::MixScreen::MixScreen(Display &display) : Context(display), screenLayo
 void MixScreen::MixScreen::start(){
 	draw();
 	screen.commit();
-	InputJayD::getInstance()->setBtnPressCallback(3, [](){
+	InputJayD::getInstance()->setBtnPressCallback(0, [](){
 		if(!instance->isPlaying){
-			instance->isPlaying=true;
+			instance->isPlaying = true;
 		}else{
-			instance->isPlaying=false;
+			instance->isPlaying = false;
 		}
 		instance->leftSeekBar.setPlaying(instance->isPlaying);
 		instance->draw();
 		instance->screen.commit();
 	});
-	InputJayD::getInstance()->setBtnPressCallback(2, [](){
+	InputJayD::getInstance()->setBtnPressCallback(1, [](){
 		if(!instance->isPlaying){
-			instance->isPlaying=true;
+			instance->isPlaying = true;
 		}else{
-			instance->isPlaying=false;
+			instance->isPlaying = false;
 		}
 		instance->rightSeekBar.setPlaying(instance->isPlaying);
 		instance->draw();
 		instance->screen.commit();
 	});
+	InputJayD::getInstance()->setBtnPressCallback(3,[](){
+		if(!instance->isSelected){
+			instance->isSelected = true;
+		}else{
+			instance->isSelected= false;
+		}
+		instance->effectsLeft[0]->setSelected(instance->isSelected);
+		instance->draw();
+		instance->screen.commit();
+	});
+	InputJayD::getInstance()->setBtnPressCallback(8,[](){
+		if(!instance->isSelected){
+			instance->isSelected = true;
+		}else{
+			instance->isSelected= false;
+		}
+		instance->effectsLeft[1]->setSelected(instance->isSelected);
+		instance->draw();
+		instance->screen.commit();
+	});
+	InputJayD::getInstance()->setBtnPressCallback(7,[](){
+		if(!instance->isSelected){
+			instance->isSelected = true;
+		}else{
+			instance->isSelected= false;
+		}
+		instance->effectsLeft[2]->setSelected(instance->isSelected);
+		instance->draw();
+		instance->screen.commit();
+	});
+	InputJayD::getInstance()->setBtnPressCallback(6,[](){
+		if(!instance->isSelected){
+			instance->isSelected = true;
+		}else{
+			instance->isSelected= false;
+		}
+		instance->effectsRight[0]->setSelected(instance->isSelected);
+		instance->draw();
+		instance->screen.commit();
+	});
+	InputJayD::getInstance()->setBtnPressCallback(5,[](){
+		if(!instance->isSelected){
+			instance->isSelected = true;
+		}else{
+			instance->isSelected= false;
+		}
+		instance->effectsRight[1]->setSelected(instance->isSelected);
+		instance->draw();
+		instance->screen.commit();
+	});
+	InputJayD::getInstance()->setBtnPressCallback(4,[](){
+		if(!instance->isSelected){
+			instance->isSelected = true;
+		}else{
+			instance->isSelected= false;
+		}
+		instance->effectsRight[2]->setSelected(instance->isSelected);
+		instance->draw();
+		instance->screen.commit();
+	});
 	InputJayD::getInstance()->setEncoderMovedCallback(1, [](int8_t value){
-		instance->leftSeekBar.setCurrentDuration(value);
+		instance->intenstiy[0]=instance->intenstiy[0]+value;
+		instance->effectsLeft[0]->setIntensity(instance->intenstiy[0]);
+		instance->draw();
+		instance->screen.commit();
+	});
+	InputJayD::getInstance()->setEncoderMovedCallback(6, [](int8_t value){
+		instance->intenstiy[1]=instance->intenstiy[1]+value;
+		instance->effectsLeft[1]->setIntensity(instance->intenstiy[1]);
+		instance->draw();
+		instance->screen.commit();
+	});
+	InputJayD::getInstance()->setEncoderMovedCallback(5, [](int8_t value){
+		instance->intenstiy[2]=instance->intenstiy[2]+value;
+		instance->effectsLeft[2]->setIntensity(instance->intenstiy[2]);
+		instance->draw();
+		instance->screen.commit();
+	});
+	InputJayD::getInstance()->setEncoderMovedCallback(4, [](int8_t value){
+		instance->intenstiy[3]=instance->intenstiy[3]+value;
+		instance->effectsRight[0]->setIntensity(instance->intenstiy[3]);
+		instance->draw();
+		instance->screen.commit();
+	});
+	InputJayD::getInstance()->setEncoderMovedCallback(3, [](int8_t value){
+		instance->intenstiy[4]=instance->intenstiy[4]+value;
+		instance->effectsRight[1]->setIntensity(instance->intenstiy[4]);
+		instance->draw();
+		instance->screen.commit();
+	});
+	InputJayD::getInstance()->setEncoderMovedCallback(2, [](int8_t value){
+		instance->intenstiy[5]=instance->intenstiy[5]+value;
+		instance->effectsRight[2]->setIntensity(instance->intenstiy[5]);
 		instance->draw();
 		instance->screen.commit();
 	});
@@ -54,7 +145,11 @@ void MixScreen::MixScreen::start(){
 
 
 void MixScreen::MixScreen::stop(){
-
+	InputJayD::getInstance()->removeBtnPressCallback(0);
+	InputJayD::getInstance()->removeBtnPressCallback(1);
+	InputJayD::getInstance()->removeEncoderMovedCallback(1);
+	InputJayD::getInstance()->removeEncoderMovedCallback(5);
+	InputJayD::getInstance()->removeEncoderMovedCallback(6);
 }
 
 void MixScreen::MixScreen::draw(){
@@ -80,7 +175,6 @@ void MixScreen::MixScreen::buildUI(){
 	for(int i = 0; i < effectsLeft.size(); i++){
 		leftLayout.addChild(effectsLeft[i]);
 	}
-
 
 	effectsLeft[0]->setEffect(LOWPASS);
 	effectsLeft[1]->setEffect(HIGHPASS);

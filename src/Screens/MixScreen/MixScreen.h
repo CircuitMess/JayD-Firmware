@@ -35,9 +35,15 @@ namespace MixScreen {
 		std::vector<Effects *> effectsLeft;
 		std::vector<Effects *> effectsRight;
 
-		bool isPlaying=false;
+		bool isPlaying = false;
+
+		bool isSelected = false;
+
+		uint8_t intenstiy[];
 
 		void buildUI();
+
+
 	};
 }
 
