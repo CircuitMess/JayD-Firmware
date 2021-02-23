@@ -8,6 +8,7 @@
 #include <Loop/LoopManager.h>
 #include "src/Screens/Playback/Playback.h"
 #include "src/Screens/SongList/SongList.h"
+#include "src/Screens/MixScreen/MixScreen.h"
 #include <JayD.h>
 #include <InputLib/InputJayD.h>
 
@@ -16,6 +17,7 @@
 Display display(160, 128, -1, -1);
 Playback *playback;
 SongList *songList;
+MixScreen::MixScreen *mixScreen;
 
 void setup(){
 	Serial.begin(115200);
@@ -23,9 +25,9 @@ void setup(){
 	digitalWrite(blPin, LOW);
 	display.begin();
 	LoopManager::addListener(new InputJayD());
-	songList=new SongList(display);
-	songList->unpack();
-	songList->start();
+	mixScreen=new MixScreen::MixScreen(display);
+	mixScreen->unpack();
+	mixScreen->start();
 
 
 }
