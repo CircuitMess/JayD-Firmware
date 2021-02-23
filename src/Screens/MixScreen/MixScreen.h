@@ -37,9 +37,11 @@ namespace MixScreen {
 
 		bool isPlaying = false;
 
-		bool isSelected = false;
+		bool isSelected[6];
 
-		uint8_t intenstiy[];
+		uint8_t effects[6];
+
+		uint8_t intensity[];
 
 		void buildUI();
 
