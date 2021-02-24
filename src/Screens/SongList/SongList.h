@@ -8,29 +8,29 @@
 #include <UI/ScrollLayout.h>
 #include "ListItem.h"
 
+namespace Songlist {
+	class SongList : public Context {
+	public:
 
-class SongList : public Context {
-public:
+		SongList(Display &display);
 
-	SongList(Display &display);
+		void start();
 
-	void start();
+		void stop();
 
-	void stop();
+		void draw();
 
-	void draw();
+	private:
 
-private:
+		static SongList *instance;
 
-	static SongList *instance;
+		LinearLayout screenLayout;
+		ScrollLayout scrollLayout;
+		LinearLayout list;
 
-	LinearLayout screenLayout;
-	ScrollLayout scrollLayout;
-	LinearLayout list;
+		std::vector<ListItem *> song;
 
-	std::vector<ListItem *> song;
-
-	void buildUI();
-};
-
+		void buildUI();
+	};
+}
 #endif //JAYD_FIRMWARE_SONGLIST_H

@@ -3,16 +3,17 @@
 
 #include <UI/CustomElement.h>
 
-class ListItem : public CustomElement {
-public:
-	ListItem(ElementContainer *parent);
+namespace Songlist {
+	class ListItem : public CustomElement {
+	public:
+		ListItem(ElementContainer *parent);
 
-	void draw();
+		void draw();
 
-	void setSelected(bool selected);
+		void setSelected(bool selected);
 
-private:
-	bool selected=false;
-};
-
+	private:
+		bool selected = false;
+	};
+}
 #endif //JAYD_FIRMWARE_LISTITEM_H

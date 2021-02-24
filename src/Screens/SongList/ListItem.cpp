@@ -1,11 +1,11 @@
 #include "ListItem.h"
 
-ListItem::ListItem(ElementContainer *parent) : CustomElement(parent, 10, 10){
+Songlist::ListItem::ListItem(ElementContainer *parent) : CustomElement(parent, 10, 10){
 
 
 }
 
-void ListItem::draw(){
+void Songlist::ListItem::draw(){
 	getSprite()->setTextFont(1);
 	getSprite()->setTextColor(TFT_WHITE);
 	getSprite()->setTextSize(2);
@@ -16,6 +16,6 @@ void ListItem::draw(){
 	getSprite()->println("song");
 }
 
-void ListItem::setSelected(bool selected){
+void Songlist::ListItem::setSelected(bool selected){
 	ListItem::selected = selected;
 }

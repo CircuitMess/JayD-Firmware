@@ -1,9 +1,9 @@
 #include <InputLib/InputJayD.h>
 #include "SongList.h"
 
-SongList *SongList::instance = nullptr;
+Songlist::SongList *Songlist::SongList::instance = nullptr;
 
-SongList::SongList(Display &display) : Context(display), screenLayout(&screen, VERTICAL), scrollLayout(&screenLayout),
+Songlist::SongList::SongList(Display &display) : Context(display), screenLayout(&screen, VERTICAL), scrollLayout(&screenLayout),
 									   list(&scrollLayout, VERTICAL){
 
 	for(int i = 0; i < 10; i++){
@@ -15,7 +15,7 @@ SongList::SongList(Display &display) : Context(display), screenLayout(&screen, V
 
 }
 
-void SongList::start(){
+void Songlist::SongList::start(){
 	draw();
 	screen.commit();
 	InputJayD::getInstance()->setEncoderMovedCallback(1, [](int8_t value){
@@ -31,16 +31,16 @@ void SongList::start(){
 	});
 }
 
-void SongList::stop(){
+void Songlist::SongList::stop(){
 	InputJayD::getInstance()->removeEncoderMovedCallback(1);
 }
 
-void SongList::draw(){
+void Songlist::SongList::draw(){
 	screen.getSprite()->clear(TFT_BLACK);
 	screen.draw();
 }
 
-void SongList::buildUI(){
+void Songlist::SongList::buildUI(){
 	screenLayout.setWHType(PARENT, PARENT);
 	screenLayout.setPadding(2);
 	screenLayout.setGutter(2);
