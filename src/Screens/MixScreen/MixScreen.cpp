@@ -188,13 +188,25 @@ void MixScreen::MixScreen::start(){
 void MixScreen::MixScreen::stop(){
 	InputJayD::getInstance()->removeBtnPressCallback(0);
 	InputJayD::getInstance()->removeBtnPressCallback(1);
+	InputJayD::getInstance()->removeBtnPressCallback(2);
+	InputJayD::getInstance()->removeBtnPressCallback(3);
+	InputJayD::getInstance()->removeBtnPressCallback(4);
+	InputJayD::getInstance()->removeBtnPressCallback(5);
+	InputJayD::getInstance()->removeBtnPressCallback(6);
+	InputJayD::getInstance()->removeBtnPressCallback(7);
+	InputJayD::getInstance()->removeBtnPressCallback(8);
 	InputJayD::getInstance()->removeEncoderMovedCallback(1);
 	InputJayD::getInstance()->removeEncoderMovedCallback(5);
 	InputJayD::getInstance()->removeEncoderMovedCallback(6);
+	InputJayD::getInstance()->removeEncoderMovedCallback(4);
+	InputJayD::getInstance()->removeEncoderMovedCallback(3);
+	InputJayD::getInstance()->removeEncoderMovedCallback(2);
 }
 
 void MixScreen::MixScreen::draw(){
 	screen.getSprite()->clear(TFT_BLACK);
+	screen.getSprite()->fillRect(leftLayout.getTotalX(), leftLayout.getTotalY(), 78, 128, C_RGB(249, 53, 2));
+	screen.getSprite()->fillRect(rightLayout.getTotalX(), rightLayout.getTotalY(), 79, 128, C_RGB(3, 52, 135));
 	screen.draw();
 }
 
@@ -208,7 +220,7 @@ void MixScreen::MixScreen::buildUI(){
 	leftLayout.setWidth(79);
 	leftLayout.setGutter(10);
 	leftLayout.setPadding(1);
-	leftLayout.setBorder(1, TFT_RED);
+
 
 	leftLayout.addChild(&leftSeekBar);
 	leftLayout.addChild(&leftSongName);
@@ -225,7 +237,7 @@ void MixScreen::MixScreen::buildUI(){
 	rightLayout.setWidth(79);
 	rightLayout.setGutter(10);
 	rightLayout.setPadding(1);
-	rightLayout.setBorder(1, TFT_BLUE);
+
 
 	rightLayout.addChild(&rightSeekBar);
 	rightLayout.addChild(&rightSongName);
