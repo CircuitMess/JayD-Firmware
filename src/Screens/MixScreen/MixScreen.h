@@ -41,7 +41,7 @@ namespace MixScreen {
 
 		uint8_t effects[6];
 
-		uint8_t intensity[];
+		uint8_t intensity[6];
 
 		void buildUI();
 
