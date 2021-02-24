@@ -1,9 +1,9 @@
 #include <InputLib/InputJayD.h>
 #include "Playback.h"
 
-Playback *Playback::instance = nullptr;
+Playback::Playback *Playback::Playback::instance = nullptr;
 
-Playback::Playback(Display &display) : Context(display), screenLayout(&screen, VERTICAL),
+Playback::Playback::Playback(Display &display) : Context(display), screenLayout(&screen, VERTICAL),
 									   songNameLayout(&screenLayout, HORIZONTAL),
 									   timeElapsedLayout(&screenLayout, HORIZONTAL), buttonLayout(
 				&screenLayout, HORIZONTAL){
@@ -19,7 +19,7 @@ Playback::Playback(Display &display) : Context(display), screenLayout(&screen, V
 
 }
 
-void Playback::start(){
+void Playback::Playback::start(){
 	draw();
 	screen.commit();
 	InputJayD::getInstance()->setBtnPressCallback(3, [](){
@@ -34,16 +34,16 @@ void Playback::start(){
 	});
 }
 
-void Playback::stop(){
+void Playback::Playback::stop(){
 	InputJayD::getInstance()->removeBtnPressCallback(3);
 }
 
-void Playback::draw(){
+void Playback::Playback::draw(){
 	screen.getSprite()->clear(TFT_BLACK);
 	screen.draw();
 }
 
-void Playback::buildUI(){
+void Playback::Playback::buildUI(){
 	screenLayout.setWHType(PARENT, PARENT);
 	screenLayout.setGutter(5);
 	screenLayout.addChild(&songNameLayout);

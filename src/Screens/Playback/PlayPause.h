@@ -4,21 +4,21 @@
 #include <UI/CustomElement.h>
 #include <Loop/LoopListener.h>
 
+namespace Playback {
+	class PlayPause : public CustomElement {
+	public:
+		PlayPause(ElementContainer *parent);
 
-class PlayPause : public CustomElement {
-public:
-	PlayPause(ElementContainer *parent);
+		void togglePlaying();
 
-	void togglePlaying();
+		void draw();
 
-	void draw();
-
-	void setPlaying(bool playing);
+		void setPlaying(bool playing);
 
 
-private:
-	bool playing = false;
-};
-
+	private:
+		bool playing = false;
+	};
+}
 
 #endif //JAYD_FIRMWARE_PLAYPAUSE_H

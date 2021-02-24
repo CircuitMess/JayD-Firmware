@@ -1,11 +1,11 @@
 #include "SongName.h"
 
-SongName::SongName(ElementContainer *parent) : CustomElement(parent,40,20){
+Playback::SongName::SongName(ElementContainer *parent) : CustomElement(parent,40,20){
 
 
 }
 
-void SongName::draw(){
+void Playback::SongName::draw(){
 
 	getSprite()->setTextFont(1);
 	getSprite()->setTextColor(TFT_WHITE);

@@ -4,11 +4,11 @@
 #include "Bitmaps/rew.hpp"
 #include "Bitmaps/pause.hpp"
 
-PlayPause::PlayPause(ElementContainer *parent) : CustomElement(parent, 10, 10){
+Playback::PlayPause::PlayPause(ElementContainer *parent) : CustomElement(parent, 10, 10){
 
 }
 
-void PlayPause::togglePlaying(){
+void Playback::PlayPause::togglePlaying(){
 	if(!playing){
 		playing = true;
 	}else if(playing){
@@ -16,7 +16,7 @@ void PlayPause::togglePlaying(){
 	}
 }
 
-void PlayPause::draw(){
+void Playback::PlayPause::draw(){
 	getSprite()->setTextFont(1);
 	getSprite()->setTextColor(TFT_WHITE);
 	getSprite()->setTextSize(2);
@@ -30,6 +30,6 @@ void PlayPause::draw(){
 	getSprite()->drawIcon(fw, 102, 90, 10, 8, 1, TFT_BLACK);
 }
 
-void PlayPause::setPlaying(bool playing){
+void Playback::PlayPause::setPlaying(bool playing){
 	PlayPause::playing = playing;
 }

@@ -3,14 +3,15 @@
 
 #include <UI/CustomElement.h>
 
-class SongName : public CustomElement {
-public:
-	SongName(ElementContainer *parent);
+namespace Playback {
+	class SongName : public CustomElement {
+	public:
+		SongName(ElementContainer *parent);
 
-	void draw();
+		void draw();
 
-private:
+	private:
 
-};
-
+	};
+}
 #endif //JAYD_FIRMWARE_SONGNAME_H

@@ -1,11 +1,11 @@
 #include "TrackCounter.hpp"
 
-TrackCounter::TrackCounter(ElementContainer *parent) : CustomElement(parent, 10, 10){
+Playback::TrackCounter::TrackCounter(ElementContainer *parent) : CustomElement(parent, 10, 10){
 
 }
 
 
-void TrackCounter::draw(){
+void Playback::TrackCounter::draw(){
 	getSprite()->setTextFont(1);
 	getSprite()->setTextColor(TFT_WHITE);
 	getSprite()->setTextSize(1);
@@ -18,11 +18,11 @@ void TrackCounter::draw(){
 
 }
 
-void TrackCounter::setTotalDuration(int totalDuration){
+void Playback::TrackCounter::setTotalDuration(int totalDuration){
 	TrackCounter::totalDuration = totalDuration;
 }
 
-void TrackCounter::setCurrentDuration(int currentDuration){
+void Playback::TrackCounter::setCurrentDuration(int currentDuration){
 	if(currentDuration < totalDuration){
 		TrackCounter::currentDuration = currentDuration;
 	}else if(currentDuration >= totalDuration){
