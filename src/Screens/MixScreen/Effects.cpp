@@ -34,8 +34,11 @@ void MixScreen::Effects::setIntensity(uint8_t intensity){
 }
 
 void MixScreen::Effects::draw(){
-	if(selected){
-		getSprite()->fillRect(getTotalX(), getTotalY() + 25, 77, 18, TFT_DARKGREY);
+	if(selected && !mirrored){
+		getSprite()->fillRect(getTotalX(), getTotalY() + 25, 77, 18, C_RGB(248, 147, 121));
+	}
+	if(selected && mirrored){
+		getSprite()->fillRect(getTotalX(), getTotalY() + 25, 77, 18, C_RGB(157, 194, 255));
 	}
 	if(!mirrored){
 		getSprite()->drawIcon(ikone[effect], getTotalX(), getTotalY() + 25, 16, 16, 1, TFT_BLACK);
