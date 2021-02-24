@@ -48,6 +48,7 @@ AUX_SOURCE_DIRECTORY(src/Screens/Playback/Bitmaps SOURCES)
 AUX_SOURCE_DIRECTORY(src/Screens/SongList SOURCES)
 AUX_SOURCE_DIRECTORY(src/Screens/MixScreen SOURCES)
 AUX_SOURCE_DIRECTORY(src/Screens/MixScreen/Bitmaps SOURCES)
+AUX_SOURCE_DIRECTORY(src/Screens/MainMenu SOURCES)
 
 # Defines
 add_definitions(-DDEBUG)
