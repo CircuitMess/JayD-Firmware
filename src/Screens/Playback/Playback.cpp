@@ -6,13 +6,8 @@ Playback::Playback *Playback::Playback::instance = nullptr;
 Playback::Playback::Playback(Display &display) : Context(display), screenLayout(&screen, VERTICAL),
 									   songNameLayout(&screenLayout, HORIZONTAL),
 									   timeElapsedLayout(&screenLayout, HORIZONTAL), buttonLayout(
-				&screenLayout, HORIZONTAL){
+				&screenLayout, HORIZONTAL),song(&songNameLayout),playOrPause(&buttonLayout),trackCount(&timeElapsedLayout){
 
-	song.push_back(new SongName(&songNameLayout));
-
-	playOrPause.push_back(new PlayPause(&buttonLayout));
-
-	trackCount.push_back(new TrackCounter(&timeElapsedLayout));
 
 	instance = this;
 	buildUI();
@@ -23,12 +18,12 @@ void Playback::Playback::start(){
 	draw();
 	screen.commit();
 	InputJayD::getInstance()->setBtnPressCallback(3, [](){
-		instance->playOrPause[0]->togglePlaying();
+		instance->playOrPause.togglePlaying();
 		instance->draw();
 		instance->screen.commit();
 	});
 	InputJayD::getInstance()->setEncoderMovedCallback(1, [](int8_t value){
-		instance->trackCount[0]->setCurrentDuration(value);
+		instance->trackCount.setCurrentDuration(value);
 		instance->draw();
 		instance->screen.commit();
 	});
@@ -55,21 +50,15 @@ void Playback::Playback::buildUI(){
 	songNameLayout.setGutter(5);
 	songNameLayout.setPadding(10);
 
-	songNameLayout.addChild(song[0]);
-
 	timeElapsedLayout.setWHType(PARENT, FIXED);
 	timeElapsedLayout.setHeight(20);
 	timeElapsedLayout.setGutter(5);
 	timeElapsedLayout.setPadding(10);
 
-	timeElapsedLayout.addChild(trackCount[0]);
-
 	buttonLayout.setWHType(PARENT, FIXED);
 	buttonLayout.setHeight(62);
 	buttonLayout.setPadding(10);
 	buttonLayout.setGutter(5);
-
-	buttonLayout.addChild(playOrPause[0]);
 
 	screenLayout.reflow();
 	timeElapsedLayout.reflow();

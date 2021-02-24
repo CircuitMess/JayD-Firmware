@@ -29,11 +29,11 @@ namespace Playback {
 		LinearLayout timeElapsedLayout;
 		LinearLayout buttonLayout;
 
-		std::vector<SongName *> song;
+		SongName song;
 
-		std::vector<PlayPause *> playOrPause;
+		PlayPause playOrPause;
 
-		std::vector<TrackCounter *> trackCount;
+		TrackCounter trackCount;
 
 		void buildUI();
 
