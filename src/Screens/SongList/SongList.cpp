@@ -8,11 +8,12 @@ SongList::SongList::SongList(Display &display) : Context(display),
 												 list(&scrollLayout, VERTICAL){
 
 	for(int i = 0; i < 10; i++){
-		song.push_back(new ListItem(&list, "song"));
+		songs.push_back(new ListItem(&list, "song"));
 	}
 
 	instance = this;
 	buildUI();
+	songs[selectedElement]->setSelected(true);
 
 }
 
@@ -21,20 +22,25 @@ void SongList::SongList::start(){
 	screen.commit();
 	InputJayD::getInstance()->setEncoderMovedCallback(1, [](int8_t value){
 		if(instance == nullptr) return;
-		int scrollVal = value * 20;
-		if(value == 0) return;
-		if((instance->scrollLayout.getScrollY() >= instance->scrollLayout.getMaxScrollY()) && (value > 0) ||
-		   ((instance->scrollLayout.getScrollY() == 0) && value < 0)){
-			scrollVal = 0;
+		instance->songs[instance->selectedElement]->setSelected(false);
+		instance->selectedElement += value;
+		if(instance->selectedElement < 0){
+			instance->selectedElement = 0;
+		}else if(instance->selectedElement >= instance->songs.size()){
+			instance->selectedElement = instance->songs.size() - 1;
 		}
-		instance->scrollLayout.setScroll(0, instance->scrollLayout.getScrollY() + scrollVal);
+		instance->songs[instance->selectedElement]->setSelected(true);
+		instance->scrollLayout.scrollIntoView(instance->selectedElement,2);
 		instance->draw();
 		instance->screen.commit();
 	});
+	instance->draw();
+	instance->screen.commit();
 }
 
 void SongList::SongList::stop(){
 	InputJayD::getInstance()->removeEncoderMovedCallback(1);
+
 }
 
 void SongList::SongList::draw(){
@@ -43,17 +49,16 @@ void SongList::SongList::draw(){
 }
 
 void SongList::SongList::buildUI(){
-	scrollLayout.setWHType(PARENT, FIXED);
-	scrollLayout.setHeight(20);
-	scrollLayout.setBorder(1, TFT_RED);
+	scrollLayout.setWHType(PARENT, PARENT);
+	//scrollLayout.setBorder(1, TFT_RED);
 	scrollLayout.addChild(&list);
 
 	list.setWHType(PARENT, CHILDREN);
 	list.setPadding(5);
 	list.setGutter(10);
 	//list.setBorder(1, TFT_RED);
-	for(int i = 0; i < song.size(); i++){
-		list.addChild(song[i]);
+	for(int i = 0; i < songs.size(); i++){
+		list.addChild(songs[i]);
 	}
 
 	scrollLayout.reflow();

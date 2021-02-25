@@ -28,7 +28,9 @@ namespace SongList {
 		ScrollLayout scrollLayout;
 		LinearLayout list;
 
-		std::vector<ListItem *> song;
+		int selectedElement = 0;
+
+		std::vector<ListItem *> songs;
 
 		void buildUI();
 	};
