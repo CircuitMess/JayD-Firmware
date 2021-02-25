@@ -9,11 +9,17 @@ void Playback::TrackCounter::draw(){
 	getSprite()->setTextFont(1);
 	getSprite()->setTextColor(TFT_WHITE);
 	getSprite()->setTextSize(1);
-	getSprite()->setCursor(getTotalX(), getTotalY());
-	getSprite()->fillRoundRect(getTotalX(), getTotalY() + 10, currentDuration, 8, 5, TFT_GREENYELLOW);
-	getSprite()->drawRoundRect(getTotalX(), getTotalY() + 10, 140, 8, 5, TFT_WHITE);
+	getSprite()->setCursor(getTotalX()+10, getTotalY());
+	if(currentDuration==0){
+		fillSeekBar=0;
+	}
+	else {
+		fillSeekBar=(((float) currentDuration) / (float)totalDuration ) * 140.0f;
+	}
+	getSprite()->fillRoundRect(getTotalX()+10, getTotalY() + 10, fillSeekBar, 8, 5, TFT_GREENYELLOW);
+	getSprite()->drawRoundRect(getTotalX()+10, getTotalY() + 10, 140, 8, 5, TFT_WHITE);
 	getSprite()->printf("%02d:%02d", currentDuration / 60, currentDuration - (currentDuration / 60) * 60);
-	getSprite()->setCursor(getTotalX() + 110, getTotalY());
+	getSprite()->setCursor(getTotalX() + 117, getTotalY());
 	getSprite()->printf("%02d:%02d", totalDuration / 60, totalDuration - (totalDuration / 60) * 60);
 
 }
