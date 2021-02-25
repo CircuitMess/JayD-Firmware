@@ -5,7 +5,7 @@
 #include <UI/Screen.h>
 #include <UI/LinearLayout.h>
 #include <UI/ScrollLayout.h>
-#include "Mode.h"
+#include "MainMenuItem.h"
 
 
 namespace MainMenu {
@@ -26,9 +26,10 @@ namespace MainMenu {
 
 		LinearLayout screenLayout;
 
-		std::vector<Mode *> modeElement;
+		std::vector<MainMenuItem *> item;
 
-		bool isSelected[3];
+		int8_t itemNum = 0;
+
 
 		void buildUI();
 	};
