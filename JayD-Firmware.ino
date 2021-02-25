@@ -7,23 +7,28 @@
 #include <Loop/LoopListener.h>
 #include <Loop/LoopManager.h>
 #include "src/Screens/Playback/Playback.h"
+#include "src/Screens/SongList/SongList.h"
+#include "src/Screens/MixScreen/MixScreen.h"
 #include <JayD.hpp>
 #include <Input/InputJayD.h>
 
 #define blPin 25
 
-Display display(160,128,-1,-1);
-Playback::Playback* playback;
+Display display(160, 128, -1, -1);
+Playback *playback;
+SongList *songList;
+MixScreen::MixScreen *mixScreen;
 
 void setup(){
 	Serial.begin(115200);
-	pinMode(blPin,OUTPUT);
-	digitalWrite(blPin,LOW);
+	pinMode(blPin, OUTPUT);
+	digitalWrite(blPin, LOW);
 	display.begin();
 	LoopManager::addListener(new InputJayD());
-	playback=new Playback::Playback(display);
-	playback->unpack();
-	playback->start();
+	mixScreen=new MixScreen::MixScreen(display);
+	mixScreen->unpack();
+	mixScreen->start();
+
 
 }
 
