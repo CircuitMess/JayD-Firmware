@@ -6,12 +6,12 @@
 namespace MixScreen {
 	class SongName : public CustomElement {
 	public:
-		SongName(ElementContainer *parent);
+		SongName(ElementContainer *parent, String songName);
 
 		void draw();
 
 	private:
-
+		String songName;
 	};
 
 }
