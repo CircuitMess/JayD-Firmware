@@ -33,17 +33,18 @@ include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.0/libraries/Wire
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.0/tools/sdk/include/freertos)
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.0/tools/sdk/include/freertos/freertos)
 include_directories(${ArduinoLibs}/CircuitOS/src)
+include_directories(${ArduinoLibs}/JayD-Library/src)
 
 
 include_directories(${ArduinoLibs}/TFT_eSPI)
 include_directories(${ArduinoLibs}/TFT_eSPI/Extensions)
 
-AUX_SOURCE_DIRECTORY(src SOURCES)
-
-
 
 # Source directories
 AUX_SOURCE_DIRECTORY(src SOURCES)
+AUX_SOURCE_DIRECTORY(src/Screens SOURCES)
+AUX_SOURCE_DIRECTORY(src/Screens/Playback SOURCES)
+AUX_SOURCE_DIRECTORY(src/Screens/Playback/Bitmaps SOURCES)
 
 # Defines
 add_definitions(-DDEBUG)

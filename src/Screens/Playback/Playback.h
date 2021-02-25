@@ -1,0 +1,45 @@
+#ifndef JAYD_FIRMWARE_PLAYBACK_H
+#define JAYD_FIRMWARE_PLAYBACK_H
+
+#include <Support/Context.h>
+#include <UI/Image.h>
+#include <UI/LinearLayout.h>
+#include <UI/TextElement.h>
+#include "SongName.h"
+#include "PlayPause.h"
+#include "TrackCounter.hpp"
+
+namespace Playback {
+	class Playback : public Context {
+	public:
+
+		Playback(Display &display);
+
+		virtual ~Playback();
+
+		void start();
+
+		void stop();
+
+		void draw();
+
+	private:
+		static Playback *instance;
+
+		LinearLayout screenLayout;
+		LinearLayout songNameLayout;
+		LinearLayout timeElapsedLayout;
+		LinearLayout buttonLayout;
+
+		SongName song;
+
+		PlayPause playOrPause;
+
+		TrackCounter trackCount;
+
+		void buildUI();
+
+	};
+}
+
+#endif //JAYD_FIRMWARE_PLAYBACK_H
