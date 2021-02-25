@@ -1,6 +1,6 @@
 #include <Input/InputJayD.h>
 #include "Playback.h"
-
+#include "Bitmaps/playback _pozadina.hpp"
 Playback::Playback *Playback::Playback::instance = nullptr;
 
 Playback::Playback::Playback(Display &display) : Context(display), screenLayout(&screen, VERTICAL),
@@ -39,6 +39,7 @@ void Playback::Playback::stop(){
 
 void Playback::Playback::draw(){
 	screen.getSprite()->clear(TFT_BLACK);
+	screenLayout.getSprite()->drawIcon(playback_pozadina,screenLayout.getTotalX(),screenLayout.getTotalY(),160,128,1,TFT_TRANSPARENT);
 	screen.draw();
 }
 
