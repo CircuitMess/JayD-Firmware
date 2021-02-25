@@ -52,17 +52,17 @@ void Playback::Playback::buildUI(){
 	songNameLayout.setWHType(PARENT, FIXED);
 	songNameLayout.setHeight(35);
 	songNameLayout.setGutter(5);
-	songNameLayout.setPadding(10);
+	songNameLayout.addChild(&song);
 
 	timeElapsedLayout.setWHType(PARENT, FIXED);
 	timeElapsedLayout.setHeight(20);
 	timeElapsedLayout.setGutter(5);
-	timeElapsedLayout.setPadding(10);
+	timeElapsedLayout.addChild(&trackCount);
 
 	buttonLayout.setWHType(PARENT, FIXED);
 	buttonLayout.setHeight(62);
-	buttonLayout.setPadding(10);
 	buttonLayout.setGutter(5);
+	buttonLayout.addChild(&playOrPause);
 
 	screenLayout.reflow();
 	timeElapsedLayout.reflow();
