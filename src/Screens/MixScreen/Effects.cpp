@@ -24,11 +24,11 @@ void MixScreen::Effects::setEffect(Effect effect){
 }
 
 void MixScreen::Effects::setIntensity(uint8_t intensity){
-	if(intensity == 0){
+	if(intensity <= 0){
 		Effects::intensity = 0;
 	}else if(intensity > 0 && intensity < 255){
 		Effects::intensity = intensity;
-	}else if(intensity == 255){
+	}else if(intensity >= 255){
 		Effects::intensity = 255;
 	}
 }
