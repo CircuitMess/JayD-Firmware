@@ -1,69 +1,74 @@
-#include <InputLib/InputJayD.h>
+#include <Input/InputJayD.h>
 #include "SongList.h"
 
-SongList *SongList::instance = nullptr;
+SongList::SongList *SongList::SongList::instance = nullptr;
 
-SongList::SongList(Display &display) : Context(display), screenLayout(&screen, VERTICAL), scrollLayout(&screenLayout),
-									   list(&scrollLayout, VERTICAL){
+SongList::SongList::SongList(Display &display) : Context(display),
+												 scrollLayout(&screen),
+												 list(&scrollLayout, VERTICAL){
 
 	for(int i = 0; i < 10; i++){
-		song.push_back(new ListItem(&list));
+		songs.push_back(new ListItem(&list, "song"));
 	}
 
 	instance = this;
 	buildUI();
+	songs[selectedElement]->setSelected(true);
 
 }
 
-void SongList::start(){
+void SongList::SongList::start(){
 	draw();
 	screen.commit();
 	InputJayD::getInstance()->setEncoderMovedCallback(1, [](int8_t value){
-		int scrollVal = value * 20;
-		if(value == 0) return;
-		if((instance->scrollLayout.getScrollY() >= instance->scrollLayout.getMaxScrollY()) && (value > 0) ||
-		   ((instance->scrollLayout.getScrollY() == 0) && value < 0)){
-			scrollVal = 0;
+		if(instance == nullptr) return;
+		instance->songs[instance->selectedElement]->setSelected(false);
+		instance->selectedElement += value;
+		if(instance->selectedElement < 0){
+			instance->selectedElement = 0;
+		}else if(instance->selectedElement >= instance->songs.size()){
+			instance->selectedElement = instance->songs.size() - 1;
 		}
-		instance->scrollLayout.setScroll(0, instance->scrollLayout.getScrollY() + scrollVal);
+		instance->songs[instance->selectedElement]->setSelected(true);
+		instance->scrollLayout.scrollIntoView(instance->selectedElement,2);
 		instance->draw();
 		instance->screen.commit();
 	});
+	instance->draw();
+	instance->screen.commit();
 }
 
-void SongList::stop(){
+void SongList::SongList::stop(){
 	InputJayD::getInstance()->removeEncoderMovedCallback(1);
+
 }
 
-void SongList::draw(){
+void SongList::SongList::draw(){
 	screen.getSprite()->clear(TFT_BLACK);
 	screen.draw();
 }
 
-void SongList::buildUI(){
-	screenLayout.setWHType(PARENT, PARENT);
-	screenLayout.setPadding(2);
-	screenLayout.setGutter(2);
-	screenLayout.addChild(&scrollLayout);
-
-	scrollLayout.setWHType(PARENT, FIXED);
-	scrollLayout.setHeight(20);
-	scrollLayout.setBorder(1, TFT_RED);
+void SongList::SongList::buildUI(){
+	scrollLayout.setWHType(PARENT, PARENT);
+	//scrollLayout.setBorder(1, TFT_RED);
 	scrollLayout.addChild(&list);
 
 	list.setWHType(PARENT, CHILDREN);
 	list.setPadding(5);
 	list.setGutter(10);
 	//list.setBorder(1, TFT_RED);
-	for(int i=0; i < song.size(); i++){
-		list.addChild(song[i]);
+	for(int i = 0; i < songs.size(); i++){
+		list.addChild(songs[i]);
 	}
 
-	screenLayout.reflow();
 	scrollLayout.reflow();
 	list.reflow();
 
-	screen.addChild(&screenLayout);
+	screen.addChild(&scrollLayout);
 	screen.repos();
 	pack();
+}
+
+SongList::SongList::~SongList(){
+	instance = nullptr;
 }
