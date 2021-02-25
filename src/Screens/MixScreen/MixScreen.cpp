@@ -1,4 +1,4 @@
-#include <InputLib/InputJayD.h>
+#include <Input/InputJayD.h>
 #include "MixScreen.h"
 
 MixScreen::MixScreen *MixScreen::MixScreen::instance = nullptr;
@@ -6,8 +6,8 @@ MixScreen::MixScreen *MixScreen::MixScreen::instance = nullptr;
 MixScreen::MixScreen::MixScreen(Display &display) : Context(display), screenLayout(&screen, HORIZONTAL),
 													leftLayout(&screenLayout, VERTICAL),
 													rightLayout(&screenLayout, VERTICAL), leftSeekBar(&leftLayout),
-													rightSeekBar(&rightLayout), leftSongName(&leftLayout),
-													rightSongName(&rightLayout){
+													rightSeekBar(&rightLayout), leftSongName(&leftLayout,"songLeft"),
+													rightSongName(&rightLayout,"songRight"){
 
 
 	for(int i = 0; i < 3; i++){
@@ -186,21 +186,12 @@ void MixScreen::MixScreen::start(){
 
 
 void MixScreen::MixScreen::stop(){
-	InputJayD::getInstance()->removeBtnPressCallback(0);
-	InputJayD::getInstance()->removeBtnPressCallback(1);
-	InputJayD::getInstance()->removeBtnPressCallback(2);
-	InputJayD::getInstance()->removeBtnPressCallback(3);
-	InputJayD::getInstance()->removeBtnPressCallback(4);
-	InputJayD::getInstance()->removeBtnPressCallback(5);
-	InputJayD::getInstance()->removeBtnPressCallback(6);
-	InputJayD::getInstance()->removeBtnPressCallback(7);
-	InputJayD::getInstance()->removeBtnPressCallback(8);
-	InputJayD::getInstance()->removeEncoderMovedCallback(1);
-	InputJayD::getInstance()->removeEncoderMovedCallback(5);
-	InputJayD::getInstance()->removeEncoderMovedCallback(6);
-	InputJayD::getInstance()->removeEncoderMovedCallback(4);
-	InputJayD::getInstance()->removeEncoderMovedCallback(3);
-	InputJayD::getInstance()->removeEncoderMovedCallback(2);
+	for(int i = 0; i <= 8; i++){
+		InputJayD::getInstance()->removeBtnPressCallback(i);
+	}
+	for(int i = 1; i <= 6; i++){
+		InputJayD::getInstance()->removeEncoderMovedCallback(i);
+	}
 }
 
 void MixScreen::MixScreen::draw(){
