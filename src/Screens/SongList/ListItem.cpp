@@ -1,11 +1,11 @@
 #include "ListItem.h"
 
-Songlist::ListItem::ListItem(ElementContainer *parent) : CustomElement(parent, 10, 10){
+SongList::ListItem::ListItem(ElementContainer *parent, String songName) : CustomElement(parent, 10, 10), songName(songName){
 
 
 }
 
-void Songlist::ListItem::draw(){
+void SongList::ListItem::draw(){
 	getSprite()->setTextFont(1);
 	getSprite()->setTextColor(TFT_WHITE);
 	getSprite()->setTextSize(2);
@@ -13,9 +13,9 @@ void Songlist::ListItem::draw(){
 	if(selected){
 		getSprite()->drawCircle(getTotalX(),getTotalY(),10,TFT_RED);//treba ubaciti ikonicu za scrolanje
 	}
-	getSprite()->println("song");
+	getSprite()->println(songName);
 }
 
-void Songlist::ListItem::setSelected(bool selected){
+void SongList::ListItem::setSelected(bool selected){
 	ListItem::selected = selected;
 }

@@ -3,10 +3,10 @@
 
 #include <UI/CustomElement.h>
 
-namespace Songlist {
+namespace SongList {
 	class ListItem : public CustomElement {
 	public:
-		ListItem(ElementContainer *parent);
+		ListItem(ElementContainer *parent,String songName);
 
 		void draw();
 
@@ -14,6 +14,7 @@ namespace Songlist {
 
 	private:
 		bool selected = false;
+		String songName;
 	};
 }
 #endif //JAYD_FIRMWARE_LISTITEM_H
