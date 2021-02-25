@@ -11,10 +11,10 @@ void MainMenu::Mode::draw(){
 	getSprite()->setTextSize(2);
 
 	if(selected){
-		getSprite()->fillRect(getTotalX(),getTotalY(),35,45,TFT_DARKGREY);//treba ubaciti ikonicu za scrolanje
+		getSprite()->fillRect(getTotalX()+25,getTotalY()+50,25,25,TFT_DARKGREY);//treba ubaciti ikonicu za scrolanje
 	}
 
-	getSprite()->fillRect(getTotalX()+20,getTotalY()+40,20,20,TFT_BLUE);
+	getSprite()->fillRect(getTotalX()+25,getTotalY()+50,20,20,TFT_BLUE);
 
 }
 

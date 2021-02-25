@@ -25,10 +25,10 @@ namespace MainMenu {
 		static MainMenu *instance;
 
 		LinearLayout screenLayout;
-		ScrollLayout scrollLayout;
-		LinearLayout screenMode;
 
 		std::vector<Mode *> modeElement;
+
+		bool isSelected[3];
 
 		void buildUI();
 	};
