@@ -9,11 +9,7 @@ Playback::PlayPause::PlayPause(ElementContainer *parent) : CustomElement(parent,
 }
 
 void Playback::PlayPause::togglePlaying(){
-	if(!playing){
-		playing = true;
-	}else if(playing){
-		playing = false;
-	}
+	playing=!playing;
 }
 
 void Playback::PlayPause::draw(){
@@ -21,13 +17,9 @@ void Playback::PlayPause::draw(){
 	getSprite()->setTextColor(TFT_WHITE);
 	getSprite()->setTextSize(2);
 	getSprite()->drawCircle(78, 93, 17, TFT_WHITE);
-	if(playing){
-		getSprite()->drawIcon(play, 73, 84, 14, 18, 1, TFT_BLACK);
-	}else if(!playing){
-		getSprite()->drawIcon(pauza, 72, 84, 14, 18, 1, TFT_BLACK);
-	}
-	getSprite()->drawIcon(rew, 44, 90, 10, 8, 1, TFT_BLACK);
-	getSprite()->drawIcon(fw, 102, 90, 10, 8, 1, TFT_BLACK);
+	getSprite()->drawIcon(playing ? play : pauza, getTotalX()+72, getTotalY()+84, 14, 18, 1, TFT_BLACK);
+	getSprite()->drawIcon(rew, getTotalX()+44, getTotalY()+90, 10, 8, 1, TFT_BLACK);
+	getSprite()->drawIcon(fw, getTotalX()+102, getTotalY()+90, 10, 8, 1, TFT_BLACK);
 }
 
 void Playback::PlayPause::setPlaying(bool playing){
