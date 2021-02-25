@@ -13,7 +13,7 @@
 #define blPin 25
 
 Display display(160,128,-1,-1);
-Playback* playback;
+Playback::Playback* playback;
 
 void setup(){
 	Serial.begin(115200);
@@ -21,7 +21,7 @@ void setup(){
 	digitalWrite(blPin,LOW);
 	display.begin();
 	LoopManager::addListener(new InputJayD());
-	playback=new Playback(display);
+	playback=new Playback::Playback(display);
 	playback->unpack();
 	playback->start();
 
