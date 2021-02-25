@@ -112,10 +112,20 @@ void MixScreen::MixScreen::start(){
 	InputJayD::getInstance()->setEncoderMovedCallback(1, [](int8_t value){
 		if(instance->isSelected[0]){
 			instance->effects[0] = instance->effects[0] + value;
+			if(instance->effects[0]<0){
+				instance->effects[0]=4;
+			}else if(instance->effects[0]>4){
+				instance->effects[0]=0;
+			}
 			instance->effectsLeft[0]->setEffect(static_cast<Effect>(instance->effects[0]));
 		}
 		if(!instance->isSelected[0]){
 			instance->intensity[0] = instance->intensity[0] + value * 4;
+			if(instance->intensity[0]>255){
+				instance->intensity[0]=255;
+			}else if(instance->intensity[0]<0){
+				instance->intensity[0]=0;
+			}
 			instance->effectsLeft[0]->setIntensity(instance->intensity[0]);
 		}
 
@@ -125,10 +135,20 @@ void MixScreen::MixScreen::start(){
 	InputJayD::getInstance()->setEncoderMovedCallback(6, [](int8_t value){
 		if(instance->isSelected[1]){
 			instance->effects[1] = instance->effects[1] + value;
+			if(instance->effects[1]<0){
+				instance->effects[1]=4;
+			}else if(instance->effects[1]>4){
+				instance->effects[1]=0;
+			}
 			instance->effectsLeft[1]->setEffect(static_cast<Effect>(instance->effects[1]));
 		}
 		if(!instance->isSelected[1]){
 			instance->intensity[1] = instance->intensity[1] + value * 4;
+			if(instance->intensity[1]>255){
+				instance->intensity[1]=255;
+			}else if(instance->intensity[1]<0){
+				instance->intensity[1]=0;
+			}
 			instance->effectsLeft[1]->setIntensity(instance->intensity[1]);
 		}
 		instance->draw();
@@ -137,10 +157,20 @@ void MixScreen::MixScreen::start(){
 	InputJayD::getInstance()->setEncoderMovedCallback(5, [](int8_t value){
 		if(instance->isSelected[2]){
 			instance->effects[2] = instance->effects[2] + value;
+			if(instance->effects[2]<0){
+				instance->effects[2]=4;
+			}else if(instance->effects[2]>4){
+				instance->effects[2]=0;
+			}
 			instance->effectsLeft[2]->setEffect(static_cast<Effect>(instance->effects[2]));
 		}
 		if(!instance->isSelected[2]){
 			instance->intensity[2] = instance->intensity[1] + value * 4;
+			if(instance->intensity[2]>255){
+				instance->intensity[2]=255;
+			}else if(instance->intensity[2]<0){
+				instance->intensity[2]=0;
+			}
 			instance->effectsLeft[2]->setIntensity(instance->intensity[2]);
 		}
 		instance->draw();
@@ -149,10 +179,20 @@ void MixScreen::MixScreen::start(){
 	InputJayD::getInstance()->setEncoderMovedCallback(4, [](int8_t value){
 		if(instance->isSelected[3]){
 			instance->effects[3] = instance->effects[3] + value;
+			if(instance->effects[3]<0){
+				instance->effects[3]=4;
+			}else if(instance->effects[3]>4){
+				instance->effects[3]=0;
+			}
 			instance->effectsRight[0]->setEffect(static_cast<Effect>(instance->effects[3]));
 		}
 		if(!instance->isSelected[3]){
 			instance->intensity[3] = instance->intensity[3] + value * 4;
+			if(instance->intensity[3]>255){
+				instance->intensity[3]=255;
+			}else if(instance->intensity[3]<0){
+				instance->intensity[3]=0;
+			}
 			instance->effectsRight[0]->setIntensity(instance->intensity[3]);
 		}
 		instance->draw();
@@ -161,10 +201,20 @@ void MixScreen::MixScreen::start(){
 	InputJayD::getInstance()->setEncoderMovedCallback(3, [](int8_t value){
 		if(instance->isSelected[4]){
 			instance->effects[4] = instance->effects[4] + value;
+			if(instance->effects[4]<0){
+				instance->effects[4]=4;
+			}else if(instance->effects[4]>4){
+				instance->effects[4]=0;
+			}
 			instance->effectsRight[1]->setEffect(static_cast<Effect>(instance->effects[4]));
 		}
 		if(!instance->isSelected[4]){
 			instance->intensity[4] = instance->intensity[4] + value * 4;
+			if(instance->intensity[4]>255){
+				instance->intensity[4]=255;
+			}else if(instance->intensity[4]<0){
+				instance->intensity[4]=0;
+			}
 			instance->effectsRight[1]->setIntensity(instance->intensity[4]);
 		}
 		instance->draw();
@@ -173,10 +223,20 @@ void MixScreen::MixScreen::start(){
 	InputJayD::getInstance()->setEncoderMovedCallback(2, [](int8_t value){
 		if(instance->isSelected[5]){
 			instance->effects[5] = instance->effects[5] + value;
+			if(instance->effects[5]<0){
+				instance->effects[5]=4;
+			}else if(instance->effects[5]>4){
+				instance->effects[5]=0;
+			}
 			instance->effectsRight[2]->setEffect(static_cast<Effect>(instance->effects[5]));
 		}
 		if(!instance->isSelected[5]){
 			instance->intensity[5] = instance->intensity[5] + value * 4;
+			if(instance->intensity[5]>255){
+				instance->intensity[5]=255;
+			}else if(instance->intensity[5]<0){
+				instance->intensity[5]=0;
+			}
 			instance->effectsRight[2]->setIntensity(instance->intensity[5]);
 		}
 		instance->draw();
