@@ -3,18 +3,21 @@
 
 #include <UI/CustomElement.h>
 
-class TrackCounter : public CustomElement {
-public:
-	TrackCounter(ElementContainer *parent);
+namespace Playback {
+	class TrackCounter : public CustomElement {
+	public:
+		TrackCounter(ElementContainer *parent);
 
-	void draw();
+		void draw();
 
-private:
+		void setTotalDuration(int totalDuration);
 
-	int minutes = 0;
-	int seconds = 0;
-	bool pressed = false;
+		void setCurrentDuration(int currentDuration);
 
-};
-
+	private:
+		int totalDuration = 0;
+		int currentDuration = 0;
+		float fillSeekBar = 0;
+	};
+}
 #endif //JAYD_FIRMWARE_TRACKCOUNTER_HPP

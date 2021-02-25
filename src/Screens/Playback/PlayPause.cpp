@@ -4,28 +4,28 @@
 #include "Bitmaps/rew.hpp"
 #include "Bitmaps/pause.hpp"
 
-PlayPause::PlayPause(ElementContainer *parent) : CustomElement(parent, 10, 10){
+Playback::PlayPause::PlayPause(ElementContainer *parent) : CustomElement(parent, 160, 10){
 
 }
 
-void PlayPause::checkIfPlaying(){
-	if(!pressed){
-		pressed = true;
-	}else if(pressed){
-		pressed = false;
-	}
+void Playback::PlayPause::togglePlaying(){
+	playing=!playing;
 }
 
-void PlayPause::draw(){
+void Playback::PlayPause::draw(){
 	getSprite()->setTextFont(1);
 	getSprite()->setTextColor(TFT_WHITE);
 	getSprite()->setTextSize(2);
 	getSprite()->drawCircle(78, 93, 17, TFT_WHITE);
-	if(pressed){
-		getSprite()->drawIcon(play, 73, 84, 14, 18, 1, TFT_BLACK);
-	}else if(!pressed){
-		getSprite()->drawIcon(pauza, 72, 84, 14, 18, 1, TFT_BLACK);
+	if(playing){
+		getSprite()->drawIcon(play, getTotalX() + getWidth() / 2 - 7, getTotalY()+19, 14, 18, 1, TFT_BLACK);
+	}else if(!playing){
+		getSprite()->drawIcon(pauza, getTotalX() + getWidth() / 2 - 9, getTotalY()+19, 14, 18, 1, TFT_BLACK);
 	}
-	getSprite()->drawIcon(rew, 44, 90, 10, 8, 1, TFT_BLACK);
-	getSprite()->drawIcon(fw, 102, 90, 10, 8, 1, TFT_BLACK);
+	getSprite()->drawIcon(rew, getTotalX()+ getWidth() / 2-35, getTotalY()+25, 10, 8, 1, TFT_BLACK);
+	getSprite()->drawIcon(fw, getTotalX()+ getWidth() / 2+22, getTotalY()+25, 10, 8, 1, TFT_BLACK);
+}
+
+void Playback::PlayPause::setPlaying(bool playing){
+	PlayPause::playing = playing;
 }
