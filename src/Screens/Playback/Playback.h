@@ -15,6 +15,8 @@ namespace Playback {
 
 		Playback(Display &display);
 
+		virtual ~Playback();
+
 		void start();
 
 		void stop();
