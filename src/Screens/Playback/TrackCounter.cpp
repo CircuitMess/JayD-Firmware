@@ -6,6 +6,7 @@ Playback::TrackCounter::TrackCounter(ElementContainer *parent) : CustomElement(p
 
 
 void Playback::TrackCounter::draw(){
+	float fillSeekBar;
 	getSprite()->setTextFont(1);
 	getSprite()->setTextColor(TFT_WHITE);
 	getSprite()->setTextSize(1);
