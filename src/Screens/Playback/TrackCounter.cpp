@@ -23,10 +23,12 @@ void Playback::TrackCounter::setTotalDuration(int totalDuration){
 }
 
 void Playback::TrackCounter::setCurrentDuration(int currentDuration){
-	if(currentDuration < totalDuration){
-		TrackCounter::currentDuration = currentDuration;
-	}else if(currentDuration >= totalDuration){
+	if(currentDuration < 0){
+		TrackCounter::currentDuration = 0;
+	}else if(currentDuration > totalDuration){
 		TrackCounter::currentDuration = totalDuration;
+	}else{
+		TrackCounter::currentDuration = currentDuration;
 	}
 }
 
