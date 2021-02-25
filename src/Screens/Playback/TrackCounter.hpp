@@ -17,7 +17,7 @@ namespace Playback {
 	private:
 		int totalDuration = 0;
 		int currentDuration = 0;
-		float fillSeekBar = 0;
+
 	};
 }
 #endif //JAYD_FIRMWARE_TRACKCOUNTER_HPP
