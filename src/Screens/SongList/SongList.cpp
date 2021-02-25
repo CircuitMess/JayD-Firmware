@@ -1,4 +1,4 @@
-#include <InputLib/InputJayD.h>
+#include <Input/InputJayD.h>
 #include "SongList.h"
 
 SongList::SongList *SongList::SongList::instance = nullptr;
