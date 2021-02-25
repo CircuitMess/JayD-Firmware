@@ -7,8 +7,8 @@
 #include <Loop/LoopListener.h>
 #include <Loop/LoopManager.h>
 #include "src/Screens/Playback/Playback.h"
-#include <JayD.h>
-#include <InputLib/InputJayD.h>
+#include <JayD.hpp>
+#include <Input/InputJayD.h>
 
 #define blPin 25
 
