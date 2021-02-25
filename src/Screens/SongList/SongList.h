@@ -8,11 +8,13 @@
 #include <UI/ScrollLayout.h>
 #include "ListItem.h"
 
-namespace Songlist {
+namespace SongList {
 	class SongList : public Context {
 	public:
 
 		SongList(Display &display);
+
+		virtual ~SongList();
 
 		void start();
 
@@ -23,8 +25,6 @@ namespace Songlist {
 	private:
 
 		static SongList *instance;
-
-		LinearLayout screenLayout;
 		ScrollLayout scrollLayout;
 		LinearLayout list;
 
