@@ -12,6 +12,10 @@ void Playback::SongName::draw(){
 	getSprite()->setTextSize(2);
 	getSprite()->setTextFont(1);
 	getSprite()->setCursor(getTotalX(), getTotalY());
-	getSprite()->printCenter("PJESMA");
+	getSprite()->printCenter(songName);
 
+}
+
+void Playback::SongName::setSongName(const String &songName){
+	SongName::songName = songName;
 }

@@ -10,8 +10,10 @@ namespace Playback {
 
 		void draw();
 
-	private:
+		void setSongName(const String &songName);
 
+	private:
+		String songName;
 	};
 }
 #endif //JAYD_FIRMWARE_SONGNAME_H
