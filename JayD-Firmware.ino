@@ -15,7 +15,7 @@
 
 Display display(160, 128, -1, -1);
 Playback *playback;
-SongList *songList;
+SongList::SongList *songList;
 
 void setup(){
 	Serial.begin(115200);
@@ -23,7 +23,7 @@ void setup(){
 	digitalWrite(blPin, LOW);
 	display.begin();
 	LoopManager::addListener(new InputJayD());
-	songList=new SongList(display);
+	songList=new SongList::SongList(display);
 	songList->unpack();
 	songList->start();
 
