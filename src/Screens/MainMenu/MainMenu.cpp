@@ -1,36 +1,52 @@
-#include <InputLib/InputJayD.h>
+#include <Input/InputJayD.h>
 #include "MainMenu.h"
 
 
 MainMenu::MainMenu *MainMenu::MainMenu::instance = nullptr;
 
-MainMenu::MainMenu::MainMenu(Display &display) : Context(display), screenLayout(&screen, VERTICAL),
-												 scrollLayout(&screenLayout), screenMode(&scrollLayout, HORIZONTAL){
-
+MainMenu::MainMenu::MainMenu(Display &display) : Context(display), screenLayout(&screen, HORIZONTAL){
 
 	for(int i = 0; i < 3; i++){
-		modeElement.push_back(new Mode(&screenMode));
+		item.push_back(new MainMenuItem(&screenLayout));
 	}
 
 	instance = this;
 	buildUI();
-
+	instance->item[0]->isSelected(true);
 }
 
 void MainMenu::MainMenu::start(){
 	draw();
 	screen.commit();
 	InputJayD::getInstance()->setEncoderMovedCallback(1, [](int8_t value){
-		int scrollVal = value * 20;
 		if(value == 0) return;
-		if((instance->scrollLayout.getScrollX() >= instance->scrollLayout.getMaxScrollX()) && (value > 0) ||
-		   ((instance->scrollLayout.getScrollX() == 0) && value < 0)){
-			scrollVal = 0;
+		instance->itemNum = instance->itemNum + value;
+
+		if(instance->itemNum < 0){
+			instance->itemNum = 2;
+		}else if (instance->itemNum>2){
+			instance->itemNum = 0;
 		}
-		instance->scrollLayout.setScroll(instance->scrollLayout.getScrollX() + scrollVal, 0);
+
+		if(instance->itemNum == 0){
+			instance->item[0]->isSelected(true);
+		}else{
+			instance->item[0]->isSelected(false);
+		}
+		if(instance->itemNum == 1){
+			instance->item[1]->isSelected(true);
+		}else{
+			instance->item[1]->isSelected(false);
+		}
+		if(instance->itemNum == 2){
+			instance->item[2]->isSelected(true);
+		}else{
+			instance->item[2]->isSelected(false);
+		}
 		instance->draw();
 		instance->screen.commit();
 	});
+
 }
 
 void MainMenu::MainMenu::stop(){
@@ -43,28 +59,19 @@ void MainMenu::MainMenu::draw(){
 }
 
 void MainMenu::MainMenu::buildUI(){
+
 	screenLayout.setWHType(PARENT, PARENT);
-	screenLayout.setPadding(2);
-	screenLayout.setGutter(2);
-	screenLayout.addChild(&scrollLayout);
+	screenLayout.setGutter(30);
 
-	scrollLayout.setWHType(FIXED, FIXED);
-	scrollLayout.setWidth(40);
-	scrollLayout.setHeight(40);
-	scrollLayout.setBorder(1, TFT_RED);
-	scrollLayout.addChild(&screenMode);
-
-	screenMode.setWHType(PARENT, CHILDREN);
-	screenMode.setPadding(5);
-	screenMode.setGutter(25);
-	//screenMode.setBorder(1, TFT_RED);
-	for(int i=0; i < modeElement.size(); i++){
-		screenMode.addChild(modeElement[i]);
+	for(int i = 0; i < item.size(); i++){
+		screenLayout.addChild(item[i]);
 	}
 
+	item[0]->setItems(static_cast<Items>(0));
+	item[1]->setItems(static_cast<Items>(1));
+	item[2]->setItems(static_cast<Items>(2));
+
 	screenLayout.reflow();
-	scrollLayout.reflow();
-	screenMode.reflow();
 
 	screen.addChild(&screenLayout);
 	screen.repos();
