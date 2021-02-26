@@ -33,6 +33,9 @@ namespace SongList {
 		std::vector<ListItem *> songs;
 
 		void buildUI();
+
+		void populateList();
+		bool insertedSD = false;
 	};
 }
 #endif //JAYD_FIRMWARE_SONGLIST_H

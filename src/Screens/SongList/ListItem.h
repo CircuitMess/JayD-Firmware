@@ -12,6 +12,8 @@ namespace SongList {
 
 		void setSelected(bool selected);
 
+		const String& getName() const;
+
 	private:
 		bool selected = false;
 		String songName;
