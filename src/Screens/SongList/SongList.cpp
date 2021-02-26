@@ -55,7 +55,7 @@ void SongList::SongList::start(){
 	InputJayD::getInstance()->setBtnPressCallback(BTN_EL1, [](){
 		if(instance == nullptr) return;
 
-		instance->pop(new int8_t(instance->selectedElement));
+		instance->pop(new String(instance->songs[instance->selectedElement]->getName()));
 	});
 
 	draw();
