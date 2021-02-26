@@ -20,6 +20,7 @@ namespace MixScreen {
 		bool playing = false;
 		int totalDuration = 0;
 		int currentDuration = 0;
+		float movingCursor=0;
 	};
 
 }

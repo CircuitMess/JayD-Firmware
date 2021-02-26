@@ -9,9 +9,8 @@
 #include "src/Screens/Playback/Playback.h"
 #include "src/Screens/SongList/SongList.h"
 #include "src/Screens/MixScreen/MixScreen.h"
-#include "src/Screens/MainMenu/MainMenu.h"
-#include <JayD.h>
-#include <InputLib/InputJayD.h>
+#include <JayD.hpp>
+#include <Input/InputJayD.h>
 
 #define blPin 25
 

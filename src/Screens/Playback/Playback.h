@@ -9,34 +9,37 @@
 #include "PlayPause.h"
 #include "TrackCounter.hpp"
 
-class Playback : public Context {
-public:
+namespace Playback {
+	class Playback : public Context {
+	public:
 
-	Playback(Display &display);
+		Playback(Display &display);
 
-	void start();
+		virtual ~Playback();
 
-	void stop();
+		void start();
 
-	void draw();
+		void stop();
 
-private:
-	static Playback *instance;
+		void draw();
 
-	LinearLayout screenLayout;
-	LinearLayout songNameLayout;
-	LinearLayout timeElapsedLayout;
-	LinearLayout buttonLayout;
+	private:
+		static Playback *instance;
 
-	std::vector<SongName *> song;
+		LinearLayout screenLayout;
+		LinearLayout songNameLayout;
+		LinearLayout timeElapsedLayout;
+		LinearLayout buttonLayout;
 
-	std::vector<PlayPause *> playOrPause;
+		SongName song;
 
-	std::vector<TrackCounter *> trackCount;
+		PlayPause playOrPause;
 
-	void buildUI();
+		TrackCounter trackCount;
 
-};
+		void buildUI();
 
+	};
+}
 
 #endif //JAYD_FIRMWARE_PLAYBACK_H
