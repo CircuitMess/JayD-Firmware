@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 project(JayD-Firmware)
-set(PORT COM18)
+set(PORT COM23)
 set(DEVICE cm:esp32:spencer) # Arduino device FQBN
 set(CMAKE_CXX_STANDARD 11)
 
@@ -45,6 +45,7 @@ include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/TFT_
 include_directories(${ArduinoLibs}/JayD-Library/src)
 
 
+
 # Source directories
 AUX_SOURCE_DIRECTORY(src SOURCES)
 AUX_SOURCE_DIRECTORY(src/Matrix SOURCES)
@@ -56,6 +57,7 @@ AUX_SOURCE_DIRECTORY(src/Screens/MixScreen SOURCES)
 AUX_SOURCE_DIRECTORY(src/Screens/MixScreen/Bitmaps SOURCES)
 AUX_SOURCE_DIRECTORY(src/Screens/MainMenu SOURCES)
 AUX_SOURCE_DIRECTORY(src/Screens/IntroScreen SOURCES)
+AUX_SOURCE_DIRECTORY(src/Screens/Settings SOURCES)
 
 # Defines
 add_definitions(-DDEBUG)
@@ -67,16 +69,16 @@ set(BUILD ${ROOT}/build)
 
 SET_SOURCE_FILES_PROPERTIES(${CMAKE_PROJECT_NAME}.ino PROPERTIES LANGUAGE CXX)
 
-add_custom_command(OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_PROJECT_NAME}.ino.elf
-        COMMAND arduino-cli compile --fqbn ${DEVICE} --output-dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} ${CMAKE_PROJECT_NAME}.ino
+add_custom_command(OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_PROJECT_NAME}.elf ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_PROJECT_NAME}.bin ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_PROJECT_NAME}.partitions.bin
+        COMMAND arduino-cli compile --fqbn ${DEVICE} -o ${BUILD}/${CMAKE_PROJECT_NAME}.bin ${CMAKE_PROJECT_NAME}.ino
         DEPENDS ${CMAKE_PROJECT_NAME}.ino ${SOURCES}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 
 add_custom_target(CMBuild
-        SOURCES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_PROJECT_NAME}.ino.elf)
+        SOURCES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_PROJECT_NAME}.elf)
 
 add_custom_target(CMUpload ALL
-        COMMAND arduino-cli upload --fqbn ${DEVICE} -p ${PORT} --input-dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+        COMMAND arduino-cli upload --fqbn ${DEVICE} -p ${PORT} -i ${BUILD}/${CMAKE_PROJECT_NAME}.bin
         DEPENDS CMBuild
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 
