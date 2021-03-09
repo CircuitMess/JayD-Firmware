@@ -23,16 +23,18 @@ void TextInputScreen::TextInputScreen::start(){
 		instance->screen.commit();
 	});
 	InputJayD::getInstance()->setBtnPressCallback(3, [](){
-		if(instance->selectedIndex == 26){
-			instance->text += (instance->capitalLetters || instance->shiftLetters ? (char) ('A' - 33) : (char) ('a' - 65));
-		}else if(instance->selectedIndex == 27){
+		if(instance->selectedIndex == 27){
 			instance->text = instance->text.substring(0, instance->text.length() - 1);
+		}else if(instance->selectedIndex == 30){
+			instance->pop(new String(instance->text));
+		}else if(instance->text.length() > 24){
+			return;
+		}else if(instance->selectedIndex == 26){
+			instance->text += (instance->capitalLetters || instance->shiftLetters ? (char) ('A' - 33) : (char) ('a' - 65));
 		}else if(instance->selectedIndex == 28){
 			instance->shiftLetters = !instance->shiftLetters;
 		}else if(instance->selectedIndex == 29){
 			instance->capitalLetters = !instance->capitalLetters;
-		}else if(instance->selectedIndex == 30){
-			instance->pop(new String(instance->text));
 		}else{
 			instance->text += (instance->capitalLetters || instance->shiftLetters ? (char) ('A' + instance->selectedIndex) : (char) ('a' + instance->selectedIndex));
 			instance->shiftLetters = false;
@@ -81,8 +83,8 @@ void TextInputScreen::TextInputScreen::draw(){
 			}else if(k == 29){
 				sprite->fillTriangle(x - 1, y + 5, x + 3, y + 1, x + 7, y + 5, capitalLetters ? TFT_GREEN : TFT_WHITE);
 			}else if(k == 30){
-				sprite->fillTriangle(x -1, y+4, x + 1, y + 6, x - 1, y+4, TFT_WHITE);
-				sprite->fillTriangle(x + 6, y+3, x+2 , y + 7, x + 7, y+2, TFT_WHITE);
+				sprite->fillTriangle(x - 1, y + 4, x + 1, y + 6, x - 1, y + 4, TFT_WHITE);
+				sprite->fillTriangle(x + 6, y + 3, x + 2, y + 7, x + 7, y + 2, TFT_WHITE);
 			}else if(k > 30){
 				return;
 			}else{
