@@ -81,9 +81,8 @@ void TextInputScreen::TextInputScreen::draw(){
 			}else if(k == 29){
 				sprite->fillTriangle(x - 1, y + 5, x + 3, y + 1, x + 7, y + 5, capitalLetters ? TFT_GREEN : TFT_WHITE);
 			}else if(k == 30){
-				sprite->fillTriangle(x + 3, y, x - 1, y + 4, x + 3, y + 8, TFT_WHITE);
-				sprite->drawRect(x + 4, y + 4, 4, 1, TFT_WHITE);
-				sprite->drawRect(x + 8, y, 1, 5, TFT_WHITE);
+				sprite->fillTriangle(x -1, y+4, x + 1, y + 6, x - 1, y+4, TFT_WHITE);
+				sprite->fillTriangle(x + 6, y+3, x+2 , y + 7, x + 7, y+2, TFT_WHITE);
 			}else if(k > 30){
 				return;
 			}else{
