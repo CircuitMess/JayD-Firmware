@@ -6,10 +6,11 @@
 #include <UI/LinearLayout.h>
 #include <UI/ScrollLayout.h>
 #include "MainMenuItem.h"
+#include <Display/AnimatedSprite.h>
 
 
 namespace MainMenu {
-	class MainMenu : public Context {
+	class MainMenu : public Context, public LoopListener {
 	public:
 
 		MainMenu(Display &display);
@@ -20,6 +21,8 @@ namespace MainMenu {
 
 		void draw();
 
+		void loop(uint micros) override;
+
 	private:
 
 		static MainMenu *instance;
@@ -29,7 +32,6 @@ namespace MainMenu {
 		std::vector<MainMenuItem *> item;
 
 		int8_t itemNum = 0;
-
 
 		void buildUI();
 	};

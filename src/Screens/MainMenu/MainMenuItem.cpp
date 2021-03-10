@@ -1,28 +1,26 @@
 #include "MainMenuItem.h"
-#include "Bitmaps/reset.hpp"
-#include "Bitmaps/dj.hpp"
-#include "Bitmaps/playback.hpp"
-#include "Bitmaps/Settings_orange.hpp"
-#include "Bitmaps/Playback_blue.hpp"
-#include "Bitmaps/DJ_red.hpp"
+#include "Bitmaps/settings.h"
+#include "Bitmaps/dj.h"
+#include "Bitmaps/playback.h"
+#include "Bitmaps/djGIF.h"
+#include "Bitmaps/playbackGIF.h"
+#include "Bitmaps/settingsGIF.h"
+#include <Display/PGMFile.h>
 
-MainMenu::MainMenuItem::MainMenuItem(ElementContainer *parent) : CustomElement(parent, 20, 20){
+
+uint16_t *icons[] = {playback, dj, settings};
+
+unsigned char *gifIcons[] = {playback_gif, dj_gif, settings_gif};
+
+size_t gifIconsSize[] = {sizeof(playback_gif), sizeof(dj_gif), sizeof(settings_gif)};
+
+MainMenu::MainMenuItem::MainMenuItem(ElementContainer *parent, MenuItemType type) : CustomElement(parent, 20, 20), type(type),
+																					gif(getSprite(), fs::File(std::make_shared<PGMFile>(gifIcons[type], gifIconsSize[type]))){
+
+
 
 }
 
-uint16_t *icons[] = {const_cast<uint16_t *>(playback), const_cast<uint16_t *>(dj), const_cast<uint16_t *>(reset)};
-
-uint16_t *gifovi[] ={const_cast<uint16_t *>(playback_blue), const_cast<uint16_t *>(DJ_red), const_cast<uint16_t *>(settings_orange)};
-
-void MainMenu::MainMenuItem::setItems(Items items){
-	if(items == 0){
-		MainMenuItem::items = static_cast<Items>(0);
-	}else if(items == 2 ){
-		MainMenuItem::items = static_cast<Items>(2);
-	}else if(items > 0 && items < 2){
-		MainMenuItem::items = items;
-	}
-}
 
 
 void MainMenu::MainMenuItem::draw(){
@@ -31,9 +29,11 @@ void MainMenu::MainMenuItem::draw(){
 	getSprite()->setTextSize(2);
 
 	if(selected){
-		getSprite()->drawIcon( gifovi[items] ,getTotalX(),getTotalY()+45,45,42,1,TFT_TRANSPARENT);
-	}else{
-		getSprite()->drawIcon( icons[items] ,getTotalX(),getTotalY()+45,45,42,1,TFT_TRANSPARENT);
+		gif.setXY(getTotalX(), getTotalY() + 40);
+		gif.push();
+	}
+	else{
+		getSprite()->drawIcon(icons[type], getTotalX(), getTotalY() + 45, 45, 42, 1, TFT_TRANSPARENT);
 	}
 
 }
@@ -41,4 +41,22 @@ void MainMenu::MainMenuItem::draw(){
 void MainMenu::MainMenuItem::isSelected(bool selected){
 	MainMenuItem::selected = selected;
 }
+
+MainMenu::MainMenuItem::~MainMenuItem(){
+
+}
+
+bool MainMenu::MainMenuItem::needsUpdate(){
+	if(selected){
+		return gif.newFrameReady();
+	}else{
+		return false;
+	}
+}
+
+
+
+
+
+
 

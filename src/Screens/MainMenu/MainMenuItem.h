@@ -2,24 +2,33 @@
 #define JAYD_FIRMWARE_MAINMENUITEM_H
 
 #include <UI/CustomElement.h>
+#include <Display/AnimatedSprite.h>
 
-enum Items {
-	PLAYBACK,DJ,SETTINGS
+enum MenuItemType {
+	PLAYBACK, DJ, SETTINGS
 };
+
 namespace MainMenu {
 	class MainMenuItem : public CustomElement {
 	public:
-		MainMenuItem(ElementContainer *parent);
+
+		MainMenuItem(ElementContainer *parent, MenuItemType type);
 
 		void draw();
 
 		void isSelected(bool selected);
 
-		void setItems(Items items);
+		bool needsUpdate();
+
+		virtual ~MainMenuItem();
 
 	private:
-		Items items;
+
+		MenuItemType type;
+
 		bool selected = false;
+
+		AnimatedSprite gif;
 	};
 }
 #endif //JAYD_FIRMWARE_MAINMENUITEM_H
