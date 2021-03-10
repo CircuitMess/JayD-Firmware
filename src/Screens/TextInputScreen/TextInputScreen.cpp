@@ -1,5 +1,6 @@
 #include <Input/InputJayD.h>
 #include "TextInputScreen.h"
+#include "Bitmaps/backgroundTextEntry.h"
 
 TextInputScreen::TextInputScreen *TextInputScreen::TextInputScreen::instance = nullptr;
 
@@ -27,14 +28,14 @@ void TextInputScreen::TextInputScreen::start(){
 			instance->text = instance->text.substring(0, instance->text.length() - 1);
 		}else if(instance->selectedIndex == 30){
 			instance->pop(new String(instance->text));
-		}else if(instance->text.length() > 24){
-			return;
-		}else if(instance->selectedIndex == 26){
-			instance->text += (instance->capitalLetters || instance->shiftLetters ? (char) ('A' - 33) : (char) ('a' - 65));
 		}else if(instance->selectedIndex == 28){
 			instance->shiftLetters = !instance->shiftLetters;
 		}else if(instance->selectedIndex == 29){
 			instance->capitalLetters = !instance->capitalLetters;
+		}else if(instance->text.length() > 21){
+			return;
+		}else if(instance->selectedIndex == 26){
+			instance->text += (instance->capitalLetters || instance->shiftLetters ? (char) ('A' - 33) : (char) ('a' - 65));
 		}else{
 			instance->text += (instance->capitalLetters || instance->shiftLetters ? (char) ('A' + instance->selectedIndex) : (char) ('a' + instance->selectedIndex));
 			instance->shiftLetters = false;
@@ -52,6 +53,7 @@ void TextInputScreen::TextInputScreen::stop(){
 
 void TextInputScreen::TextInputScreen::draw(){
 	screen.getSprite()->clear(TFT_BLACK);
+	screen.getSprite()->drawIcon(textEntryBackground, screen.getTotalX(), screen.getTotalY(), 160, 128, 1);
 	sprite->fillRect(2, 35, 156, 1, TFT_WHITE);
 	sprite->setTextFont(1);
 	sprite->setTextSize(1);
