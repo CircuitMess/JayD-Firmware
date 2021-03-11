@@ -6,9 +6,11 @@
 
 IntroScreen::IntroScreen *IntroScreen::IntroScreen::instance = nullptr;
 
+
 IntroScreen::IntroScreen::IntroScreen(Display &display) : Context(display), gifIntro(screen.getSprite(), fs::File(std::make_shared<PGMFile>(intro_gif, sizeof(intro_gif)))){
 
 	instance = this;
+
 	gifIntro.setXY(screen.getTotalX(), screen.getTotalY());
 
 	pack();
@@ -38,8 +40,8 @@ void IntroScreen::IntroScreen::stop(){
 void IntroScreen::IntroScreen::loop(uint micros){
 
 	if(gifIntro.newFrameReady()){
-	//	gifIntro.push();
 		draw();
+		gifIntro.push();
 		screen.commit();
 	}
 
