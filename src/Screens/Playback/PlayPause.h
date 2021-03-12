@@ -16,6 +16,7 @@ namespace Playback {
 		void setPlaying(bool playing);
 
 
+
 	private:
 		bool playing = false;
 	};

@@ -39,5 +39,9 @@ void Playback::TrackCounter::setCurrentDuration(int currentDuration){
 	}
 }
 
+int Playback::TrackCounter::getCurrentDuration() const{
+	return currentDuration;
+}
+
 
 

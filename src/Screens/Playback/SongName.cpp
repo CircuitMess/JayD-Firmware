@@ -9,9 +9,9 @@ void Playback::SongName::draw(){
 
 	getSprite()->setTextFont(1);
 	getSprite()->setTextColor(TFT_WHITE);
-	getSprite()->setTextSize(2);
-	getSprite()->setTextFont(1);
-	getSprite()->setCursor(getTotalX(), getTotalY());
+	getSprite()->setTextSize(1);
+	getSprite()->setTextFont(2);
+	getSprite()->setCursor(getTotalX(), getTotalY() + 10);
 	getSprite()->printCenter(songName);
 
 }

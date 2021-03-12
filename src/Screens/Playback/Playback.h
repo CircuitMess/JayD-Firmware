@@ -8,9 +8,12 @@
 #include "SongName.h"
 #include "PlayPause.h"
 #include "TrackCounter.hpp"
+#include <FS.h>
+#include <AudioLib/AudioOutputI2S.h>
+#include <AudioLib/AudioGeneratorWAV.h>
 
 namespace Playback {
-	class Playback : public Context {
+	class Playback : public Context, public LoopListener {
 	public:
 
 		Playback(Display &display);
@@ -23,6 +26,9 @@ namespace Playback {
 
 		void draw();
 
+		void returned(void* data) override;
+		void loop(uint micros) override;
+
 	private:
 		static Playback *instance;
 
@@ -30,14 +36,17 @@ namespace Playback {
 		LinearLayout songNameLayout;
 		LinearLayout timeElapsedLayout;
 		LinearLayout buttonLayout;
-
-		SongName song;
-
+		SongName songName;
 		PlayPause playOrPause;
-
 		TrackCounter trackCount;
 
 		void buildUI();
+
+		File file;
+
+		bool playing = false;
+		AudioOutputI2S* i2s = nullptr;
+		AudioGeneratorWAV* wav = nullptr;
 
 	};
 }
