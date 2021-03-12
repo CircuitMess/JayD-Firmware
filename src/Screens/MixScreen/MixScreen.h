@@ -8,7 +8,7 @@
 #include "Effects.hpp"
 
 namespace MixScreen {
-	class MixScreen : public Context {
+	class MixScreen : public Context, public LoopListener{
 	public:
 
 		MixScreen(Display &display);
@@ -18,6 +18,10 @@ namespace MixScreen {
 		void stop();
 
 		void draw();
+
+		void loop(uint micros) override;
+
+		virtual ~MixScreen();
 
 	private:
 		static MixScreen *instance;
