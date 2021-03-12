@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 project(JayD-Firmware)
-set(PORT /dev/ttyUSB0)
+set(PORT COM18)
 set(DEVICE cm:esp32:spencer) # Arduino device FQBN
 set(CMAKE_CXX_STANDARD 11)
 
@@ -53,8 +53,11 @@ AUX_SOURCE_DIRECTORY(src SOURCES)
 AUX_SOURCE_DIRECTORY(src/Matrix SOURCES)
 AUX_SOURCE_DIRECTORY(src/Screens SOURCES)
 AUX_SOURCE_DIRECTORY(src/Screens/Playback SOURCES)
+AUX_SOURCE_DIRECTORY(src/Screens/Playback/Bitmaps SOURCES)
 AUX_SOURCE_DIRECTORY(src/Screens/SongList SOURCES)
 AUX_SOURCE_DIRECTORY(src/Screens/MixScreen SOURCES)
+AUX_SOURCE_DIRECTORY(src/Screens/MixScreen/Bitmaps SOURCES)
+AUX_SOURCE_DIRECTORY(src/Screens/MainMenu SOURCES)
 
 # Defines
 add_definitions(-DDEBUG)
