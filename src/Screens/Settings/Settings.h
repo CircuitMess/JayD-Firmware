@@ -6,6 +6,8 @@
 #include "SettingsElement.h"
 #include "BooleanSetting.h"
 #include "DropDownSetting.h"
+#include "BrightnessSettings.h"
+
 
 namespace Settings {
 	class Settings : public Context {
@@ -26,7 +28,7 @@ namespace Settings {
 
 		BooleanSetting firstElement;
 		DropDownSetting secondElement;
-	//	SettingsElement thirdElement;
+		BrightnessSetting thirdElement;
 	//	SettingsElement fourthElement;
 
 		int newValue = 0;

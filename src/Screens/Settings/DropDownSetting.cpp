@@ -7,11 +7,7 @@ Settings::DropDownSetting::DropDownSetting(ElementContainer *partent, String nam
 }
 
 void Settings::DropDownSetting::activated(){
-	if(showDropDown){
-		showDropDown = false;
-	}else if(!showDropDown){
-		showDropDown = true;
-	}
+	showDropDown=!showDropDown;
 }
 
 void Settings::DropDownSetting::selectNext(){

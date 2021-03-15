@@ -6,9 +6,9 @@ Settings::Settings *Settings::Settings::instance = nullptr;
 Settings::Settings::Settings(Display &display) : Context(display), screenLayout(&screen, VERTICAL),
 												 firstElement(&screenLayout, "Song"),
 												 secondElement(&screenLayout, "Color",
-															   {"Blue", "Red", "Yellow", "Green", "Orange", "Purple"})/*,
-												 thirdElement(&screenLayout, "Name"),
-												 fourthElement(&screenLayout, "Brightness")*/{
+															   {"Blue", "Red", "Yellow", "Green", "Orange", "Purple"}),
+												 thirdElement(&screenLayout, "Brightness")
+/*fourthElement(&screenLayout, "Brightness")*/{
 
 	instance = this;
 	buildUI();
@@ -30,7 +30,12 @@ void Settings::Settings::start(){
 			instance->draw();
 			instance->screen.commit();
 			return;
-		}
+		}else if(instance->disableMainSelector && instance->newValue == 2){
+		instance->thirdElement.setBightnessValue(value);
+		instance->draw();
+		instance->screen.commit();
+		return;
+	}
 		instance->newValue = instance->newValue + value;
 		if(instance->newValue < 0){
 			instance->newValue = 3;
@@ -38,25 +43,22 @@ void Settings::Settings::start(){
 			instance->newValue = 0;
 		}
 		if(instance->newValue == 0){
-			Serial.println(instance->newValue);
 			instance->firstElement.setIsSelected(true);
 		}else{
 			instance->firstElement.setIsSelected(false);
 		}
-
 		if(instance->newValue == 1){
 			instance->secondElement.setIsSelected(true);
 		}else{
 			instance->secondElement.setIsSelected(false);
 		}
-
-/*
 		if(instance->newValue == 2){
 			instance->thirdElement.setIsSelected(true);
+
 		}else{
 			instance->thirdElement.setIsSelected(false);
 		}
-
+/*
 		if(instance->newValue == 3){
 			instance->fourthElement.setIsSelected(true);
 		}else{
@@ -68,22 +70,18 @@ void Settings::Settings::start(){
 				instance->firstElement.activated();
 				instance->draw();
 				instance->screen.commit();
+			}else if(instance->newValue == 2){
+				instance->thirdElement.activated();
+				instance->disableMainSelector=!instance->disableMainSelector;
+				instance->draw();
+				instance->screen.commit();
 			}else if(instance->newValue == 1){
 				instance->secondElement.activated();
-				if(!instance->disableMainSelector){
-					instance->disableMainSelector = true;
-				}else if(instance->disableMainSelector){
-					instance->disableMainSelector = false;
-				}
+				instance->disableMainSelector=!instance->disableMainSelector;
 				instance->draw();
 				instance->screen.commit();
 			}
-			/*else if(instance->newValue == 1){
-				instance->secondElement.activated();
-			}
-			else if(instance->newValue == 2){
-				instance->thirdElement.activated();
-			}
+			/*
 			else if(instance->newValue == 3){
 				instance->fourthElement.activated();
 			}*/
@@ -109,8 +107,8 @@ void Settings::Settings::buildUI(){
 	screenLayout.setGutter(5);
 	screenLayout.addChild(&firstElement);
 	screenLayout.addChild(&secondElement);
-	/*screenLayout.addChild(&thirdElement);
-	screenLayout.addChild(&fourthElement);*/
+	screenLayout.addChild(&thirdElement);
+	//screenLayout.addChild(&fourthElement);
 
 	screenLayout.reflow();
 	screen.addChild(&screenLayout);
