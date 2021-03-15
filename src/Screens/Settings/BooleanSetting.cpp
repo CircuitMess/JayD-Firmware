@@ -6,11 +6,7 @@ Settings::BooleanSetting::BooleanSetting(ElementContainer *partent, String name)
 }
 
 void Settings::BooleanSetting::activated(){
-	if(booleanSwitch){
-		booleanSwitch = false;
-	}else if(!booleanSwitch){
-		booleanSwitch = true;
-	}
+	booleanSwitch=!booleanSwitch;
 }
 
 void Settings::BooleanSetting::drawControl(){
