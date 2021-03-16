@@ -9,8 +9,8 @@
 #include "PlayPause.h"
 #include "TrackCounter.hpp"
 #include <FS.h>
-#include <AudioLib/AudioOutputI2S.h>
-#include <AudioLib/AudioGeneratorWAV.h>
+#include <AudioLib/OutputI2S.h>
+#include <AudioLib/SourceWAV.h>
 
 namespace Playback {
 	class Playback : public Context, public LoopListener {
@@ -42,11 +42,11 @@ namespace Playback {
 
 		void buildUI();
 
-		File file;
+		fs::File file;
 
 		bool playing = false;
-		AudioOutputI2S* i2s = nullptr;
-		AudioGeneratorWAV* wav = nullptr;
+		OutputI2S* i2s = nullptr;
+		SourceWAV* wav = nullptr;
 
 	};
 }

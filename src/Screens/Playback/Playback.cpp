@@ -27,8 +27,8 @@ void Playback::Playback::loop(uint micros){
 		i2s->loop(micros);
 	}
 
-	if(((int) wav->elapsed) != trackCount.getCurrentDuration()){
-		trackCount.setCurrentDuration(wav->elapsed);
+	if(((int) wav->getElapsed()) != trackCount.getCurrentDuration()){
+		trackCount.setCurrentDuration(wav->getElapsed());
 		draw();
 		screen.commit();
 	}
@@ -39,9 +39,9 @@ void Playback::Playback::returned(void* data){
 	file = SD.open(name->c_str());
 
 	if(file){
-		wav = new AudioGeneratorWAV(&file);
-		trackCount.setTotalDuration(wav->duration);
-		Serial.printf("Duration: %d\n", wav->duration);
+		wav = new SourceWAV(file);
+		trackCount.setTotalDuration(wav->getDuration());
+		Serial.printf("Duration: %d\n", wav->getDuration());
 		songName.setSongName(name->substring(1, name->length() - 4));
 	}else{
 		trackCount.setTotalDuration(0);
@@ -58,7 +58,7 @@ void Playback::Playback::start(){
 	draw();
 	screen.commit();
 
-	InputJayD::getInstance()->setBtnPressCallback(BTN_EL1, [](){
+	InputJayD::getInstance()->setBtnPressCallback(BTN_L1, [](){
 		if(instance == nullptr) return;
 
 		if(instance->playing){
@@ -81,8 +81,8 @@ void Playback::Playback::start(){
 		if(instance == nullptr) return;
 
 		if(instance->wav){
-			instance->wav->seek(max(0, (int) instance->wav->getPos() + value * 100000));
-			instance->trackCount.setCurrentDuration(instance->wav->elapsed);
+			instance->wav->seek(max(0, (int) instance->wav->getElapsed() + value * 100000), SeekMode::SeekSet);
+			instance->trackCount.setCurrentDuration(instance->wav->getElapsed());
 		}
 
 		instance->draw();
@@ -107,13 +107,13 @@ void Playback::Playback::start(){
 			.use_apll = false
 	};
 
-	i2s = new AudioOutputI2S(i2s_config, i2s_pin_config, 0);
+	i2s = new OutputI2S(i2s_config, i2s_pin_config, 0);
 	i2s->setSource(wav);
 	i2s->setGain(0.01);
 }
 
 void Playback::Playback::stop(){
-	InputJayD::getInstance()->removeBtnPressCallback(BTN_EL1);
+	InputJayD::getInstance()->removeBtnPressCallback(BTN_L1);
 	InputJayD::getInstance()->removeEncoderMovedCallback(ENC_L1);
 
 	playing = false;
