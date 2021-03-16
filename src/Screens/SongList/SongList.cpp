@@ -52,7 +52,7 @@ void SongList::SongList::start(){
 		instance->screen.commit();
 	});
 
-	InputJayD::getInstance()->setBtnPressCallback(BTN_EL1, [](){
+	InputJayD::getInstance()->setBtnPressCallback(BTN_L1, [](){
 		if(instance == nullptr) return;
 
 		instance->pop(new String(instance->songs[instance->selectedElement]->getName()));
@@ -64,7 +64,7 @@ void SongList::SongList::start(){
 
 void SongList::SongList::stop(){
 	InputJayD::getInstance()->removeEncoderMovedCallback(ENC_L1);
-	InputJayD::getInstance()->removeBtnPressCallback(BTN_EL1);
+	InputJayD::getInstance()->removeBtnPressCallback(BTN_L1);
 }
 
 void SongList::SongList::draw(){
