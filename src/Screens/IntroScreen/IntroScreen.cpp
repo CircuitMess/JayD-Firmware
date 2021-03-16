@@ -46,5 +46,8 @@ void IntroScreen::IntroScreen::loop(uint micros){
 	}
 
 }
+IntroScreen::IntroScreen::~IntroScreen(){
+	instance = nullptr;
+}
 
 
