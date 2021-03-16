@@ -23,6 +23,8 @@ namespace MainMenu {
 
 		void loop(uint micros) override;
 
+		virtual ~MainMenu();
+
 	private:
 
 		static MainMenu *instance;

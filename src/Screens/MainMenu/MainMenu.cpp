@@ -21,12 +21,13 @@ void MainMenu::MainMenu::start(){
 	draw();
 	screen.commit();
 	InputJayD::getInstance()->setEncoderMovedCallback(0, [](int8_t value){
+		if(instance == nullptr) return;
 		if(value == 0) return;
 		instance->itemNum = instance->itemNum + value;
 
 		if(instance->itemNum < 0){
 			instance->itemNum = 2;
-		}else if (instance->itemNum>2){
+		}else if(instance->itemNum > 2){
 			instance->itemNum = 0;
 		}
 
@@ -90,5 +91,9 @@ void MainMenu::MainMenu::loop(uint micros){
 		}
 	}
 
+}
+
+MainMenu::MainMenu::~MainMenu(){
+	instance = nullptr;
 }
 
