@@ -5,7 +5,7 @@
 #include "Bitmaps/djGIF.h"
 #include "Bitmaps/playbackGIF.h"
 #include "Bitmaps/settingsGIF.h"
-#include <Display/PGMFile.h>
+#include <FS/PGMFile.h>
 
 
 uint16_t *icons[] = {playback, dj, settings};
@@ -16,8 +16,6 @@ size_t gifIconsSize[] = {sizeof(playback_gif), sizeof(dj_gif), sizeof(settings_g
 
 MainMenu::MainMenuItem::MainMenuItem(ElementContainer *parent, MenuItemType type) : CustomElement(parent, 20, 20), type(type),
 																					gif(getSprite(), fs::File(std::make_shared<PGMFile>(gifIcons[type], gifIconsSize[type]))){
-
-
 
 }
 
@@ -40,10 +38,6 @@ void MainMenu::MainMenuItem::draw(){
 
 void MainMenu::MainMenuItem::isSelected(bool selected){
 	MainMenuItem::selected = selected;
-}
-
-MainMenu::MainMenuItem::~MainMenuItem(){
-
 }
 
 bool MainMenu::MainMenuItem::needsUpdate(){

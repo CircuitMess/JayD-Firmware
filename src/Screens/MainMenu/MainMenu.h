@@ -14,20 +14,20 @@ namespace MainMenu {
 	public:
 
 		MainMenu(Display &display);
+		virtual ~MainMenu();
 
 		void start();
 
 		void stop();
 
 		void draw();
-
 		void loop(uint micros) override;
 
 	private:
 
 		static MainMenu *instance;
 
-		LinearLayout screenLayout;
+		LinearLayout* screenLayout;
 
 		std::vector<MainMenuItem *> item;
 

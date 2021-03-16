@@ -20,8 +20,6 @@ namespace MainMenu {
 
 		bool needsUpdate();
 
-		virtual ~MainMenuItem();
-
 	private:
 
 		MenuItemType type;
