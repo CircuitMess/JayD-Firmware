@@ -28,10 +28,6 @@ include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/FS/s
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/SD/src)
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/SPI/src)
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/WiFi/src)
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/SPIFFS/src)
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/HTTPClient/src)
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/WebServer/src)
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/DNSServer/src)
 
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/cores/esp32)
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/tools/sdk)
@@ -58,6 +54,7 @@ AUX_SOURCE_DIRECTORY(src/Screens/SongList SOURCES)
 AUX_SOURCE_DIRECTORY(src/Screens/MixScreen SOURCES)
 AUX_SOURCE_DIRECTORY(src/Screens/MixScreen/Bitmaps SOURCES)
 AUX_SOURCE_DIRECTORY(src/Screens/MainMenu SOURCES)
+AUX_SOURCE_DIRECTORY(src/Screens/IntroScreen SOURCES)
 
 # Defines
 add_definitions(-DDEBUG)
