@@ -16,7 +16,7 @@ MixScreen::MixScreen::MixScreen(Display &display) : Context(display), screenLayo
 	for(int i = 0; i < 3; i++){
 		effectsRight.push_back(new Effects(&rightLayout, true));
 	}
-	for(int i = 0; i < 5; ++i){
+	for(int i = 0; i < 6; ++i){
 		isSelected[i] = false;
 	}
 
@@ -165,7 +165,7 @@ void MixScreen::MixScreen::start(){
 			instance->effectsLeft[2]->setEffect(static_cast<Effect>(instance->effects[2]));
 		}
 		if(!instance->isSelected[2]){
-			instance->intensity[2] = instance->intensity[1] + value * 4;
+			instance->intensity[2] = instance->intensity[2] + value * 4;
 			if(instance->intensity[2]>255){
 				instance->intensity[2]=255;
 			}else if(instance->intensity[2]<0){
@@ -256,7 +256,7 @@ void MixScreen::MixScreen::stop(){
 
 void MixScreen::MixScreen::draw(){
 	screen.getSprite()->clear(TFT_BLACK);
-	screen.getSprite()->fillRect(leftLayout.getTotalX(), leftLayout.getTotalY(), 78, 128, C_RGB(249, 53, 2));
+	screen.getSprite()->fillRect(leftLayout.getTotalX(), leftLayout.getTotalY(), 79, 128, C_RGB(249, 53, 2));
 	screen.getSprite()->fillRect(rightLayout.getTotalX(), rightLayout.getTotalY(), 79, 128, C_RGB(3, 52, 135));
 	screen.draw();
 }

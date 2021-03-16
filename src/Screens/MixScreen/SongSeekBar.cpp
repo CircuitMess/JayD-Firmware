@@ -27,9 +27,9 @@ void MixScreen::SongSeekBar::draw(){
 	getSprite()->fillRect(getTotalX() + 2, getTotalY() + 44, 72, 2, C_RGB(4, 211, 35));
 	getSprite()->drawRoundRect(getTotalX() + 2, getTotalY() + 40, 72, 10, 2, TFT_WHITE);
 	if(currentDuration==0){
-		movingCursor=0;
+		movingCursor=3;
 	}else{
-		movingCursor=((float) currentDuration / (float) totalDuration) * 72.0f;
+		movingCursor=((float) currentDuration / (float) totalDuration) * 69.0f;
 	}
 	getSprite()->fillRect(getTotalX() + movingCursor, getTotalY() + 41, 4,
 						  7, TFT_WHITE);
