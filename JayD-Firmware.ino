@@ -9,23 +9,41 @@
 #include "src/Screens/IntroScreen/IntroScreen.h"
 #include <JayD.hpp>
 #include <Input/InputJayD.h>
+#include <WiFi.h>
+#include <SD.h>
 
 #define blPin 25
 
 Display display(160, 128, -1, -1);
-IntroScreen::IntroScreen *introScreen;
 
 void setup(){
 	Serial.begin(115200);
 	pinMode(blPin, OUTPUT);
-	digitalWrite(blPin, LOW);
+	digitalWrite(blPin, HIGH);
+
+	WiFi.mode(WIFI_OFF);
+	btStop();
+
+	disableCore0WDT();
+	disableCore1WDT();
+
+	SPI.begin(18, 19, 23);
+	SPI.setFrequency(60000000);
+	if(!SD.begin(22, SPI)){
+		Serial.println("No SD card");
+		//for(;;);
+	}
+
 	display.begin();
+
 	LoopManager::addListener(new InputJayD());
-	introScreen=new IntroScreen::IntroScreen(display);
-	LoopManager::addListener(introScreen);
+	InputJayD::getInstance()->begin();
+
+	Context* introScreen = new IntroScreen::IntroScreen(display);
 	introScreen->unpack();
 	introScreen->start();
 
+	digitalWrite(blPin, LOW);
 }
 
 void loop(){
