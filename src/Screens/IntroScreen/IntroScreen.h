@@ -15,7 +15,7 @@ namespace IntroScreen {
 
 		IntroScreen(Display &display);
 
-		//virtual ~IntroScreen();
+		virtual ~IntroScreen();
 
 		void start();
 
