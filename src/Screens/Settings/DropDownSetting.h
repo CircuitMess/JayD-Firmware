@@ -9,7 +9,7 @@ namespace Settings {
 
 		DropDownSetting(ElementContainer *partent, String name, std::vector<String> dropDownContent);
 
-		void activated() override;
+		void activate() override;
 
 		void selectNext();
 
@@ -18,6 +18,7 @@ namespace Settings {
 	private:
 
 		bool showDropDown = false;
+
 		int index = 0;
 		std::vector<String> dropDownContent;
 
