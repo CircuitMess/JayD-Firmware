@@ -21,6 +21,8 @@ namespace Settings {
 
 		void draw();
 
+		virtual ~Settings();
+
 	private:
 		static Settings *instance;
 
@@ -29,13 +31,15 @@ namespace Settings {
 		BooleanSetting firstElement;
 		DropDownSetting secondElement;
 		BrightnessSetting thirdElement;
-	//	SettingsElement fourthElement;
+		//	SettingsElement fourthElement;
 
 		int newValue = 0;
 
 		bool disableMainSelector = false;
 
 		void buildUI();
+
+		bool disableBrightnessBar = false;
 
 	};
 }
