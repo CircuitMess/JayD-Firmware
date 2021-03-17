@@ -8,7 +8,7 @@ namespace Settings {
 	public:
 		BooleanSetting(ElementContainer *partent, String name);
 
-		void activated() override;
+		void activate() override;
 
 	private:
 
