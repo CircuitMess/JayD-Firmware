@@ -37,7 +37,7 @@ void MainMenu::MainMenu::start(){
 
 		if(instance->itemNum < 0){
 			instance->itemNum = 2;
-		}else if (instance->itemNum>2){
+		}else if(instance->itemNum > 2){
 			instance->itemNum = 0;
 		}
 
@@ -102,5 +102,9 @@ void MainMenu::MainMenu::loop(uint micros){
 			screen.commit();
 		}
 	}
+}
+
+MainMenu::MainMenu::~MainMenu(){
+	instance = nullptr;
 }
 
