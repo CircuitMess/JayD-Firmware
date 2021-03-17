@@ -5,7 +5,7 @@ Settings::BooleanSetting::BooleanSetting(ElementContainer *partent, String name)
 
 }
 
-void Settings::BooleanSetting::activated(){
+void Settings::BooleanSetting::activate(){
 	booleanSwitch=!booleanSwitch;
 }
 
