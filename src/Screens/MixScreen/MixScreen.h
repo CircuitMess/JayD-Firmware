@@ -5,7 +5,7 @@
 #include <UI/LinearLayout.h>
 #include "SongSeekBar.h"
 #include "SongName.hpp"
-#include "Effects.hpp"
+#include "EffectElement.hpp"
 
 namespace MixScreen {
 	class MixScreen : public Context, public LoopListener{
@@ -36,8 +36,8 @@ namespace MixScreen {
 		SongName leftSongName;
 		SongName rightSongName;
 
-		std::vector<Effects *> effectsLeft;
-		std::vector<Effects *> effectsRight;
+		std::vector<EffectElement *> effectsLeft;
+		std::vector<EffectElement *> effectsRight;
 
 		bool isPlaying = false;
 

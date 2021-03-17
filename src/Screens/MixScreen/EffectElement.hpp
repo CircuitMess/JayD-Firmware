@@ -1,21 +1,21 @@
-#ifndef JAYD_FIRMWARE_EFFECTS_HPP
-#define JAYD_FIRMWARE_EFFECTS_HPP
+#ifndef JAYD_FIRMWARE_EFFECTELEMENT_HPP
+#define JAYD_FIRMWARE_EFFECTELEMENT_HPP
 
 #include <UI/CustomElement.h>
 #include <Display/AnimatedSprite.h>
 
-enum Effect {
+enum EffectType {
 	LOWPASS, HIGHPASS, SPEED, REVERB, BITCRUSHER
 };
 
 namespace MixScreen {
-	class Effects : public CustomElement {
+	class EffectElement : public CustomElement {
 	public:
-		Effects(ElementContainer *parent, bool mirrored,Effect effect);
+		EffectElement(ElementContainer *parent, bool mirrored, EffectType effect);
 
 		void draw();
 
-		void setEffect(Effect effect);
+		void setEffect(EffectType effect);
 
 		void setIntensity(uint8_t intensity);
 
@@ -23,8 +23,7 @@ namespace MixScreen {
 
 		bool needsUpdate();
 	private:
-
-		Effect effect;
+		EffectType effect;
 		uint8_t intensity = 0;
 		bool mirrored = false;
 		bool selected = false;
@@ -34,4 +33,4 @@ namespace MixScreen {
 }
 
 
-#endif //JAYD_FIRMWARE_EFFECTS_HPP
+#endif //JAYD_FIRMWARE_EFFECTELEMENT_HPP

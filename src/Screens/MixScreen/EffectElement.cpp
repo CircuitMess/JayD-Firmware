@@ -26,24 +26,25 @@ unsigned char *gifIcons[] = {lowpass_gif, highpass_gif, speed_gif, reverb_gif, b
 
 size_t gifIconsSize[] = {sizeof(lowpass_gif), sizeof(highpass_gif), sizeof(speed_gif), sizeof(reverb_gif), sizeof(bitcrusher_gif)};
 
+MixScreen::EffectElement::EffectElement(ElementContainer *parent, bool mirrored, EffectType type) : CustomElement(parent, 10, 10), type(type)
+																	   mirrored(mirrored){
 
-MixScreen::Effects::Effects(ElementContainer *parent, bool mirrored, Effect effect) : CustomElement(parent, 10, 10), effect(effect),
-																					  mirrored(mirrored){
 	gif = new AnimatedSprite(getSprite(), fs::File(std::make_shared<PGMFile>(gifIcons[effect], gifIconsSize[effect])));
+
 }
 
 
-void MixScreen::Effects::setEffect(Effect effect){
-	Effects::effect = effect;
+void MixScreen::EffectElement::setEffect(EffectType effect){
+	EffectElement::effect = effect;
 	delete gif;
 	gif = new AnimatedSprite(getSprite(), fs::File(std::make_shared<PGMFile>(gifIcons[effect], gifIconsSize[effect])));
 }
 
-void MixScreen::Effects::setIntensity(uint8_t intensity){
-	Effects::intensity = intensity;
+void MixScreen::EffectElement::setIntensity(uint8_t intensity){
+	EffectElement::intensity = intensity;
 }
 
-void MixScreen::Effects::draw(){
+void MixScreen::EffectElement::draw(){
 	if(selected && !mirrored){
 		getSprite()->fillRect(getTotalX(), getTotalY() + 25, 77, 18, C_RGB(248, 147, 121));
 		gif->setXY(getTotalX(), getTotalY() + 25);
@@ -75,8 +76,8 @@ void MixScreen::Effects::draw(){
 
 }
 
-void MixScreen::Effects::setSelected(bool selected){
-	Effects::selected = selected;
+void MixScreen::EffectElement::setSelected(bool selected){
+	EffectElement::selected = selected;
 }
 
 bool MixScreen::Effects::needsUpdate(){
