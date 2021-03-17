@@ -103,8 +103,3 @@ void MainMenu::MainMenu::loop(uint micros){
 		}
 	}
 }
-
-MainMenu::MainMenu::~MainMenu(){
-	instance = nullptr;
-}
-
