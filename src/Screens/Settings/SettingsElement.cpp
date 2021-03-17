@@ -22,3 +22,7 @@ void Settings::SettingsElement::draw(){
 	drawControl();
 
 }
+
+bool Settings::SettingsElement::isSelected() const{
+	return selected;
+}
