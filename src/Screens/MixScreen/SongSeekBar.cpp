@@ -1,6 +1,6 @@
 #include "SongSeekBar.h"
-#include "Bitmaps/pause_dj.hpp"
-#include "Bitmaps/play_dj.hpp"
+#include "Bitmaps/pause_dj.h"
+#include "Bitmaps/play_dj.h"
 
 MixScreen::SongSeekBar::SongSeekBar(ElementContainer *parent) : CustomElement(parent, 10, 10){
 
@@ -29,12 +29,12 @@ void MixScreen::SongSeekBar::draw(){
 	if(currentDuration==0){
 		movingCursor=0;
 	}else{
-		movingCursor=((float) currentDuration / (float) totalDuration) * 72.0f;
+		movingCursor=((float) currentDuration / (float) totalDuration) * 66.0f;
 	}
-	getSprite()->fillRect(getTotalX() + movingCursor, getTotalY() + 41, 4,
-						  7, TFT_WHITE);
-	getSprite()->drawRect(getTotalX() + movingCursor, getTotalY() + 41, 4,
-						  7, TFT_BLACK);
+	getSprite()->fillRect(getTotalX()+3 + movingCursor, getTotalY() + 41, 4,
+						  8, TFT_WHITE);
+	getSprite()->drawRect(getTotalX()+3 + movingCursor, getTotalY() + 41, 4,
+						  8, TFT_BLACK);
 
 }
 
