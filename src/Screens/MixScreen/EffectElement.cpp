@@ -1,4 +1,4 @@
-#include "Effects.hpp"
+#include "EffectElement.hpp"
 #include "Bitmaps/bitcrusherFadeBlue.h"
 #include "Bitmaps/bitcrusherFadeRed.h"
 #include "Bitmaps/highpassFadeRed.h"
@@ -15,7 +15,7 @@
 #include "Bitmaps/reverbGIF.h"
 #include "Bitmaps/speedGIF.h"
 #include <FS.h>
-#include <Display/PGMFile.h>
+#include <FS/PGMFile.h>
 
 
 uint16_t *iconsNotMirrored[] = {lowpass_fade, highpass_fade_red, speed_fade_red, reverb_fade_red, bitcrusher_fade_red};
@@ -26,7 +26,7 @@ unsigned char *gifIcons[] = {lowpass_gif, highpass_gif, speed_gif, reverb_gif, b
 
 size_t gifIconsSize[] = {sizeof(lowpass_gif), sizeof(highpass_gif), sizeof(speed_gif), sizeof(reverb_gif), sizeof(bitcrusher_gif)};
 
-MixScreen::EffectElement::EffectElement(ElementContainer *parent, bool mirrored, EffectType type) : CustomElement(parent, 10, 10), type(type)
+MixScreen::EffectElement::EffectElement(ElementContainer *parent, bool mirrored, EffectType effect) : CustomElement(parent, 10, 10), effect(effect),
 																	   mirrored(mirrored){
 
 	gif = new AnimatedSprite(getSprite(), fs::File(std::make_shared<PGMFile>(gifIcons[effect], gifIconsSize[effect])));
@@ -80,7 +80,7 @@ void MixScreen::EffectElement::setSelected(bool selected){
 	EffectElement::selected = selected;
 }
 
-bool MixScreen::Effects::needsUpdate(){
+bool MixScreen::EffectElement::needsUpdate(){
 	if(selected){
 		return gif->newFrameReady();
 	}else{
