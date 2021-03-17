@@ -13,10 +13,11 @@ namespace Settings {
 
 		void draw();
 
-		virtual void activated() = 0;
+		virtual void activate() = 0;
+
+		bool isSelected() const;
 
 	private:
-
 		bool selected = false;
 		String name;
 
