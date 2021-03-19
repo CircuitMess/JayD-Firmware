@@ -22,14 +22,14 @@ uint16_t *iconsNotMirrored[] = {lowpass_fade, highpass_fade_red, speed_fade_red,
 
 uint16_t *iconsMirrored[] = {lowpass_fade_blue, highpass_fade_blue, speed_fade_blue, reverb_fade_blue, bitcrusher_fade_blue};
 
-unsigned char *gifIcons[] = {lowpass_gif, highpass_gif, speed_gif, reverb_gif, bitcrusher_gif};
+unsigned char *gifIconsA[] = {lowpass_gif, highpass_gif, speed_gif, reverb_gif, bitcrusher_gif};
 
-size_t gifIconsSize[] = {sizeof(lowpass_gif), sizeof(highpass_gif), sizeof(speed_gif), sizeof(reverb_gif), sizeof(bitcrusher_gif)};
+size_t gifIconsASize[] = {sizeof(lowpass_gif), sizeof(highpass_gif), sizeof(speed_gif), sizeof(reverb_gif), sizeof(bitcrusher_gif)};
 
 MixScreen::EffectElement::EffectElement(ElementContainer *parent, bool mirrored, EffectType effect) : CustomElement(parent, 10, 10), effect(effect),
 																	   mirrored(mirrored){
 
-	gif = new AnimatedSprite(getSprite(), fs::File(std::make_shared<PGMFile>(gifIcons[effect], gifIconsSize[effect])));
+	gif = new AnimatedSprite(getSprite(), fs::File(std::make_shared<PGMFile>(gifIconsA[effect], gifIconsASize[effect])));
 
 }
 
@@ -37,7 +37,7 @@ MixScreen::EffectElement::EffectElement(ElementContainer *parent, bool mirrored,
 void MixScreen::EffectElement::setEffect(EffectType effect){
 	EffectElement::effect = effect;
 	delete gif;
-	gif = new AnimatedSprite(getSprite(), fs::File(std::make_shared<PGMFile>(gifIcons[effect], gifIconsSize[effect])));
+	gif = new AnimatedSprite(getSprite(), fs::File(std::make_shared<PGMFile>(gifIconsA[effect], gifIconsASize[effect])));
 }
 
 void MixScreen::EffectElement::setIntensity(uint8_t intensity){
