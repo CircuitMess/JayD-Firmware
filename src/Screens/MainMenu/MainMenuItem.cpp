@@ -42,7 +42,7 @@ void MainMenu::MainMenuItem::isSelected(bool selected){
 
 bool MainMenu::MainMenuItem::needsUpdate(){
 	if(selected){
-		return gif.newFrameReady();
+		return gif.checkFrame();
 	}else{
 		return false;
 	}

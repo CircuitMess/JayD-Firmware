@@ -82,7 +82,7 @@ void MixScreen::EffectElement::setSelected(bool selected){
 
 bool MixScreen::EffectElement::needsUpdate(){
 	if(selected){
-		return gif->newFrameReady();
+		return gif->checkFrame();
 	}else{
 		return false;
 	}
