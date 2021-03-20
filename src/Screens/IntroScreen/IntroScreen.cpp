@@ -56,8 +56,5 @@ void IntroScreen::IntroScreen::loop(uint micros){
 	draw();
 	screen.commit();
 }
-IntroScreen::IntroScreen::~IntroScreen(){
-	instance = nullptr;
-}
 
 
