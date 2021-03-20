@@ -219,7 +219,7 @@ void MixScreen::MixScreen::loop(uint micros){
 		update |= element->needsUpdate();
 	}
 
-	if(update){
+	if(update || leftSongName.checkScrollUpdate() || rightSongName.checkScrollUpdate()){
 		draw();
 		screen.commit();
 	}
