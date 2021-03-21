@@ -4,9 +4,6 @@
 
 #include <Support/Context.h>
 
-#define rows 4
-#define columns 8
-
 namespace TextInputScreen {
 	class TextInputScreen : public Context {
 	public:

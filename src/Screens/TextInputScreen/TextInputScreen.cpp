@@ -61,7 +61,8 @@ void TextInputScreen::TextInputScreen::draw(){
 	sprite->setCursor(5, 25);
 	sprite->printf("%s", text.c_str());
 
-
+	uint8_t const rows = 4;
+	uint8_t const columns = 8;
 	for(int i = 0; i < rows; i++){
 		char letter;
 		for(int j = 0; j < columns; j++){
