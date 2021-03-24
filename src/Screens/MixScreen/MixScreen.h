@@ -49,15 +49,15 @@ namespace MixScreen {
 		Mixer* mixer;
 		OutputI2S* out;
 
-		LinearLayout screenLayout;
-		LinearLayout leftLayout;
-		LinearLayout rightLayout;
+		LinearLayout* screenLayout;
+		LinearLayout* leftLayout;
+		LinearLayout* rightLayout;
 
-		SongSeekBar leftSeekBar;
-		SongSeekBar rightSeekBar;
+		SongSeekBar* leftSeekBar;
+		SongSeekBar* rightSeekBar;
 
-		SongName leftSongName;
-		SongName rightSongName;
+		SongName* leftSongName;
+		SongName* rightSongName;
 
 		EffectElement* effectElements[6] = { nullptr };
 
