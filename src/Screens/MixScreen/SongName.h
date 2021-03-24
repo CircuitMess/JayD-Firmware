@@ -1,5 +1,5 @@
-#ifndef JAYD_FIRMWARE_SONGNAME_H
-#define JAYD_FIRMWARE_SONGNAME_H
+#ifndef JAYD_FIRMWARE_MIX_SONGNAME_H
+#define JAYD_FIRMWARE_MIX_SONGNAME_H
 
 #include <UI/CustomElement.h>
 
@@ -17,4 +17,4 @@ namespace MixScreen {
 }
 
 
-#endif //JAYD_FIRMWARE_SONGNAME_H
+#endif //JAYD_FIRMWARE_MIX_SONGNAME_H
