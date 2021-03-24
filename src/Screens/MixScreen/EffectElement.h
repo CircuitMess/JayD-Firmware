@@ -1,5 +1,5 @@
-#ifndef JAYD_FIRMWARE_EFFECTELEMENT_HPP
-#define JAYD_FIRMWARE_EFFECTELEMENT_HPP
+#ifndef JAYD_FIRMWARE_EFFECTELEMENT_H
+#define JAYD_FIRMWARE_EFFECTELEMENT_H
 
 #include <UI/CustomElement.h>
 #include <Display/AnimatedSprite.h>
@@ -41,4 +41,4 @@ namespace MixScreen {
 }
 
 
-#endif //JAYD_FIRMWARE_EFFECTELEMENT_HPP
+#endif //JAYD_FIRMWARE_EFFECTELEMENT_H
