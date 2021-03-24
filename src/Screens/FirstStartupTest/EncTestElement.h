@@ -14,7 +14,6 @@ public:
 	void draw() override;
 
 private:
-	int value = 0;
 	bool midLayout = false;
 	bool pressed = false;
 	uint8_t counter=5;

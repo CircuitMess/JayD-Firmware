@@ -6,13 +6,7 @@ EncTestElement::EncTestElement(ElementContainer *parent, bool midLayout) : Custo
 }
 
 void EncTestElement::encoderMove(int8_t newValue){
-	value = value + newValue;
-	if(counter<9){
-		counter++;
-	}else{
-		counter = 11;
-
-	}
+	counter = min(counter + abs(newValue), 11);
 }
 
 void EncTestElement::draw(){
