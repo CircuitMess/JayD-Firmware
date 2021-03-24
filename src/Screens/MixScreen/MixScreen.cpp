@@ -41,25 +41,23 @@ Effect* (*launch[])() = {
 		[]() -> Effect* { return new BitCrusher(); }
 };
 
-MixScreen::MixScreen::MixScreen(Display &display) : Context(display), screenLayout(&screen, HORIZONTAL),
-													leftLayout(&screenLayout, VERTICAL),
-													rightLayout(&screenLayout, VERTICAL), leftSeekBar(&leftLayout),
-													rightSeekBar(&rightLayout), leftSongName(&leftLayout), rightSongName(&rightLayout),
+MixScreen::MixScreen::MixScreen(Display &display) : Context(display), screenLayout(new LinearLayout(&screen, HORIZONTAL)),
+													leftLayout(new LinearLayout(screenLayout, VERTICAL)),
+													rightLayout(new LinearLayout(screenLayout, VERTICAL)), leftSeekBar(new SongSeekBar(leftLayout)),
+													rightSeekBar(new SongSeekBar(rightLayout)), leftSongName(new SongName(leftLayout)),
+													rightSongName(new SongName(rightLayout)),
 													audioTask("MixAudio", audioThread, 4096, this){
 
 
 	for(int i = 0; i < 3; i++){
-		effectElements[i] = new EffectElement(&leftLayout, false);
+		effectElements[i] = new EffectElement(leftLayout, false);
 	}
 	for(int i = 3; i < 6; i++){
-		effectElements[i] = new EffectElement(&rightLayout, true);
+		effectElements[i] = new EffectElement(rightLayout, true);
 	}
 
 	instance = this;
 	buildUI();
-
-	leftSongName.setSongName("name name name name");
-	rightSongName.setSongName("name anem anem");
 }
 
 Context* selector = nullptr;
@@ -133,7 +131,7 @@ void MixScreen::MixScreen::start(){
 		}else{
 			instance->isPlaying = false;
 		}
-		instance->leftSeekBar.setPlaying(instance->isPlaying);
+		instance->leftSeekBar->setPlaying(instance->isPlaying);
 		instance->draw();
 		instance->screen.commit();
 	});
@@ -144,7 +142,7 @@ void MixScreen::MixScreen::start(){
 		}else{
 			instance->isPlaying = false;
 		}
-		instance->rightSeekBar.setPlaying(instance->isPlaying);
+		instance->rightSeekBar->setPlaying(instance->isPlaying);
 		instance->draw();
 		instance->screen.commit();
 	});
@@ -168,49 +166,49 @@ void MixScreen::MixScreen::stop(){
 
 void MixScreen::MixScreen::draw(){
 	screen.getSprite()->clear(TFT_BLACK);
-	screen.getSprite()->fillRect(leftLayout.getTotalX(), leftLayout.getTotalY(), 78, 128, C_RGB(249, 53, 2));
-	screen.getSprite()->fillRect(rightLayout.getTotalX(), rightLayout.getTotalY(), 79, 128, C_RGB(3, 52, 135));
+	screen.getSprite()->fillRect(leftLayout->getTotalX(), leftLayout->getTotalY(), 78, 128, C_RGB(249, 53, 2));
+	screen.getSprite()->fillRect(rightLayout->getTotalX(), rightLayout->getTotalY(), 79, 128, C_RGB(3, 52, 135));
 	screen.draw();
 }
 
 void MixScreen::MixScreen::buildUI(){
-	screenLayout.setWHType(PARENT, PARENT);
-	screenLayout.setGutter(1);
-	screenLayout.addChild(&leftLayout);
-	screenLayout.addChild(&rightLayout);
+	screenLayout->setWHType(PARENT, PARENT);
+	screenLayout->setGutter(1);
+	screenLayout->addChild(leftLayout);
+	screenLayout->addChild(rightLayout);
 
-	leftLayout.setWHType(FIXED, PARENT);
-	leftLayout.setWidth(79);
-	leftLayout.setGutter(10);
-	leftLayout.setPadding(1);
+	leftLayout->setWHType(FIXED, PARENT);
+	leftLayout->setWidth(79);
+	leftLayout->setGutter(10);
+	leftLayout->setPadding(1);
 
 
-	leftLayout.addChild(&leftSeekBar);
-	leftLayout.addChild(&leftSongName);
+	leftLayout->addChild(leftSeekBar);
+	leftLayout->addChild(leftSongName);
 
 	for(int i = 0; i < 3; i++){
-		leftLayout.addChild(effectElements[i]);
+		leftLayout->addChild(effectElements[i]);
 	}
 
 
-	rightLayout.setWHType(FIXED, PARENT);
-	rightLayout.setWidth(79);
-	rightLayout.setGutter(10);
-	rightLayout.setPadding(1);
+	rightLayout->setWHType(FIXED, PARENT);
+	rightLayout->setWidth(79);
+	rightLayout->setGutter(10);
+	rightLayout->setPadding(1);
 
 
-	rightLayout.addChild(&rightSeekBar);
-	rightLayout.addChild(&rightSongName);
+	rightLayout->addChild(rightSeekBar);
+	rightLayout->addChild(rightSongName);
 
 	for(int i = 3; i < 6; i++){
-		rightLayout.addChild(effectElements[i]);
+		rightLayout->addChild(effectElements[i]);
 	}
 
-	screenLayout.reflow();
-	leftLayout.reflow();
-	rightLayout.reflow();
+	screenLayout->reflow();
+	leftLayout->reflow();
+	rightLayout->reflow();
 
-	screen.addChild(&screenLayout);
+	screen.addChild(screenLayout);
 	screen.repos();
 }
 
@@ -220,8 +218,8 @@ void MixScreen::MixScreen::loop(uint micros){
 		update |= element->needsUpdate();
 	}
 
-	bool songNameUpdateL = leftSongName.checkScrollUpdate();
-	bool songNameUpdateR = rightSongName.checkScrollUpdate();
+	bool songNameUpdateL = leftSongName->checkScrollUpdate();
+	bool songNameUpdateR = rightSongName->checkScrollUpdate();
 	if(update || songNameUpdateL || songNameUpdateR){
 		draw();
 		screen.commit();
