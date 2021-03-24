@@ -44,8 +44,7 @@ Effect* (*launch[])() = {
 MixScreen::MixScreen::MixScreen(Display &display) : Context(display), screenLayout(&screen, HORIZONTAL),
 													leftLayout(&screenLayout, VERTICAL),
 													rightLayout(&screenLayout, VERTICAL), leftSeekBar(&leftLayout),
-													rightSeekBar(&rightLayout), leftSongName(&leftLayout, "songLeft"),
-													rightSongName(&rightLayout, "songRight"),
+													rightSeekBar(&rightLayout), leftSongName(&leftLayout), rightSongName(&rightLayout),
 													audioTask("MixAudio", audioThread, 4096, this){
 
 
@@ -59,6 +58,8 @@ MixScreen::MixScreen::MixScreen(Display &display) : Context(display), screenLayo
 	instance = this;
 	buildUI();
 
+	leftSongName.setSongName("name name name name");
+	rightSongName.setSongName("name anem anem");
 }
 
 Context* selector = nullptr;

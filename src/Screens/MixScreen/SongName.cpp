@@ -1,18 +1,7 @@
 #include "SongName.h"
 
-MixScreen::SongName::SongName(ElementContainer *parent, String songName) : CustomElement(parent, 79, 10),
-																		   songName(songName){
-	getSprite()->setTextSize(1);
-	getSprite()->setTextFont(1);
-	nameLength = getSprite()->textWidth(songName);
-	if(nameLength >= (getWidth() - 2)){
-		scrolling = true;
-		currentTime = millis();
-		scrollCursor = 10;
-	}else{
-		scrolling = false;
-		scrollCursor = ((int)(getWidth()) - 2 - nameLength) / 2;
-	}
+MixScreen::SongName::SongName(ElementContainer *parent) : CustomElement(parent, 79, 10){
+
 }
 
 void MixScreen::SongName::draw(){
@@ -59,5 +48,21 @@ bool MixScreen::SongName::checkScrollUpdate(){
 			scrollCursor = 20;
 		}
 		return true;
+	}
+}
+
+void MixScreen::SongName::setSongName(const String& songName){
+	SongName::songName = songName;
+
+	getSprite()->setTextSize(1);
+	getSprite()->setTextFont(1);
+	nameLength = getSprite()->textWidth(songName);
+	if(nameLength >= (getWidth() - 2)){
+		scrolling = true;
+		currentTime = millis();
+		scrollCursor = 10;
+	}else{
+		scrolling = false;
+		scrollCursor = ((int)(getWidth()) - 2 - nameLength) / 2;
 	}
 }
