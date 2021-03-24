@@ -7,7 +7,7 @@
 #include <UI/TextElement.h>
 #include "SongName.h"
 #include "PlayPause.h"
-#include "TrackCounter.hpp"
+#include "TrackCounter.h"
 #include <FS.h>
 #include <AudioLib/OutputI2S.h>
 #include <AudioLib/SourceWAV.h>
