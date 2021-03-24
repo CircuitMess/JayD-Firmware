@@ -3,31 +3,39 @@
 
 #include <UI/CustomElement.h>
 #include <Display/AnimatedSprite.h>
-
-enum EffectType {
-	LOWPASS, HIGHPASS, SPEED, REVERB, BITCRUSHER
-};
+#include <AudioLib/EffectType.hpp>
 
 namespace MixScreen {
 	class EffectElement : public CustomElement {
 	public:
-		EffectElement(ElementContainer *parent, bool mirrored, EffectType effect);
+		EffectElement(ElementContainer *parent, bool mirrored);
 
 		void draw();
 
-		void setEffect(EffectType effect);
+		void setType(EffectType effect);
+		EffectType getType() const;
 
 		void setIntensity(uint8_t intensity);
+		uint8_t getIntensity() const;
 
 		void setSelected(bool selected);
+		bool isSelected() const;
 
 		bool needsUpdate();
+		void repos() override;
 	private:
-		EffectType effect;
+		EffectType effect = EffectType::NONE;
 		uint8_t intensity = 0;
 		bool mirrored = false;
 		bool selected = false;
-		AnimatedSprite *gif;
+		AnimatedSprite *gif = nullptr;
+
+		void setupGif();
+
+		static const uint16_t* const iconsNotMirrored[EffectType::COUNT];
+		static const uint16_t* const iconsMirrored[EffectType::COUNT];
+		static const uint8_t* const gifIcons[EffectType::COUNT];
+		static const size_t gifIconSizes[EffectType::COUNT];
 	};
 
 }
