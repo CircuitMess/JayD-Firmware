@@ -44,8 +44,8 @@ Effect* (*launch[])() = {
 MixScreen::MixScreen::MixScreen(Display &display) : Context(display), screenLayout(new LinearLayout(&screen, HORIZONTAL)),
 													leftLayout(new LinearLayout(screenLayout, VERTICAL)),
 													rightLayout(new LinearLayout(screenLayout, VERTICAL)), leftSeekBar(new SongSeekBar(leftLayout)),
-													rightSeekBar(new SongSeekBar(rightLayout)), leftSongName(new SongName(leftLayout, "songLeft")),
-													rightSongName(new SongName(rightLayout, "songRight")),
+													rightSeekBar(new SongSeekBar(rightLayout)), leftSongName(new SongName(leftLayout)),
+													rightSongName(new SongName(rightLayout)),
 													audioTask("MixAudio", audioThread, 4096, this){
 
 
@@ -58,7 +58,6 @@ MixScreen::MixScreen::MixScreen(Display &display) : Context(display), screenLayo
 
 	instance = this;
 	buildUI();
-
 }
 
 Context* selector = nullptr;
@@ -219,7 +218,9 @@ void MixScreen::MixScreen::loop(uint micros){
 		update |= element->needsUpdate();
 	}
 
-	if(update){
+	bool songNameUpdateL = leftSongName->checkScrollUpdate();
+	bool songNameUpdateR = rightSongName->checkScrollUpdate();
+	if(update || songNameUpdateL || songNameUpdateR){
 		draw();
 		screen.commit();
 	}
