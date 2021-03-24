@@ -1,6 +1,6 @@
 #include <Input/InputJayD.h>
 #include "TextInputScreen.h"
-#include "Bitmaps/backgroundTextEntry.h"
+#include "Bitmaps/backgroundTextEntry.hpp"
 
 TextInputScreen::TextInputScreen *TextInputScreen::TextInputScreen::instance = nullptr;
 
@@ -13,7 +13,7 @@ TextInputScreen::TextInputScreen::TextInputScreen(Display &display) : Context(di
 void TextInputScreen::TextInputScreen::start(){
 	instance->draw();
 	instance->screen.commit();
-	InputJayD::getInstance()->setEncoderMovedCallback(1, [](int8_t value){
+	InputJayD::getInstance()->setEncoderMovedCallback(0, [](int8_t value){
 		instance->selectedIndex = instance->selectedIndex + value;
 		if(instance->selectedIndex < 0){
 			instance->selectedIndex = 30;
@@ -23,7 +23,7 @@ void TextInputScreen::TextInputScreen::start(){
 		instance->draw();
 		instance->screen.commit();
 	});
-	InputJayD::getInstance()->setBtnPressCallback(3, [](){
+	InputJayD::getInstance()->setBtnPressCallback(2, [](){
 		if(instance->selectedIndex == 27){
 			instance->text = instance->text.substring(0, instance->text.length() - 1);
 		}else if(instance->selectedIndex == 30){
@@ -48,7 +48,8 @@ void TextInputScreen::TextInputScreen::start(){
 
 
 void TextInputScreen::TextInputScreen::stop(){
-	InputJayD::getInstance()->removeEncoderMovedCallback(1);
+	InputJayD::getInstance()->removeEncoderMovedCallback(0);
+	InputJayD::getInstance()->removeBtnPressCallback(2);
 }
 
 void TextInputScreen::TextInputScreen::draw(){
@@ -61,8 +62,8 @@ void TextInputScreen::TextInputScreen::draw(){
 	sprite->setCursor(5, 25);
 	sprite->printf("%s", text.c_str());
 
-	uint8_t const rows = 4;
-	uint8_t const columns = 8;
+	uint8_t static const rows = 4;
+	uint8_t static const columns = 8;
 	for(int i = 0; i < rows; i++){
 		char letter;
 		for(int j = 0; j < columns; j++){
