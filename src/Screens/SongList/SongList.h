@@ -23,10 +23,9 @@ namespace SongList {
 		void draw();
 
 	private:
-
 		static SongList *instance;
-		ScrollLayout scrollLayout;
-		LinearLayout list;
+		ScrollLayout* scrollLayout;
+		LinearLayout* list;
 
 		int selectedElement = 0;
 
