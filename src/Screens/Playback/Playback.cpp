@@ -107,7 +107,7 @@ void Playback::Playback::start(){
 			.use_apll = false
 	};
 
-	i2s = new OutputI2S(i2s_config, i2s_pin_config, 0);
+	i2s = new OutputI2S(i2s_config, i2s_pin_config, I2S_NUM_0);
 	i2s->setSource(wav);
 	i2s->setGain(0.01);
 }
