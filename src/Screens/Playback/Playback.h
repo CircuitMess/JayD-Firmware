@@ -7,7 +7,7 @@
 #include <UI/TextElement.h>
 #include "SongName.h"
 #include "PlayPause.h"
-#include "TrackCounter.hpp"
+#include "TrackCounter.h"
 #include <FS.h>
 #include <AudioLib/OutputI2S.h>
 #include <AudioLib/SourceWAV.h>
@@ -32,13 +32,13 @@ namespace Playback {
 	private:
 		static Playback *instance;
 
-		LinearLayout screenLayout;
-		LinearLayout songNameLayout;
-		LinearLayout timeElapsedLayout;
-		LinearLayout buttonLayout;
-		SongName songName;
-		PlayPause playOrPause;
-		TrackCounter trackCount;
+		LinearLayout* screenLayout;
+		LinearLayout* songNameLayout;
+		LinearLayout* timeElapsedLayout;
+		LinearLayout* buttonLayout;
+		SongName* songName;
+		PlayPause* playOrPause;
+		TrackCounter* trackCount;
 
 		void buildUI();
 

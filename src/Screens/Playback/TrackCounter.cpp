@@ -1,4 +1,4 @@
-#include "TrackCounter.hpp"
+#include "TrackCounter.h"
 
 Playback::TrackCounter::TrackCounter(ElementContainer *parent) : CustomElement(parent, 10, 10){
 
