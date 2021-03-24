@@ -1,89 +1,107 @@
-#include "EffectElement.hpp"
-#include "Bitmaps/bitcrusherFadeBlue.h"
-#include "Bitmaps/bitcrusherFadeRed.h"
-#include "Bitmaps/highpassFadeRed.h"
-#include "Bitmaps/highpassFadeBlue.h"
-#include "Bitmaps/lowpassFadeRed.h"
-#include "Bitmaps/lowpassFadeBlue.h"
-#include "Bitmaps/reverbFadeBlue.h"
-#include "Bitmaps/reverbFadeRed.h"
-#include "Bitmaps/speedFadeBlue.h"
-#include "Bitmaps/speedFadeRed.h"
-#include "Bitmaps/highpassGIF.h"
-#include "Bitmaps/bitcrusherGIF.h"
-#include "Bitmaps/lowpassGIF.h"
-#include "Bitmaps/reverbGIF.h"
-#include "Bitmaps/speedGIF.h"
+#include "EffectElement.h"
+#include "gif/lowpass.hpp"
+#include "gif/highpass.hpp"
+#include "gif/speed.hpp"
+#include "gif/reverb.hpp"
+#include "gif/walkietalkie.hpp"
+#include "Bitmaps/lowpassFadeRed.hpp"
+#include "Bitmaps/highpassFadeRed.hpp"
+#include "Bitmaps/speedFadeRed.hpp"
+#include "Bitmaps/reverbFadeRed.hpp"
+#include "Bitmaps/bitcrusherFadeRed.hpp"
+#include "Bitmaps/lowpassFadeBlue.hpp"
+#include "Bitmaps/highpassFadeBlue.hpp"
+#include "Bitmaps/speedFadeBlue.hpp"
+#include "Bitmaps/bitcrusherFadeBlue.hpp"
+#include "Bitmaps/reverbFadeBlue.hpp"
+
 #include <FS.h>
 #include <FS/PGMFile.h>
 
 
-uint16_t *iconsNotMirrored[] = {lowpass_fade, highpass_fade_red, speed_fade_red, reverb_fade_red, bitcrusher_fade_red};
+const uint16_t* const MixScreen::EffectElement::iconsNotMirrored[] = { nullptr, speed_fade_red, lowpass_fade, highpass_fade_red, reverb_fade_red, bitcrusher_fade_red };
+const uint16_t* const MixScreen::EffectElement::iconsMirrored[] = { nullptr, speed_fade_blue, lowpass_fade_blue, highpass_fade_blue, reverb_fade_blue, bitcrusher_fade_blue };
 
-uint16_t *iconsMirrored[] = {lowpass_fade_blue, highpass_fade_blue, speed_fade_blue, reverb_fade_blue, bitcrusher_fade_blue};
+const uint8_t* const MixScreen::EffectElement::gifIcons[]  =  { nullptr, mix_speed_gif, mix_lowpass_gif, mix_highpass_gif, mix_reverb_gif, mix_walkietalkie_gif };
+const size_t MixScreen::EffectElement::gifIconSizes[] = { 0, sizeof(mix_speed_gif), sizeof(mix_lowpass_gif), sizeof(mix_highpass_gif), sizeof(mix_reverb_gif), sizeof(mix_walkietalkie_gif),  };
 
-unsigned char *gifIcons[] = {lowpass_gif, highpass_gif, speed_gif, reverb_gif, bitcrusher_gif};
-
-size_t gifIconsSize[] = {sizeof(lowpass_gif), sizeof(highpass_gif), sizeof(speed_gif), sizeof(reverb_gif), sizeof(bitcrusher_gif)};
-
-MixScreen::EffectElement::EffectElement(ElementContainer *parent, bool mirrored, EffectType effect) : CustomElement(parent, 10, 10), effect(effect),
-																	   mirrored(mirrored){
-
-	gif = new AnimatedSprite(getSprite(), fs::File(std::make_shared<PGMFile>(gifIcons[effect], gifIconsSize[effect])));
+MixScreen::EffectElement::EffectElement(ElementContainer *parent, bool mirrored) : CustomElement(parent, 10, 10), mirrored(mirrored){
 
 }
 
+void MixScreen::EffectElement::setupGif(){
+	if(gif == nullptr) return;
 
-void MixScreen::EffectElement::setEffect(EffectType effect){
+	gif->setMaskingColor(TFT_BLACK);
+	gif->setLoop(true);
+	gif->nextFrame();
+	gif->setXY(getTotalX() + 61 * mirrored, getTotalY() + 25);
+}
+
+void MixScreen::EffectElement::draw(){
+	if(effect != EffectType::NONE){
+		if(selected){
+			gif->nextFrame();
+			gif->push();
+
+			/*if(mirrored){
+				getSprite()->fillRect(getTotalX(), getTotalY() + 25, 77, 18, C_RGB(157, 194, 255));
+			}else{
+				getSprite()->fillRect(getTotalX(), getTotalY() + 25, 77, 18, C_RGB(248, 147, 121));
+			}*/
+
+		}else{
+			getSprite()->drawIcon((mirrored ? iconsMirrored : iconsNotMirrored)[effect], getTotalX() + 61 * mirrored, getTotalY() + 25, 16, 16, 1, TFT_BLACK);
+		}
+	}
+
+	getSprite()->fillRoundRect(getTotalX() + 6 + 19 * !mirrored, getTotalY() + 30, (((float) intensity) / 255.0f) * 45.0f, 8, 3, TFT_GREENYELLOW);
+	getSprite()->drawRoundRect(getTotalX() + 6 + 19 * !mirrored, getTotalY() + 30, 45, 8, 3, TFT_WHITE);
+}
+
+void MixScreen::EffectElement::repos(){
+	CustomElement::repos();
+	if(gif != nullptr){
+		gif->setXY(getTotalX() + 61 * mirrored, getTotalY() + 25);
+	}
+}
+
+void MixScreen::EffectElement::setType(EffectType effect){
 	EffectElement::effect = effect;
 	delete gif;
-	gif = new AnimatedSprite(getSprite(), fs::File(std::make_shared<PGMFile>(gifIcons[effect], gifIconsSize[effect])));
+	gif = nullptr;
+
+	if(effect != EffectType::NONE){
+		gif = new AnimatedSprite(getSprite(), PGMFile::open(gifIcons[effect], gifIconSizes[effect]));
+		setupGif();
+	}
+}
+
+
+bool MixScreen::EffectElement::needsUpdate(){
+	return selected && gif != nullptr && gif->checkFrame();
+}
+
+void MixScreen::EffectElement::setSelected(bool selected){
+	EffectElement::selected = selected;
+
+	if(selected && gif != nullptr){
+		gif->reset();
+	}
+}
+
+bool MixScreen::EffectElement::isSelected() const{
+	return selected;
 }
 
 void MixScreen::EffectElement::setIntensity(uint8_t intensity){
 	EffectElement::intensity = intensity;
 }
 
-void MixScreen::EffectElement::draw(){
-	if(selected && !mirrored){
-		getSprite()->fillRect(getTotalX(), getTotalY() + 25, 77, 18, C_RGB(248, 147, 121));
-		gif->setXY(getTotalX(), getTotalY() + 25);
-		gif->push();
-	}
-	if(selected && mirrored){
-		getSprite()->fillRect(getTotalX(), getTotalY() + 25, 77, 18, C_RGB(157, 194, 255));
-		gif->setXY(getTotalX() + 61, getTotalY() + 25);
-		gif->push();
-	}
-	if(!mirrored){
-
-		getSprite()->fillRoundRect(getTotalX() + 25, getTotalY() + 30, (((float) intensity) / 255.0f) * 45.0f, 8, 5,
-								   TFT_GREENYELLOW);
-		getSprite()->drawRoundRect(getTotalX() + 25, getTotalY() + 30, 45, 8, 5, TFT_WHITE);
-	}
-	if(mirrored){
-
-		getSprite()->fillRoundRect(getTotalX() + 6, getTotalY() + 30, (((float) intensity) / 255.0f) * 45.0f, 8, 5,
-								   TFT_GREENYELLOW);
-		getSprite()->drawRoundRect(getTotalX() + 6, getTotalY() + 30, 45, 8, 5, TFT_WHITE);
-	}
-	if(!selected && !mirrored){
-		getSprite()->drawIcon(iconsNotMirrored[effect], getTotalX(), getTotalY() + 25, 16, 16, 1, TFT_BLACK);
-	}
-	if(!selected && mirrored){
-		getSprite()->drawIcon(iconsMirrored[effect], getTotalX() + 61, getTotalY() + 25, 16, 16, 1, TFT_BLACK);
-	}
-
+uint8_t MixScreen::EffectElement::getIntensity() const{
+	return intensity;
 }
 
-void MixScreen::EffectElement::setSelected(bool selected){
-	EffectElement::selected = selected;
-}
-
-bool MixScreen::EffectElement::needsUpdate(){
-	if(selected){
-		return gif->newFrameReady();
-	}else{
-		return false;
-	}
+EffectType MixScreen::EffectElement::getType() const{
+	return effect;
 }

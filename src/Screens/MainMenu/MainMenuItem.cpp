@@ -1,10 +1,10 @@
 #include "MainMenuItem.h"
-#include "Bitmaps/settings.h"
-#include "Bitmaps/dj.h"
-#include "Bitmaps/playback.h"
-#include "Bitmaps/djGIF.h"
-#include "Bitmaps/playbackGIF.h"
-#include "Bitmaps/settingsGIF.h"
+#include "Bitmaps/settings.hpp"
+#include "Bitmaps/dj.hpp"
+#include "Bitmaps/playback.hpp"
+#include "Bitmaps/djGIF.hpp"
+#include "Bitmaps/playbackGIF.hpp"
+#include "Bitmaps/settingsGIF.hpp"
 #include <FS/PGMFile.h>
 
 
@@ -42,7 +42,7 @@ void MainMenu::MainMenuItem::isSelected(bool selected){
 
 bool MainMenu::MainMenuItem::needsUpdate(){
 	if(selected){
-		return gif.newFrameReady();
+		return gif.checkFrame();
 	}else{
 		return false;
 	}

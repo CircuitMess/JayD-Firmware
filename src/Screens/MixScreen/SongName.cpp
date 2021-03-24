@@ -1,4 +1,4 @@
-#include "SongName.hpp"
+#include "SongName.h"
 
 MixScreen::SongName::SongName(ElementContainer *parent, String songName) : CustomElement(parent, 5, 4),
 																		   songName(songName){

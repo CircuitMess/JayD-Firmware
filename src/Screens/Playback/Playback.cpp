@@ -4,13 +4,15 @@
 #include <Loop/LoopManager.h>
 #include "Playback.h"
 #include "Bitmaps/playback _pozadina.hpp"
+
 Playback::Playback *Playback::Playback::instance = nullptr;
 
-Playback::Playback::Playback(Display &display) : Context(display), screenLayout(&screen, VERTICAL),
-												 songNameLayout(&screenLayout, HORIZONTAL),
-												 timeElapsedLayout(&screenLayout, HORIZONTAL), buttonLayout(
-				&screenLayout, HORIZONTAL), songName(&songNameLayout), playOrPause(&buttonLayout),
-												 trackCount(&timeElapsedLayout){
+Playback::Playback::Playback(Display &display) : Context(display), screenLayout(new LinearLayout(&screen, VERTICAL)),
+												 songNameLayout(new LinearLayout(screenLayout, HORIZONTAL)),
+												 timeElapsedLayout(new LinearLayout(screenLayout, HORIZONTAL)), buttonLayout(new LinearLayout(
+				screenLayout, HORIZONTAL)), songName(new SongName(songNameLayout)), playOrPause(new PlayPause(buttonLayout)),
+																							trackCount(new TrackCounter(timeElapsedLayout))
+																							{
 
 
 	instance = this;
@@ -27,29 +29,29 @@ void Playback::Playback::loop(uint micros){
 		i2s->loop(micros);
 	}
 
-	if(((int) wav->getElapsed()) != trackCount.getCurrentDuration()){
-		trackCount.setCurrentDuration(wav->getElapsed());
+	if(((int) wav->getElapsed()) != trackCount->getCurrentDuration()){
+		trackCount->setCurrentDuration(wav->getElapsed());
 		draw();
 		screen.commit();
 	}
 }
 
-void Playback::Playback::returned(void* data){
-	String* name = static_cast<String*>(data);
+void Playback::Playback::returned(void *data){
+	String *name = static_cast<String *>(data);
 	file = SD.open(name->c_str());
 
 	if(file){
 		wav = new SourceWAV(file);
-		trackCount.setTotalDuration(wav->getDuration());
+		trackCount->setTotalDuration(wav->getDuration());
 		Serial.printf("Duration: %d\n", wav->getDuration());
-		songName.setSongName(name->substring(1, name->length() - 4));
+		songName->setSongName(name->substring(1, name->length() - 4));
 	}else{
-		trackCount.setTotalDuration(0);
-		songName.setSongName("-");
+		trackCount->setTotalDuration(0);
+		songName->setSongName("-");
 	}
 
-	trackCount.setCurrentDuration(0);
-	playOrPause.setPlaying(false);
+	trackCount->setCurrentDuration(0);
+	playOrPause->setPlaying(false);
 
 	delete name;
 }
@@ -71,7 +73,7 @@ void Playback::Playback::start(){
 			LoopManager::addListener(instance);
 		}
 
-		instance->playOrPause.setPlaying(instance->playing);
+		instance->playOrPause->setPlaying(instance->playing);
 
 		instance->draw();
 		instance->screen.commit();
@@ -82,7 +84,7 @@ void Playback::Playback::start(){
 
 		if(instance->wav){
 			instance->wav->seek(max(0, (int) instance->wav->getElapsed() + value * 100000), SeekMode::SeekSet);
-			instance->trackCount.setCurrentDuration(instance->wav->getElapsed());
+			instance->trackCount->setCurrentDuration(instance->wav->getElapsed());
 		}
 
 		instance->draw();
@@ -107,7 +109,7 @@ void Playback::Playback::start(){
 			.use_apll = false
 	};
 
-	i2s = new OutputI2S(i2s_config, i2s_pin_config, 0);
+	i2s = new OutputI2S(i2s_config, i2s_pin_config, I2S_NUM_0);
 	i2s->setSource(wav);
 	i2s->setGain(0.01);
 }
@@ -133,38 +135,38 @@ void Playback::Playback::stop(){
 
 void Playback::Playback::draw(){
 	screen.getSprite()->clear(TFT_BLACK);
-	screenLayout.getSprite()->drawIcon(playback_pozadina,screenLayout.getTotalX(),screenLayout.getTotalY(),160,128,1,TFT_TRANSPARENT);
+	screenLayout->getSprite()->drawIcon(playback_pozadina, screenLayout->getTotalX(), screenLayout->getTotalY(), 160, 128, 1, TFT_TRANSPARENT);
 	screen.draw();
 }
 
 void Playback::Playback::buildUI(){
-	screenLayout.setWHType(PARENT, PARENT);
-	screenLayout.setGutter(5);
-	screenLayout.addChild(&songNameLayout);
-	screenLayout.addChild(&timeElapsedLayout);
-	screenLayout.addChild(&buttonLayout);
+	screenLayout->setWHType(PARENT, PARENT);
+	screenLayout->setGutter(5);
+	screenLayout->addChild(songNameLayout);
+	screenLayout->addChild(timeElapsedLayout);
+	screenLayout->addChild(buttonLayout);
 
-	songNameLayout.setWHType(PARENT, FIXED);
-	songNameLayout.setHeight(35);
-	songNameLayout.setGutter(5);
-	songNameLayout.addChild(&songName);
+	songNameLayout->setWHType(PARENT, FIXED);
+	songNameLayout->setHeight(35);
+	songNameLayout->setGutter(5);
+	songNameLayout->addChild(songName);
 
-	timeElapsedLayout.setWHType(PARENT, FIXED);
-	timeElapsedLayout.setHeight(20);
-	timeElapsedLayout.setGutter(5);
-	timeElapsedLayout.addChild(&trackCount);
+	timeElapsedLayout->setWHType(PARENT, FIXED);
+	timeElapsedLayout->setHeight(20);
+	timeElapsedLayout->setGutter(5);
+	timeElapsedLayout->addChild(trackCount);
 
-	buttonLayout.setWHType(PARENT, FIXED);
-	buttonLayout.setHeight(62);
-	buttonLayout.setGutter(5);
-	buttonLayout.addChild(&playOrPause);
+	buttonLayout->setWHType(PARENT, FIXED);
+	buttonLayout->setHeight(62);
+	buttonLayout->setGutter(5);
+	buttonLayout->addChild(playOrPause);
 
-	screenLayout.reflow();
-	timeElapsedLayout.reflow();
-	songNameLayout.reflow();
-	buttonLayout.reflow();
+	screenLayout->reflow();
+	timeElapsedLayout->reflow();
+	songNameLayout->reflow();
+	buttonLayout->reflow();
 
-	screen.addChild(&screenLayout);
+	screen.addChild(screenLayout);
 	screen.repos();
 
 }

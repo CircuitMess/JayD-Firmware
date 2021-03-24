@@ -51,7 +51,7 @@ void IntroScreen::IntroScreen::stop(){
 }
 
 void IntroScreen::IntroScreen::loop(uint micros){
-	if(!gifIntro.newFrameReady()) return;
+	if(!gifIntro.checkFrame()) return;
 
 	draw();
 	screen.commit();

@@ -1,7 +1,7 @@
 #include <Input/InputJayD.h>
 #include <JayD.hpp>
 #include "MainMenu.h"
-#include "Bitmaps/mainMenu_background.h"
+#include "Bitmaps/mainMenu_background.hpp"
 #include "../MixScreen/MixScreen.h"
 #include "../SongList/SongList.h"
 #include "../Playback/Playback.h"
