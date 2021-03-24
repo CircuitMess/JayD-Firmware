@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <CircuitOS.h>
+#include <JayD.hpp>
 #include <TFT_eSPI.h>
 #include <Display/Display.h>
 #include <Input/InputGPIO.h>

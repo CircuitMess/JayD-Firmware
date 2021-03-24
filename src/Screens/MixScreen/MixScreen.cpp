@@ -220,7 +220,9 @@ void MixScreen::MixScreen::loop(uint micros){
 		update |= element->needsUpdate();
 	}
 
-	if(update || leftSongName.checkScrollUpdate() || rightSongName.checkScrollUpdate()){
+	bool songNameUpdateL = leftSongName.checkScrollUpdate();
+	bool songNameUpdateR = rightSongName.checkScrollUpdate();
+	if(update || songNameUpdateL || songNameUpdateR){
 		draw();
 		screen.commit();
 	}
