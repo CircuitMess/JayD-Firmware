@@ -4,8 +4,8 @@
 #include <Support/Context.h>
 #include <UI/LinearLayout.h>
 #include "SongSeekBar.h"
-#include "SongName.hpp"
-#include "EffectElement.hpp"
+#include "SongName.h"
+#include "EffectElement.h"
 #include <AudioLib/SourceWAV.h>
 #include <AudioLib/EffectProcessor.h>
 #include <AudioLib/Mixer.h>
