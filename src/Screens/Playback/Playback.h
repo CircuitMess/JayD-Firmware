@@ -7,10 +7,10 @@
 #include <UI/TextElement.h>
 #include "SongName.h"
 #include "PlayPause.h"
-#include "TrackCounter.hpp"
+#include "TrackCounter.h"
 #include <FS.h>
-#include <AudioLib/AudioOutputI2S.h>
-#include <AudioLib/AudioGeneratorWAV.h>
+#include <AudioLib/OutputI2S.h>
+#include <AudioLib/SourceWAV.h>
 
 namespace Playback {
 	class Playback : public Context, public LoopListener {
@@ -32,21 +32,21 @@ namespace Playback {
 	private:
 		static Playback *instance;
 
-		LinearLayout screenLayout;
-		LinearLayout songNameLayout;
-		LinearLayout timeElapsedLayout;
-		LinearLayout buttonLayout;
-		SongName songName;
-		PlayPause playOrPause;
-		TrackCounter trackCount;
+		LinearLayout* screenLayout;
+		LinearLayout* songNameLayout;
+		LinearLayout* timeElapsedLayout;
+		LinearLayout* buttonLayout;
+		SongName* songName;
+		PlayPause* playOrPause;
+		TrackCounter* trackCount;
 
 		void buildUI();
 
-		File file;
+		fs::File file;
 
 		bool playing = false;
-		AudioOutputI2S* i2s = nullptr;
-		AudioGeneratorWAV* wav = nullptr;
+		OutputI2S* i2s = nullptr;
+		SourceWAV* wav = nullptr;
 
 	};
 }

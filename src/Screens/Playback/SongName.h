@@ -1,5 +1,5 @@
-#ifndef JAYD_FIRMWARE_SONGNAME_H
-#define JAYD_FIRMWARE_SONGNAME_H
+#ifndef JAYD_FIRMWARE_PLAYBACK_SONGNAME_H
+#define JAYD_FIRMWARE_PLAYBACK_SONGNAME_H
 
 #include <UI/CustomElement.h>
 
@@ -16,4 +16,4 @@ namespace Playback {
 		String songName;
 	};
 }
-#endif //JAYD_FIRMWARE_SONGNAME_H
+#endif //JAYD_FIRMWARE_PLAYBACK_SONGNAME_H
