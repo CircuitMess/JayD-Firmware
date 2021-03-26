@@ -9,9 +9,9 @@
 #include <SPIFFS.h>
 
 
-uint16_t *icons[] = {playback, dj, settings};
+uint16_t *icons[] = {/*playback,*/ dj, settings};
 
-String gifIcons[] = {"/playbackGIF.g565", "/dj.g565", "/settingsGIF.g565"};
+String gifIcons[] = {/*"/playbackGIF.g565",*/"/dj.g565", "/settingsGIF.g565"};
 
 //size_t gifIconsSize[] = {sizeof(playback_gif), sizeof(dj_gif), sizeof(settings_gif)};
 
@@ -31,10 +31,11 @@ void MainMenu::MainMenuItem::draw(){
 
 	if(selected){
 		gif->setXY(getTotalX(), getTotalY() + 40);
+		gif->setMaskingColor(TFT_BLACK);
 		gif->nextFrame();
 		gif->push();
 	}else{
-		getSprite()->drawIcon(icons[type], getTotalX(), getTotalY() + 45, 45, 42, 1, TFT_TRANSPARENT);
+		getSprite()->drawIcon(icons[type], getTotalX(), getTotalY() + 45, 45, 42, 1, TFT_BLACK);
 	}
 
 }
