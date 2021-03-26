@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 project(JayD-Firmware)
-set(PORT COM23)
+set(PORT COM18)
 set(DEVICE cm:esp32:spencer) # Arduino device FQBN
 set(CMAKE_CXX_STANDARD 11)
 
@@ -23,29 +23,38 @@ else ()
 endif ()
 
 # Include directories
-message(${ArduinoLibs})
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.0/cores/esp32)
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.0/tools/sdk)
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.0/tools/sdk/include)
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.0/tools/sdk/include/driver)
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.0/tools/sdk/include/esp32)
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.0/libraries/Wire/src)
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.0/libraries/FS/src)
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.0/libraries/SD/src)
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.0/tools/sdk/include/freertos)
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.0/tools/sdk/include/freertos/freertos)
-include_directories(${ArduinoLibs}/CircuitOS/src)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/Wire/src)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/FS/src)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/SD/src)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/SPI/src)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/WiFi/src)
+
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/cores/esp32)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/tools/sdk)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/tools/sdk/include)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/tools/sdk/include/esp32)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/tools/sdk/include/freertos)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/tools/sdk/include/driver)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/tools/sdk/include/driver/driver)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/tools/sdk/include/spi_flash)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/CircuitOS/src)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/TFT_eSPI)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/TFT_eSPI/Extensions)
+
 include_directories(${ArduinoLibs}/JayD-Library/src)
-
-
-include_directories(${ArduinoLibs}/TFT_eSPI)
-include_directories(${ArduinoLibs}/TFT_eSPI/Extensions)
 
 
 # Source directories
 AUX_SOURCE_DIRECTORY(src SOURCES)
+AUX_SOURCE_DIRECTORY(src/Matrix SOURCES)
 AUX_SOURCE_DIRECTORY(src/Screens SOURCES)
-AUX_SOURCE_DIRECTORY(src/Screens/Settings SOURCES)
+AUX_SOURCE_DIRECTORY(src/Screens/Playback SOURCES)
+AUX_SOURCE_DIRECTORY(src/Screens/Playback/Bitmaps SOURCES)
+AUX_SOURCE_DIRECTORY(src/Screens/SongList SOURCES)
+AUX_SOURCE_DIRECTORY(src/Screens/MixScreen SOURCES)
+AUX_SOURCE_DIRECTORY(src/Screens/MixScreen/Bitmaps SOURCES)
+AUX_SOURCE_DIRECTORY(src/Screens/MainMenu SOURCES)
+AUX_SOURCE_DIRECTORY(src/Screens/IntroScreen SOURCES)
 
 # Defines
 add_definitions(-DDEBUG)
@@ -57,16 +66,16 @@ set(BUILD ${ROOT}/build)
 
 SET_SOURCE_FILES_PROPERTIES(${CMAKE_PROJECT_NAME}.ino PROPERTIES LANGUAGE CXX)
 
-add_custom_command(OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_PROJECT_NAME}.elf ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_PROJECT_NAME}.bin ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_PROJECT_NAME}.partitions.bin
-        COMMAND arduino-cli compile --fqbn ${DEVICE} -o ${BUILD}/${CMAKE_PROJECT_NAME}.bin ${CMAKE_PROJECT_NAME}.ino
+add_custom_command(OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_PROJECT_NAME}.ino.elf
+        COMMAND arduino-cli compile --fqbn ${DEVICE} --output-dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} ${CMAKE_PROJECT_NAME}.ino
         DEPENDS ${CMAKE_PROJECT_NAME}.ino ${SOURCES}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 
 add_custom_target(CMBuild
-        SOURCES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_PROJECT_NAME}.elf)
+        SOURCES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_PROJECT_NAME}.ino.elf)
 
 add_custom_target(CMUpload ALL
-        COMMAND arduino-cli upload --fqbn ${DEVICE} -p ${PORT} -i ${BUILD}/${CMAKE_PROJECT_NAME}.bin
+        COMMAND arduino-cli upload --fqbn ${DEVICE} -p ${PORT} --input-dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
         DEPENDS CMBuild
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 

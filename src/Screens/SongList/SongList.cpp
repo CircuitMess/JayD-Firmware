@@ -5,11 +5,11 @@
 
 SongList::SongList *SongList::SongList::instance = nullptr;
 
-SongList::SongList::SongList(Display &display) : Context(display),
-												 scrollLayout(&screen),
-												 list(&scrollLayout, VERTICAL){
-
+SongList::SongList::SongList(Display &display) : Context(display){
 	instance = this;
+
+	scrollLayout = new ScrollLayout(&getScreen());
+	list = new LinearLayout(scrollLayout, VERTICAL);
 
 	SD.end();
 	insertedSD = SD.begin(22, SPI);
@@ -22,6 +22,10 @@ SongList::SongList::SongList(Display &display) : Context(display),
 	buildUI();
 }
 
+SongList::SongList::~SongList(){
+	instance = nullptr;
+}
+
 void SongList::SongList::populateList(){
 	File root = SD.open("/");
 	File f;
@@ -29,7 +33,7 @@ void SongList::SongList::populateList(){
 		if(f.isDirectory()) continue;
 		if(!String(f.name()).endsWith(".wav")) continue;
 
-		songs.push_back(new ListItem(&list, f.name()));
+		songs.push_back(new ListItem(list, f.name()));
 
 		f.close();
 	}
@@ -47,12 +51,12 @@ void SongList::SongList::start(){
 			instance->selectedElement = instance->songs.size() - 1;
 		}
 		instance->songs[instance->selectedElement]->setSelected(true);
-		instance->scrollLayout.scrollIntoView(instance->selectedElement,2);
+		instance->scrollLayout->scrollIntoView(instance->selectedElement,2);
 		instance->draw();
 		instance->screen.commit();
 	});
 
-	InputJayD::getInstance()->setBtnPressCallback(BTN_EL1, [](){
+	InputJayD::getInstance()->setBtnPressCallback(BTN_L1, [](){
 		if(instance == nullptr) return;
 
 		instance->pop(new String(instance->songs[instance->selectedElement]->getName()));
@@ -64,7 +68,7 @@ void SongList::SongList::start(){
 
 void SongList::SongList::stop(){
 	InputJayD::getInstance()->removeEncoderMovedCallback(ENC_L1);
-	InputJayD::getInstance()->removeBtnPressCallback(BTN_EL1);
+	InputJayD::getInstance()->removeBtnPressCallback(BTN_L1);
 }
 
 void SongList::SongList::draw(){
@@ -94,28 +98,23 @@ void SongList::SongList::draw(){
 }
 
 void SongList::SongList::buildUI(){
-	scrollLayout.setWHType(PARENT, FIXED);
-	scrollLayout.setHeight(110);
-	//scrollLayout.setBorder(1, TFT_RED);
-	scrollLayout.addChild(&list);
-
-	list.setWHType(PARENT, CHILDREN);
-	list.setPadding(5);
-	list.setGutter(10);
+	scrollLayout->setWHType(PARENT, FIXED);
+	scrollLayout->setHeight(110);
+	//scrollLayo->t.setBorder(1, TFT_RED);
+	scrollLayout->addChild(list);
+	list->setWHType(PARENT, CHILDREN);
+	list->setPadding(5);
+	list->setGutter(10);
 	//list.setBorder(1, TFT_RED);
 	for(int i = 0; i < songs.size(); i++){
-		list.addChild(songs[i]);
+		list->addChild(songs[i]);
 	}
 
-	scrollLayout.reflow();
-	list.reflow();
+	scrollLayout->reflow();
+	list->reflow();
 
-	screen.addChild(&scrollLayout);
+	screen.addChild(scrollLayout);
 	screen.repos();
-	scrollLayout.setY(18);
+	scrollLayout->setY(18);
 	pack();
-}
-
-SongList::SongList::~SongList(){
-	instance = nullptr;
 }
