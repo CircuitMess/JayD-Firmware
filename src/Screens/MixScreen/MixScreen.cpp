@@ -93,6 +93,9 @@ void MixScreen::MixScreen::start(){
 	Serial.printf("F1: %s\n", f1.name());
 	Serial.printf("F2: %s\n", f2.name());
 
+	leftSongName->setSongName(String(f1.name()).substring(1));
+	rightSongName->setSongName(String(f2.name()).substring(1));
+
 	s1 = new SourceWAV(f1);
 	s2 = new SourceWAV(f2);
 
@@ -127,6 +130,12 @@ void MixScreen::MixScreen::start(){
 	out->setGain(0.05);
 	out->setSource(mixer);
 	out->start();
+
+	leftSeekBar->setTotalDuration(s1->getDuration());
+	rightSeekBar->setTotalDuration(s2->getDuration());
+
+	leftSeekBar->setPlaying(true);
+	rightSeekBar->setPlaying(true);
 
 	InputJayD::getInstance()->setBtnPressCallback(0, [](){
 		if(instance == nullptr) return;
@@ -220,6 +229,16 @@ void MixScreen::MixScreen::loop(uint micros){
 	bool update = false;
 	for(const auto& element : effectElements){
 		update |= element->needsUpdate();
+	}
+
+	if(s1->getElapsed() != leftSeekBar->getCurrentDuration()){
+		leftSeekBar->setCurrentDuration(s1->getElapsed());
+		update = true;
+	}
+
+	if(s2->getElapsed() != rightSeekBar->getCurrentDuration()){
+		rightSeekBar->setCurrentDuration(s2->getElapsed());
+		update = true;
 	}
 
 	bool songNameUpdateL = leftSongName->checkScrollUpdate();
