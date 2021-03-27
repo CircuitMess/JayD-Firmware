@@ -106,7 +106,8 @@ void MixScreen::MixScreen::start(){
 
 	mixer = new Mixer();
 	mixer->addSource(effector1);
-	//mixer->addSource(effector2);
+	mixer->addSource(effector2);
+	mixer->setMixRatio(InputJayD::getInstance()->getPotValue(POT_MID));
 
 	out = new OutputI2S({
 								.mode = i2s_mode_t(I2S_MODE_MASTER | I2S_MODE_TX),
@@ -274,6 +275,20 @@ void MixScreen::MixScreen::encoderMove(uint8_t id, int8_t value){
 				}
 			}
 
+			if(element->getType() == EffectType::SPEED){
+				if(index < 3){
+					mixer->setSource(0, effector1);
+					effector1->setSource(s1);
+					delete speedLeft;
+					speedLeft = nullptr;
+				}else{
+					mixer->setSource(1, effector2);
+					effector2->setSource(s2);
+					delete speedRight;
+					speedRight = nullptr;
+				}
+			}
+
 			EffectType type = static_cast<EffectType>(e);
 			element->setType(type);
 			element->setIntensity(0);
@@ -284,10 +299,25 @@ void MixScreen::MixScreen::encoderMove(uint8_t id, int8_t value){
 			}else{
 				effector2->setEffect(index-3, nullptr);
 			}
+			delay(50);
 			delete effect;
+			effects[index] = nullptr;
 
 			if(type == EffectType::NONE) return;
-			if(type == EffectType::SPEED) return;
+			if(type == EffectType::SPEED){
+				if(index < 3){
+					speedLeft = new SpeedModifier(s1);
+					speedLeft->setSpeed(1);
+					effector1->setSource(speedLeft);
+				}else{
+					speedRight = new SpeedModifier(s2);
+					speedRight->setSpeed(1);
+					effector2->setSource(speedRight);
+				}
+
+				element->setIntensity(85);
+				return;
+			}
 
 			effect = launch[type]();
 			effect->setIntensity(0);
@@ -306,10 +336,17 @@ void MixScreen::MixScreen::encoderMove(uint8_t id, int8_t value){
 			intensity = min((int16_t) 255, intensity);
 
 			if(type == EffectType::NONE) return;
-			if(type == EffectType::SPEED) return;
-
 			element->setIntensity(intensity);
-			effects[index]->setIntensity(element->getIntensity());
+
+			if(type == EffectType::SPEED){
+				if(index < 3){
+					speedLeft->setModifier(intensity);
+				}else{
+					speedRight->setModifier(intensity);
+				}
+			}else{
+				effects[index]->setIntensity(element->getIntensity());
+			}
 		}
 
 		draw();

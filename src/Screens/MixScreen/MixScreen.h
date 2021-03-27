@@ -59,6 +59,9 @@ namespace MixScreen {
 		SongName* leftSongName;
 		SongName* rightSongName;
 
+		SpeedModifier* speedLeft = nullptr;
+		SpeedModifier* speedRight = nullptr;
+
 		EffectElement* effectElements[6] = { nullptr };
 
 		bool isPlaying = false;
