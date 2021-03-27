@@ -246,8 +246,12 @@ void MixScreen::MixScreen::loop(uint micros){
 	bool songNameUpdateL = leftSongName->checkScrollUpdate();
 	bool songNameUpdateR = rightSongName->checkScrollUpdate();
 	if(update || songNameUpdateL || songNameUpdateR){
-		draw();
-		screen.commit();
+		uint32_t now = millis();
+		if(lastDraw == 0 || now - lastDraw >= 300){
+			draw();
+			screen.commit();
+			lastDraw = now;
+		}
 	}
 }
 
