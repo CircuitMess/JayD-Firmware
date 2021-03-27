@@ -96,6 +96,9 @@ void MixScreen::MixScreen::start(){
 	s1 = new SourceWAV(f1);
 	s2 = new SourceWAV(f2);
 
+	s1->setVolume(InputJayD::getInstance()->getPotValue(POT_L));
+	s2->setVolume(InputJayD::getInstance()->getPotValue(POT_R));
+
 	effector1 = new EffectProcessor(s1);
 	effector2 = new EffectProcessor(s2);
 
@@ -357,5 +360,11 @@ void MixScreen::MixScreen::encoderMove(uint8_t id, int8_t value){
 }
 
 void MixScreen::MixScreen::potMove(uint8_t id, uint8_t value){
-
+	if(id == POT_MID){
+		mixer->setMixRatio(value);
+	}else if(id == POT_L){
+		s1->setVolume(value);
+	}else if(id == POT_R){
+		s2->setVolume(value);
+	}
 }
