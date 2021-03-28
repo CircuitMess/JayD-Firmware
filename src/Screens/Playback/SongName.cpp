@@ -1,6 +1,6 @@
 #include "SongName.h"
 
-Playback::SongName::SongName(ElementContainer *parent) : CustomElement(parent,160,20){
+Playback::SongName::SongName(ElementContainer *parent) : CustomElement(parent,150,20){
 
 
 }
@@ -8,12 +8,64 @@ Playback::SongName::SongName(ElementContainer *parent) : CustomElement(parent,16
 void Playback::SongName::draw(){
 	FontWriter u8f = getSprite()->startU8g2Fonts();
 	u8f.setFont(u8g2_font_DigitalDisco_tf);
-	u8f.setFontMode(1);
 	u8f.setForegroundColor(TFT_WHITE);
-	u8f.setCursor(getTotalX() + ((160 - u8f.getUTF8Width(songName.c_str())) / 2) , getTotalY() + 20);
-	u8f.print(songName);
+	u8f.setFontMode(1);
+
+	if(scrolling){
+		String temp = songName;
+		while(scrollCursor + (nameLength - u8f.getUTF8Width(temp.c_str())) < 0){
+			temp.remove(0, 1);
+		}
+		int32_t correctedCursor = scrollCursor + (nameLength - u8f.getUTF8Width(temp.c_str()));
+		while(correctedCursor + u8f.getUTF8Width(temp.c_str()) >= (int)(getWidth())){
+			temp.remove(temp.length() - 1);
+		}
+		u8f.setCursor(getTotalX() + correctedCursor, getTotalY() + 20);
+		u8f.print(temp);
+
+		temp = songName;
+		if(scrollCursor + scrollOffset + nameLength > getWidth()) return;
+		while((scrollCursor + scrollOffset + nameLength) + (nameLength - u8f.getUTF8Width(temp.c_str())) < 0 && temp.length() > 0){
+			temp.remove(0, 1);
+		}
+		correctedCursor = (scrollCursor + scrollOffset + nameLength) + (nameLength - u8f.getUTF8Width(temp.c_str()));
+		while(correctedCursor + u8f.getUTF8Width(temp.c_str()) >= (int)(getWidth()) && temp.length() > 0){
+			temp.remove(temp.length() - 1);
+		}
+		u8f.setCursor(getTotalX() + correctedCursor, getTotalY() + 20);
+		u8f.print(temp);
+	}else{
+		u8f.setCursor(getTotalX() + scrollCursor, getTotalY() + 20);
+		u8f.print(songName);
+	}
+}
+
+bool Playback::SongName::checkScrollUpdate(){
+	if(!scrolling) return false;
+
+	if(currentTime + scrollSpeed <= millis()){
+		currentTime = millis();
+		scrollCursor-=1;
+		if(scrollCursor <= -nameLength){
+			scrollCursor = scrollOffset;
+		}
+		return true;
+	}
 }
 
 void Playback::SongName::setSongName(const String &songName){
 	SongName::songName = songName;
+	FontWriter u8f = getSprite()->startU8g2Fonts();
+	u8f.setFont(u8g2_font_DigitalDisco_tf);
+	u8f.setForegroundColor(TFT_WHITE);
+	u8f.setFontMode(1);
+	nameLength = u8f.getUTF8Width(songName.c_str());
+	if(nameLength >= (getWidth() - 2)){
+		scrolling = true;
+		currentTime = millis();
+		scrollCursor = 10;
+	}else{
+		scrolling = false;
+		scrollCursor = ((int)(getWidth()) - 2 - nameLength) / 2;
+	}
 }
