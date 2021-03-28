@@ -9,6 +9,7 @@ void MixScreen::SongName::draw(){
 	u8f.setFont(u8g2_font_HelvetiPixel_tr);
 	u8f.setForegroundColor(TFT_WHITE);
 	u8f.setFontMode(1);
+
 	if(scrolling){
 		String temp = songName;
 		while(scrollCursor + (nameLength - u8f.getUTF8Width(temp.c_str())) < 0){
@@ -22,11 +23,11 @@ void MixScreen::SongName::draw(){
 		u8f.print(temp);
 
 		temp = songName;
-		if(scrollCursor + 20 + nameLength > getWidth()) return;
-		while((scrollCursor + 20 + nameLength) + (nameLength - u8f.getUTF8Width(temp.c_str())) < 0 && temp.length() > 0){
+		if(scrollCursor + scrollOffset + nameLength > getWidth()) return;
+		while((scrollCursor + scrollOffset + nameLength) + (nameLength - u8f.getUTF8Width(temp.c_str())) < 0 && temp.length() > 0){
 			temp.remove(0, 1);
 		}
-		correctedCursor = (scrollCursor + 20 + nameLength) + (nameLength - u8f.getUTF8Width(temp.c_str()));
+		correctedCursor = (scrollCursor + scrollOffset + nameLength) + (nameLength - u8f.getUTF8Width(temp.c_str()));
 		while(correctedCursor + u8f.getUTF8Width(temp.c_str()) >= (int)(getWidth()) && temp.length() > 0){
 			temp.remove(temp.length() - 1);
 		}
@@ -45,7 +46,7 @@ bool MixScreen::SongName::checkScrollUpdate(){
 		currentTime = millis();
 		scrollCursor-=1;
 		if(scrollCursor <= -nameLength){
-			scrollCursor = 20;
+			scrollCursor = scrollOffset;
 		}
 		return true;
 	}
