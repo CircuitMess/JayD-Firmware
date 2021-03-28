@@ -32,21 +32,11 @@ const std::unordered_map<uint8_t, uint8_t> MixScreen::MixScreen::mapEnc = {
 		{ 2, 5 },
 };
 
-Effect* (*launch[])() = {
-		[]() -> Effect* { return nullptr; }, // None
-		[]() -> Effect* { return nullptr; }, // Speed
-		[]() -> Effect* { return new LowPass(); },
-		[]() -> Effect* { return new HighPass(); },
-		[]() -> Effect* { return new Reverb(); },
-		[]() -> Effect* { return new BitCrusher(); }
-};
-
 MixScreen::MixScreen::MixScreen(Display &display) : Context(display), screenLayout(new LinearLayout(&screen, HORIZONTAL)),
 													leftLayout(new LinearLayout(screenLayout, VERTICAL)),
 													rightLayout(new LinearLayout(screenLayout, VERTICAL)), leftSeekBar(new SongSeekBar(leftLayout)),
 													rightSeekBar(new SongSeekBar(rightLayout)), leftSongName(new SongName(leftLayout)),
-													rightSongName(new SongName(rightLayout)),
-													audioTask("MixAudio", audioThread, 4096, this){
+													rightSongName(new SongName(rightLayout)){
 
 
 	for(int i = 0; i < 3; i++){
@@ -96,43 +86,15 @@ void MixScreen::MixScreen::start(){
 	leftSongName->setSongName(String(f1.name()).substring(1));
 	rightSongName->setSongName(String(f2.name()).substring(1));
 
-	s1 = new SourceWAV(f1);
-	s2 = new SourceWAV(f2);
+	system = new MixSystem(f1, f2);
 
-	s1->setVolume(InputJayD::getInstance()->getPotValue(POT_L));
-	s2->setVolume(InputJayD::getInstance()->getPotValue(POT_R));
+	system->setVolume(0, InputJayD::getInstance()->getPotValue(POT_L));
+	system->setVolume(1, InputJayD::getInstance()->getPotValue(POT_R));
 
-	effector1 = new EffectProcessor(s1);
-	effector2 = new EffectProcessor(s2);
+	system->setMix(InputJayD::getInstance()->getPotValue(POT_MID));
 
-	for(int i = 0; i < 3; i++){
-		effector1->addEffect(nullptr);
-		effector2->addEffect(nullptr);
-	}
-
-	mixer = new Mixer();
-	mixer->addSource(effector1);
-	mixer->addSource(effector2);
-	mixer->setMixRatio(InputJayD::getInstance()->getPotValue(POT_MID));
-
-	out = new OutputI2S({
-								.mode = i2s_mode_t(I2S_MODE_MASTER | I2S_MODE_TX),
-								.sample_rate = 48000,
-								.bits_per_sample = I2S_BITS_PER_SAMPLE_32BIT,
-								.channel_format = I2S_CHANNEL_FMT_ONLY_LEFT,
-								.communication_format = i2s_comm_format_t(I2S_COMM_FORMAT_I2S | I2S_COMM_FORMAT_I2S_MSB),
-								.intr_alloc_flags = 0,
-								.dma_buf_count = 32,
-								.dma_buf_len = 512,
-								.use_apll = false
-						}, i2s_pin_config, I2S_NUM_0);
-
-	out->setGain(0.05);
-	out->setSource(mixer);
-	out->start();
-
-	leftSeekBar->setTotalDuration(s1->getDuration());
-	rightSeekBar->setTotalDuration(s2->getDuration());
+	leftSeekBar->setTotalDuration(system->getDuration(0));
+	rightSeekBar->setTotalDuration(system->getDuration(1));
 
 	leftSeekBar->setPlaying(true);
 	rightSeekBar->setPlaying(true);
@@ -166,17 +128,21 @@ void MixScreen::MixScreen::start(){
 	screen.commit();
 
 	LoopManager::addListener(this);
-	audioTask.start(1, 0);
 
-	Serial.printf("Started. Heap: %u B, PSRAM: %u B\n", ESP.getFreeHeap(), ESP.getFreePsram());
+
+	Serial.printf("System constructed. Heap: %u B, PSRAM: %u B\n", ESP.getFreeHeap(), ESP.getFreePsram());
+	system->start();
+	Serial.printf("System started. Heap: %u B, PSRAM: %u B\n", ESP.getFreeHeap(), ESP.getFreePsram());
 }
 
 
 void MixScreen::MixScreen::stop(){
 	InputJayD::getInstance()->removeListener(this);
 	LoopManager::removeListener(this);
-	out->stop();
-	audioTask.stop();
+
+	system->stop();
+	delete system;
+	system = nullptr;
 }
 
 void MixScreen::MixScreen::draw(){
@@ -233,13 +199,13 @@ void MixScreen::MixScreen::loop(uint micros){
 		update |= element->needsUpdate();
 	}
 
-	if(s1->getElapsed() != leftSeekBar->getCurrentDuration()){
-		leftSeekBar->setCurrentDuration(s1->getElapsed());
+	if(system && system->getElapsed(0) != leftSeekBar->getCurrentDuration()){
+		leftSeekBar->setCurrentDuration(system->getElapsed(0));
 		update = true;
 	}
 
-	if(s2->getElapsed() != rightSeekBar->getCurrentDuration()){
-		rightSeekBar->setCurrentDuration(s2->getElapsed());
+	if(system && system->getElapsed(1) != rightSeekBar->getCurrentDuration()){
+		rightSeekBar->setCurrentDuration(system->getElapsed(1));
 		update = true;
 	}
 
@@ -251,15 +217,6 @@ void MixScreen::MixScreen::loop(uint micros){
 			draw();
 			screen.commit();
 			lastDraw = now;
-		}
-	}
-}
-
-void MixScreen::MixScreen::audioThread(Task* task){
-	MixScreen* instance = static_cast<MixScreen*>(task->arg);
-	while(task->running){
-		if(instance->out->isRunning()){
-			instance->out->loop(0);
 		}
 	}
 }
@@ -304,76 +261,34 @@ void MixScreen::MixScreen::encoderMove(uint8_t id, int8_t value){
 			}
 
 			if(element->getType() == EffectType::SPEED){
-				if(index < 3){
-					mixer->setSource(0, effector1);
-					effector1->setSource(s1);
-					delete speedLeft;
-					speedLeft = nullptr;
-				}else{
-					mixer->setSource(1, effector2);
-					effector2->setSource(s2);
-					delete speedRight;
-					speedRight = nullptr;
-				}
+				system->removeSpeed(index >= 3);
 			}
 
 			EffectType type = static_cast<EffectType>(e);
 			element->setType(type);
 			element->setIntensity(0);
 
-			Effect* effect = index < 3 ? effector1->getEffect(index) : effector2->getEffect(index - 3);
-			if(index < 3){
-				effector1->setEffect(index, nullptr);
-			}else{
-				effector2->setEffect(index-3, nullptr);
-			}
-			delay(50);
-			delete effect;
-			effects[index] = nullptr;
-
-			if(type == EffectType::NONE) return;
 			if(type == EffectType::SPEED){
-				if(index < 3){
-					speedLeft = new SpeedModifier(s1);
-					speedLeft->setSpeed(1);
-					effector1->setSource(speedLeft);
-				}else{
-					speedRight = new SpeedModifier(s2);
-					speedRight->setSpeed(1);
-					effector2->setSource(speedRight);
-				}
-
+				system->addSpeed(index >= 3);
 				element->setIntensity(85);
 				return;
 			}
 
-			effect = launch[type]();
-			effect->setIntensity(0);
-			if(index < 3){
-				effector1->setEffect(index, effect);
-			}else{
-				effector2->setEffect(index-3, effect);
-			}
-
-			effects[index] = effect;
+			system->setEffect(index >= 3, index < 3 ? index : index - 3, type);
 		}else{
 			EffectType type = element->getType();
+			if(type == EffectType::NONE) return;
 
 			int16_t intensity = element->getIntensity() + value * 5;
 			intensity = max((int16_t) 0, intensity);
 			intensity = min((int16_t) 255, intensity);
 
-			if(type == EffectType::NONE) return;
 			element->setIntensity(intensity);
 
 			if(type == EffectType::SPEED){
-				if(index < 3){
-					speedLeft->setModifier(intensity);
-				}else{
-					speedRight->setModifier(intensity);
-				}
+				system->setSpeed(index >= 3, intensity);
 			}else{
-				effects[index]->setIntensity(element->getIntensity());
+				system->setEffectIntensity(index >= 3, index < 3 ? index : index - 3, element->getIntensity());
 			}
 		}
 
@@ -386,10 +301,10 @@ void MixScreen::MixScreen::encoderMove(uint8_t id, int8_t value){
 
 void MixScreen::MixScreen::potMove(uint8_t id, uint8_t value){
 	if(id == POT_MID){
-		mixer->setMixRatio(value);
+		system->setMix(value);
 	}else if(id == POT_L){
-		s1->setVolume(value);
+		system->setVolume(0, value);
 	}else if(id == POT_R){
-		s2->setVolume(value);
+		system->setVolume(1, value);
 	}
 }
