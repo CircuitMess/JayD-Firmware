@@ -146,15 +146,15 @@ void MixScreen::MixScreen::stop(){
 }
 
 void MixScreen::MixScreen::draw(){
-	screen.getSprite()->clear(TFT_BLACK);
-	screen.getSprite()->fillRect(leftLayout->getTotalX(), leftLayout->getTotalY(), 78, 128, C_RGB(249, 53, 2));
+	screen.getSprite()->fillRect(79, 0, 2, 128, TFT_BLACK);
+	screen.getSprite()->fillRect(leftLayout->getTotalX(), leftLayout->getTotalY(), 79, 128, C_RGB(249, 53, 2));
 	screen.getSprite()->fillRect(rightLayout->getTotalX(), rightLayout->getTotalY(), 79, 128, C_RGB(3, 52, 135));
 	screen.draw();
 }
 
 void MixScreen::MixScreen::buildUI(){
 	screenLayout->setWHType(PARENT, PARENT);
-	screenLayout->setGutter(1);
+	screenLayout->setGutter(2);
 	screenLayout->addChild(leftLayout);
 	screenLayout->addChild(rightLayout);
 
