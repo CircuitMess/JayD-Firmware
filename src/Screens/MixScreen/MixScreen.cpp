@@ -260,6 +260,22 @@ void MixScreen::MixScreen::encoderMove(uint8_t id, int8_t value){
 				}
 			}
 
+			// Only one speed allowed
+			if(e == EffectType::SPEED){
+				for(int i = (index < 3 ? 0 : 3); i < (index < 3 ? 3 : 6); i++){
+					if(i == index) continue;
+					if(effectElements[i]->getType() != EffectType::SPEED) continue;
+
+					if(value < 0){
+						e = e > 0 ? e - 1 : EffectType::COUNT - 1;
+					}else{
+						e = (e + 1) % EffectType::COUNT;
+					}
+
+					break;
+				}
+			}
+
 			if(element->getType() == EffectType::SPEED){
 				system->removeSpeed(index >= 3);
 			}
