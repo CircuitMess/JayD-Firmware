@@ -32,7 +32,7 @@ void Settings::Settings::start(){
 			instance->screen.commit();
 			return;
 		}else if(instance->disableMainSelector && instance->newValue == 2){
-			instance->thirdElement.setBightnessValue(value);
+			instance->thirdElement.moveSliderValue(value);
 			instance->draw();
 			instance->screen.commit();
 			return;

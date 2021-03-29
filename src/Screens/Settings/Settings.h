@@ -6,7 +6,7 @@
 #include "SettingsElement.h"
 #include "BooleanSetting.h"
 #include "DropDownSetting.h"
-#include "BrightnessSettings.h"
+#include "SliderSetting.h"
 
 
 namespace Settings {
@@ -30,7 +30,7 @@ namespace Settings {
 
 		BooleanSetting firstElement;
 		DropDownSetting secondElement;
-		BrightnessSetting thirdElement;
+		SliderSetting thirdElement;
 		//	SettingsElement fourthElement;
 
 		int newValue = 0;
