@@ -11,16 +11,13 @@ namespace Settings {
 
 		void activate() override;
 
-		void setBightnessValue(uint8_t value);
+		void moveBightnessValue(int8_t value);
 
 	private:
-		DropDownSetting *dropDownSetting;
 
-		bool showBrightnessValueBar = false;
+		bool sliderIsSelected = false;
 
-		int8_t value;
-
-		int8_t brightnessValue = 0;
+		uint8_t sliderValue = 0;
 
 	protected:
 		void drawControl() override;
