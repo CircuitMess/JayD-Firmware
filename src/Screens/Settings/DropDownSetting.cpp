@@ -12,16 +12,12 @@ void Settings::DropDownSetting::activate(){
 
 void Settings::DropDownSetting::selectNext(){
 	index = index + 1;
-	if(index > dropDownContent.size() - 1){
-		index = dropDownContent.size() - 1;
-	}
+	index=min(index,dropDownContent.size());
 }
 
 void Settings::DropDownSetting::selectPrev(){
 	index = index - 1;
-	if(index < 0){
-		index = 0;
-	}
+	index=max(index,0);
 }
 
 void Settings::DropDownSetting::drawControl(){
@@ -36,7 +32,7 @@ void Settings::DropDownSetting::drawControl(){
 		getSprite()->drawTriangle(getTotalX() + 141, getTotalY() + 9, getTotalX() + 145, getTotalY() + 13,
 								  getTotalX() + 149, getTotalY() + 9, TFT_BLACK);
 
-	}else if(showDropDown){
+	}else{
 		getSprite()->fillRoundRect(getTotalX() + 100, getTotalY() + 6, 55, 11, 2, TFT_DARKGREY);
 		getSprite()->fillTriangle(getTotalX() + 141, getTotalY() + 13, getTotalX() + 145, getTotalY() + 9,
 								  getTotalX() + 149, getTotalY() + 13, TFT_WHITE);
