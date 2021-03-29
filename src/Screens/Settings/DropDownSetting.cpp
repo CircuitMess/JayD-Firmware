@@ -13,7 +13,6 @@ void Settings::DropDownSetting::activate(){
 void Settings::DropDownSetting::selectNext(){
 	index = index + 1;
 	int size=dropDownContent.size()-1;
-	Serial.println(dropDownContent.size());
 	index=min(index,size);
 
 }
