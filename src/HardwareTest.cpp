@@ -9,12 +9,13 @@
 HardwareTest *HardwareTest::test = nullptr;
 
 HardwareTest::HardwareTest(Display &_display) : canvas(_display.getBaseSprite()), display(&_display){
+
 	test = this;
 
 	tests.push_back({HardwareTest::nuvotonTest, "Nuvoton"});
-	tests.push_back({HardwareTest::sdTest, "SDCard"});
-	tests.push_back({HardwareTest::matrixTest, "LEDMatrix"});
-	tests.push_back({ HardwareTest::soundTest, "Sound"});
+	tests.push_back({HardwareTest::sdTest, "SD Card"});
+	tests.push_back({HardwareTest::matrixTest, "LED Matrix"});
+	tests.push_back({ HardwareTest::soundTest, "Sound File"});
 
 	SPI.begin(18, 19, 23);
 	SPI.setFrequency(60000000);
@@ -29,46 +30,52 @@ void HardwareTest::start(){
 	printf("I2C Frequency: %zu Hz\n\n", Wire.getClock());
 
 	canvas->clear(TFT_BLACK);
-	canvas->setTextColor(TFT_WHITE);
+	canvas->setTextColor(TFT_GOLD);
 	canvas->setTextFont(2);
 	canvas->setTextSize(1);
 	canvas->setCursor(0, 0);
-	canvas->printCenter("TESTING MODE");
+	canvas->printCenter("JayD Hardware Test");
 	canvas->setCursor(0, 10);
 	canvas->println();
 	display->commit();
 
 	bool pass = true;
 	for(const Test &test : tests){
+
 		currentTest = test.name;
 
-		canvas->setTextColor(TFT_BLACK);
+		canvas->setTextColor(TFT_WHITE);
 		canvas->printf("%s: ", test.name);
 		display->commit();
 
 		bool result = test.test();
 
 		canvas->setTextColor(result ? TFT_GREEN : TFT_RED);
-		canvas->printf("%s\n", result ? "PASS" : "FAIL");
+		canvas->printf("%s\n", result ? "PASSED" : "FAILED");
 		display->commit();
 
 		if(!(pass &= result)) break;
 	}
 
 	if(pass){
-		printf("HW test completed successfully.\n\n");
+		canvas->setTextColor(TFT_CYAN);
+		canvas->printf("\n");
+		canvas->printCenter("Test Successful!");
+		display->commit();
 
+		printf("HW test completed successfully.\n\n");
 		printf("Prepare for visual & auditory test...\n");
+
 		delay(1000);
 
 		visualMatrixTest();
 		delay(100);
 		auditorySoundTest();
 
-
 		for(;;);
 
 	}else{
+
 		printf("Test failed at %s checkpoint.\n", currentTest);
 		for(;;);
 	}
@@ -189,9 +196,9 @@ bool HardwareTest::matrixTest(){
 
 bool HardwareTest::soundTest(){
 
-	File file;
+	File file = SD.open("/SandstormCut.wav");
 	/* File opening test */
-	if(!(file = SD.open("/SandstormCut.wav"))){
+	if(!(file)){
 		test->log("Sound File","File Error");
 		return false;
 	}
