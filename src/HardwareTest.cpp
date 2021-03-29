@@ -3,19 +3,18 @@
 #include <SD.h>
 #include "Wire.h"
 #include "JayD.hpp"
+#include "Devices/LEDmatrix/LEDmatrix.h"
+#include "Matrix/MatrixR.h"
 
+HardwareTest *HardwareTest::test = nullptr;
 
-
-HardwareTest* HardwareTest::test = nullptr;
-
-HardwareTest::HardwareTest(Display &_display) : canvas(_display.getBaseSprite()), display(&_display)
-{
+HardwareTest::HardwareTest(Display &_display) : canvas(_display.getBaseSprite()), display(&_display){
 	test = this;
 
-	tests.push_back({ HardwareTest::nuvotonTest, "Nuvoton"});
-	tests.push_back({ HardwareTest::sdTest, "SDCard"});
+	tests.push_back({HardwareTest::nuvotonTest, "Nuvoton"});
+	tests.push_back({HardwareTest::sdTest, "SDCard"});
+	tests.push_back({HardwareTest::matrixTest, "LEDMatrix"});
 	tests.push_back({ HardwareTest::soundTest, "Sound"});
-	tests.push_back({ HardwareTest::matrixTest, "LEDMatrix"});
 
 	SPI.begin(18, 19, 23);
 	SPI.setFrequency(60000000);
@@ -23,8 +22,8 @@ HardwareTest::HardwareTest(Display &_display) : canvas(_display.getBaseSprite())
 	Wire.begin(I2C_SDA, I2C_SCL);
 }
 
-void HardwareTest::start()
-{
+void HardwareTest::start(){
+
 	printf("\nStarting test ...\n");
 	printf("CPU Freq: %d MHz\n", ESP.getCpuFreqMHz());
 	printf("I2C Frequency: %zu Hz\n\n", Wire.getClock());
@@ -40,7 +39,7 @@ void HardwareTest::start()
 	display->commit();
 
 	bool pass = true;
-	for(const Test& test : tests){
+	for(const Test &test : tests){
 		currentTest = test.name;
 
 		canvas->setTextColor(TFT_BLACK);
@@ -57,7 +56,16 @@ void HardwareTest::start()
 	}
 
 	if(pass){
-		printf("Test completed successfully.");
+		printf("HW test completed successfully.\n\n");
+
+		printf("Prepare for visual & auditory test...\n");
+		delay(1000);
+
+		visualMatrixTest();
+		delay(100);
+		auditorySoundTest();
+
+
 		for(;;);
 
 	}else{
@@ -65,7 +73,6 @@ void HardwareTest::start()
 		for(;;);
 	}
 }
-
 
 
 bool HardwareTest::nuvotonTest(){
@@ -82,7 +89,7 @@ bool HardwareTest::nuvotonTest(){
 	/* Test i2c transmission */
 	Wire.beginTransmission(JDNV_ADDR);
 	if(Wire.endTransmission() != 0){
-		printf("Wire transmission failed.\n");
+		test->log("Wire Transmission","Failed");
 		return false;
 	}
 
@@ -93,65 +100,243 @@ bool HardwareTest::nuvotonTest(){
 	Wire.requestFrom(JDNV_ADDR, 1);
 	if(Wire.available()){
 		if(Wire.read() == JDNV_ADDR){
-			printf("Nuvoton identification Successful\n");
+			test->log("Identification", "Passed");
 			return true;
-		}
-		else{
-			printf("Nuvoton identification Failed -> Wrong data acquired\n");
+		}else{
+			test->log("Identification", "Failed -> Wrong data acquired.");
 			return false;
 		}
 	}else{
-		printf("Nuvoton identification Failed -> Wire not available\n");
+		test->log("Identification", "Failed -> Wire not available.");
 	}
-
 }
 
 bool HardwareTest::sdTest(){
 
+	/* SD begin test */
 	if(!SD.begin(22, SPI)){
-		printf("SD Card Not Recognized.\n");
+		test->log("SD Card","Not Recognized");
 		return false;
 	}
 
-	fs::File file = SD.open("/SDCardTest.txt","w");
+	/* File opening test */
+	fs::File file = SD.open("/SDCardTest.txt", "w");
+	if(!file){
+		test->log("SD Write", "Error Opening File.");
+		return false;
+	}
 
+	const char *writeBuff = "SD Card write test";
+	size_t writeBuffLen = strlen(writeBuff);
 
-	/*if(){
+	/* File write test */
+	if(file.printf("%s", writeBuff) != writeBuffLen){
+		test->log("SD Write","Failed writing to file.");
+		return false;
+	}
+
+	file.close();
+
+	/* File opening test */
+	file = SD.open("/SDCardTest.txt", "r");
+	if(!file){
+		test->log("SD Read", "Error Opening File.");
+		return false;
+	}
+
+	char *readBuff = static_cast<char *>(malloc(writeBuffLen * sizeof(char) * 2));
+
+	/* File read test */
+	if(file.available()){
+		file.readBytes(readBuff, writeBuffLen);
+	}else{
+		test->log("SD Read","File Not Available.");
+		free(readBuff);
+		return false;
+	}
+
+	/* Compare read-write */
+	if(!strcmp(writeBuff, readBuff)){
+		test->log("SD Compare", "Write buffer not equal to read buffer.");
+		free(readBuff);
+		return false;
+	}else{
+		test->log("SD Card","Test Successful.");
+		free(readBuff);
 		return true;
 	}
-	else{
-		return false;
-	}*/
-
-	return true;
-
-}
-
-bool HardwareTest::soundTest(){
-
-	return true;
 
 }
 
 bool HardwareTest::matrixTest(){
 
-	return true;
+	auto *ledMatrix = new LEDmatrixImpl(16, 9);
+
+	/* Matrix begin test */
+	if(!ledMatrix->begin(26, 27)){
+		test->log("LED Matrix","Begin failed.");
+		return false;
+	}else{
+		ledMatrix->clear();
+		ledMatrix->push();
+
+		delete ledMatrix;
+
+		test->log("LED Matrix","Begin successful.");
+		return true;
+	}
+}
+
+bool HardwareTest::soundTest(){
+
+	File file;
+	/* File opening test */
+	if(!(file = SD.open("/SandstormCut.wav"))){
+		test->log("Sound File","File Error");
+		return false;
+	}
+	else{
+		return true;
+	}
+}
+
+void HardwareTest::auditorySoundTest(){
+
+	File file;
+	if(!(file = SD.open("/SandstormCut.wav"))){
+		printf("File error\n");
+		for(;;);
+	}
+
+	auto *wav = new SourceWAV(file);
+
+	auto *i2s = new OutputI2S({
+									  .mode = i2s_mode_t(I2S_MODE_MASTER | I2S_MODE_TX),
+									  .sample_rate = 44100,
+									  .bits_per_sample = I2S_BITS_PER_SAMPLE_32BIT,
+									  .channel_format = I2S_CHANNEL_FMT_ONLY_LEFT,
+									  .communication_format = i2s_comm_format_t(
+											  I2S_COMM_FORMAT_I2S | I2S_COMM_FORMAT_I2S_MSB),
+									  .intr_alloc_flags = 0,
+									  .dma_buf_count = 6,
+									  .dma_buf_len = 512,
+									  .use_apll = false
+							  }, i2s_pin_config, I2S_NUM_0);
+
+	i2s->setSource(wav);
+
+	i2s->setGain(0.2);
+	i2s->start();
+
+	/* I2S running test*/
+	if(!i2s->isRunning()){
+		printf("I2S not running.\n");
+		for(;;);
+	}
+
+	/* Audio Task -> Core 0*/
+	Task audioTask("Audio", [](Task *task){
+		auto *i2s = (OutputI2S *) task->arg;
+		uint32_t currTime = millis();
+
+		while(task->running){
+			if(i2s->isRunning() && (millis()-currTime) < 10000){
+				i2s->loop(0);
+			}
+			else{
+				i2s->stop();
+				task->running = false;
+			}
+		}
+	});
+
+	audioTask.arg = (void *) i2s;
+
+	audioTask.start(1, 0);
+
+	/* Audio task running test */
+	if(!audioTask.running){
+		printf("Audio task not running.\n");
+	}
+
+	/* Scheduler loop */
+	for(;;){
+		Sched.loop(0);
+		if(!audioTask.running){
+			break;
+		}
+	}
+
+	printf("I2S sound test completed.\n");
+
+}
+
+void HardwareTest::visualMatrixTest(){
+
+	auto *ledMatrix = new LEDmatrixImpl(16, 9);
+
+	/* Matrix begin test */
+	if(!ledMatrix->begin(26, 27)){
+		printf("LED Matrix begin failed.\n");
+		for(;;);
+	}
+
+
+	ledMatrix->clear();
+	ledMatrix->setBrightness(MAX_BRIGHTNESS / 2);
+
+	/* Individual LED test */
+	for(int i = 0; i < NUM_LED; ++i){
+
+		ledMatrix->drawPixel(i, MAX_BRIGHTNESS / 2);
+		ledMatrix->push();
+		delay(50);
+	}
+	printf("Individual LED test completed.\n");
+
+	/* Brightness change test */
+	for(int i = MAX_BRIGHTNESS - 1; i >= 0; i -= 5){
+
+		ledMatrix->setBrightness(i);
+		ledMatrix->push();
+		delay(10);
+	}
+	/* Brightness change test */
+	for(int i = 0; i < MAX_BRIGHTNESS - 1; i += 5){
+
+		ledMatrix->setBrightness(i);
+		ledMatrix->push();
+		delay(10);
+	}
+	/* Brightness change test */
+	for(int i = MAX_BRIGHTNESS - 1; i >= 0; i -= 5){
+
+		ledMatrix->setBrightness(i);
+		ledMatrix->push();
+		delay(10);
+	}
+	printf("Brightness test completed.\n");
+
+	ledMatrix->clear();
+	ledMatrix->push();
+
+	printf("LED Matrix test completed.\n\n");
+
 }
 
 
-
-void HardwareTest::log(const char* property, char* value){
-	Serial.printf("%s:%s:%s\n", currentTest, property, value);
+void HardwareTest::log(const char *property, char *value){
+	Serial.printf("\n%s:%s:%s\n", currentTest, property, value);
 }
 
-void HardwareTest::log(const char* property, float value){
-	Serial.printf("%s:%s:%f\n", currentTest, property, value);
+void HardwareTest::log(const char *property, float value){
+	Serial.printf("\n%s:%s:%f\n", currentTest, property, value);
 }
 
-void HardwareTest::log(const char* property, double value){
-	Serial.printf("%s:%s:%lf\n", currentTest, property, value);
+void HardwareTest::log(const char *property, double value){
+	Serial.printf("\n%s:%s:%lf\n", currentTest, property, value);
 }
 
-void HardwareTest::log(const char* property, bool value){
-	Serial.printf("%s:%s:%d\n", currentTest, property, value ? 1 : 0);
+void HardwareTest::log(const char *property, bool value){
+	Serial.printf("\n%s:%s:%d\n", currentTest, property, value ? 1 : 0);
 }

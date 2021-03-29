@@ -4,11 +4,19 @@
 #include <Util/Vector.h>
 #include <Input/InputJayD.h>
 #include <FS.h>
+#include "JayD.hpp"
+#include <Util/Task.h>
+#include "AudioLib/OutputI2S.h"
+#include "AudioLib/SourceWAV.h"
+
+#define MAX_BRIGHTNESS 256
+#define NUM_LED 16*9
 
 struct Test {
 	bool (*test)();
 	const char* name;
 };
+
 
 class HardwareTest
 {
@@ -31,9 +39,11 @@ private:
 
 	static bool nuvotonTest();
 	static bool sdTest();
-	static bool soundTest();
 	static bool matrixTest();
+	static bool soundTest();
 
+	void visualMatrixTest();
+	void auditorySoundTest();
 
 	void beeping();
 };
