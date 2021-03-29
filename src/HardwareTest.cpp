@@ -247,7 +247,7 @@ void HardwareTest::auditorySoundTest(){
 		uint32_t currTime = millis();
 
 		while(task->running){
-			if(i2s->isRunning() && (millis()-currTime) < 10000){
+			if(i2s->isRunning() && (millis()-currTime) < 6000){
 				i2s->loop(0);
 			}
 			else{
