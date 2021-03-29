@@ -1,8 +1,8 @@
-#ifndef JAYD_FIRMWARE_BRIGHTNESSSETTINGS_HPP
-#define JAYD_FIRMWARE_BRIGHTNESSSETTINGS_HPP
+#ifndef JAYD_FIRMWARE_SLIDERSETTINGS_H
+#define JAYD_FIRMWARE_SLIDERSETTINGS_H
 
 #include "SettingsElement.h"
-#include "DropDownSetting.h"
+
 
 namespace Settings {
 	class SliderSetting : public SettingsElement {
@@ -24,4 +24,4 @@ namespace Settings {
 	};
 }
 
-#endif //JAYD_FIRMWARE_BRIGHTNESSSETTINGS_HPP
+#endif
