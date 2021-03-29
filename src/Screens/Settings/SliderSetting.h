@@ -5,13 +5,13 @@
 #include "DropDownSetting.h"
 
 namespace Settings {
-	class BrightnessSetting : public SettingsElement {
+	class SliderSetting : public SettingsElement {
 	public:
-		BrightnessSetting(ElementContainer *partent, String name);
+		SliderSetting(ElementContainer *partent, String name);
 
 		void activate() override;
 
-		void moveBightnessValue(int8_t value);
+		void moveSliderValue(int8_t value);
 
 	private:
 

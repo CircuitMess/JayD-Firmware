@@ -1,18 +1,18 @@
-#include "BrightnessSettings.h"
+#include "SliderSetting.h"
 
-Settings::BrightnessSetting::BrightnessSetting(ElementContainer *partent, String name) : SettingsElement(partent, name){
+Settings::SliderSetting::SliderSetting(ElementContainer *partent, String name) : SettingsElement(partent, name){
 
 }
 
-void Settings::BrightnessSetting::moveBightnessValue(int8_t value){
+void Settings::SliderSetting::moveSliderValue(int8_t value){
 	sliderValue=constrain(sliderValue + value,0,255);
 }
 
-void Settings::BrightnessSetting::activate(){
+void Settings::SliderSetting::activate(){
 	sliderIsSelected = !sliderIsSelected;
 }
 
-void Settings::BrightnessSetting::drawControl(){
+void Settings::SliderSetting::drawControl(){
 		float movingCursor;
 		if(sliderValue == 0){
 			movingCursor = 0;
