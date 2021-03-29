@@ -1,5 +1,5 @@
-#ifndef JAYD_FIRMWARE_DROPDOWN_HPP
-#define JAYD_FIRMWARE_DROPDOWN_HPP
+#ifndef JAYD_FIRMWARE_DROPDOWN_H
+#define JAYD_FIRMWARE_DROPDOWN_H
 
 #include "SettingsElement.h"
 
