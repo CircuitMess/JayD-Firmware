@@ -12,7 +12,8 @@ void Settings::DropDownSetting::activate(){
 
 void Settings::DropDownSetting::selectNext(){
 	index = index + 1;
-	index=min(index,dropDownContent.size());
+	index=min(index,5); //index=min(index,dropDownContent.size());
+
 }
 
 void Settings::DropDownSetting::selectPrev(){
