@@ -7,20 +7,29 @@
 #include <UI/LinearLayout.h>
 #include <UI/ScrollLayout.h>
 #include "ListItem.h"
+#include <Input/InputJayD.h>
+
+#define SD_CARD_INTERVAL 500
 
 namespace SongList {
-	class SongList : public Context {
+	class SongList : public Context, public LoopListener {
 	public:
 
-		SongList(Display &display);
+		explicit SongList(Display &display);
 
-		virtual ~SongList();
+		virtual ~SongList() override;
 
-		void start();
+		void start() override;
 
-		void stop();
+		void stop() override;
 
-		void draw();
+		void draw() override;
+
+		void loop(uint t) override;
+
+		void pack() override;
+
+		void unpack() override;
 
 	private:
 		static SongList *instance;
@@ -29,12 +38,18 @@ namespace SongList {
 
 		int selectedElement = 0;
 
+		fs::File background;
+		Color *buffer = nullptr;
+
 		std::vector<ListItem *> songs;
+		std::vector<Element*> listTemp;
 
 		void buildUI();
 
 		void populateList();
 		bool insertedSD = false;
+
+		uint32_t prevSDCheck = 0;
 	};
 }
 #endif //JAYD_FIRMWARE_SONGLIST_H
