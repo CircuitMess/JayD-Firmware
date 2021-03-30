@@ -48,7 +48,7 @@ namespace Settings {
 
 		fs::File background;
 
-		Color* buffer;
+		Color* buffer= nullptr;
 
 	};
 }
