@@ -12,7 +12,7 @@ namespace Settings {
 
 	private:
 
-		bool booleanSwitch=false;
+		bool booleanSwitch = false;
 
 	protected:
 		void drawControl() override;

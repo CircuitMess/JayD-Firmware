@@ -6,7 +6,7 @@ Settings::BooleanSetting::BooleanSetting(ElementContainer *partent, String name)
 }
 
 void Settings::BooleanSetting::activate(){
-	booleanSwitch=!booleanSwitch;
+	booleanSwitch = !booleanSwitch;
 }
 
 void Settings::BooleanSetting::drawControl(){
@@ -16,10 +16,10 @@ void Settings::BooleanSetting::drawControl(){
 	getSprite()->setCursor(getTotalX() + 122, getTotalY() + 7);
 
 	if(booleanSwitch){
-		getSprite()->fillRoundRect(getTotalX()+120 , getTotalY() + 5, 27, 11, 2, TFT_GREEN);
+		getSprite()->fillRoundRect(getTotalX() + 120, getTotalY() + 5, 27, 11, 2, TFT_GREEN);
 		getSprite()->println("ON");
 	}else if(!booleanSwitch){
-		getSprite()->fillRoundRect(getTotalX() +120, getTotalY() + 5, 27, 11, 2, TFT_DARKGREY);
+		getSprite()->fillRoundRect(getTotalX() + 120, getTotalY() + 5, 27, 11, 2, TFT_DARKGREY);
 		getSprite()->println("OFF");
 	}
 	getSprite()->drawRoundRect(getTotalX() + 120, getTotalY() + 5, 27, 11, 2, TFT_BLACK);
