@@ -155,5 +155,6 @@ void Settings::Settings::buildUI(){
 
 Settings::Settings::~Settings(){
 	instance = nullptr;
+	background.close();
 
 }
