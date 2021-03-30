@@ -121,9 +121,10 @@ void MainMenu::MainMenu::pack(){
 
 void MainMenu::MainMenu::unpack(){
 	Context::unpack();
-	buffer= static_cast<Color *>(ps_malloc(160 * 128 * 2));
-	if(buffer== nullptr){
-		Serial.println("Greška");
+	buffer = static_cast<Color *>(ps_malloc(160 * 128 * 2));
+	if(buffer == nullptr){
+		Serial.println("Settings background unpack error");
+		return;
 	}
 	background.seek(0);
 	background.read(reinterpret_cast<uint8_t *>(buffer), 160 * 128 * 2);
