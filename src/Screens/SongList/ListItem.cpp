@@ -12,7 +12,7 @@ void SongList::ListItem::draw(){
 	getSprite()->setCursor(getTotalX()+2, getTotalY()+2);
 	getSprite()->println(songName);
 	if(selected){
-		getSprite()->drawRect(getTotalX()-2,getTotalY()-4,getWidth()+4,getHeight()+6,TFT_RED);//treba ubaciti ikonicu za scrolanje
+		getSprite()->drawRect(getTotalX()-2,getTotalY()-4,getWidth()+4,getHeight()+6,TFT_LIGHTGREY);//treba ubaciti ikonicu za scrolanje
 	}
 
 }
