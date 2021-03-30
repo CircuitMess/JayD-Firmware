@@ -41,7 +41,7 @@ namespace MainMenu {
 
 		fs::File background;
 
-		Color* buffer;
+		Color* buffer= nullptr;
 
 		void buildUI();
 	};
