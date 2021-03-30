@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 project(JayD-Firmware)
-set(PORT COM23)
+set(PORT /dev/ttyUSB0)
 set(DEVICE cm:esp32:spencer) # Arduino device FQBN
 set(CMAKE_CXX_STANDARD 11)
 
@@ -28,7 +28,6 @@ include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/FS/s
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/SD/src)
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/SPI/src)
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/WiFi/src)
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/SPIFFS/src)
 
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/cores/esp32)
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/tools/sdk)
