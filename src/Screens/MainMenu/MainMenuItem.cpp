@@ -19,7 +19,7 @@ MainMenu::MainMenuItem::MainMenuItem(ElementContainer *parent, MenuItemType type
 
 	gif = new AnimatedSprite(getSprite(), SPIFFS.open(gifIcons[type]));
 	gif->setLoop(true);
-
+	gif->setMaskingColor(TFT_BLACK);
 
 }
 
@@ -31,7 +31,6 @@ void MainMenu::MainMenuItem::draw(){
 
 	if(selected){
 		gif->setXY(getTotalX(), getTotalY() + 40);
-		gif->setMaskingColor(TFT_BLACK);
 		gif->nextFrame();
 		gif->push();
 	}else{
