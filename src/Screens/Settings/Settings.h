@@ -7,6 +7,7 @@
 #include "BooleanSetting.h"
 #include "DropDownSetting.h"
 #include "SliderSetting.h"
+#include <FS.h>
 
 
 namespace Settings {
@@ -20,6 +21,10 @@ namespace Settings {
 		void stop();
 
 		void draw();
+
+		void pack() override;
+
+		void unpack() override;
 
 		virtual ~Settings();
 
@@ -40,6 +45,10 @@ namespace Settings {
 		void buildUI();
 
 		bool disableBrightnessBar = false;
+
+		fs::File background;
+
+		Color* buffer;
 
 	};
 }

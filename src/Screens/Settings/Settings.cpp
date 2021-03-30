@@ -1,5 +1,7 @@
 #include "Settings.h"
 #include <Input/InputJayD.h>
+#include <SPIFFS.h>
+#include <FS/CompressedFile.h>
 
 Settings::Settings *Settings::Settings::instance = nullptr;
 
@@ -7,14 +9,16 @@ Settings::Settings::Settings(Display &display) : Context(display), screenLayout(
 												 firstElement(&screenLayout, "Song"),
 												 secondElement(&screenLayout, "Color",
 															   {"Blue", "Red", "Yellow", "Green", "Orange", "Purple"}),
-												 thirdElement(&screenLayout, "Brightness")
-/*fourthElement(&screenLayout, "Brightness")*/{
+												 thirdElement(&screenLayout, "Brightness"){
 
 	instance = this;
 	buildUI();
 	firstElement.setIsSelected(true);
-	newValue=0;
+	newValue = 0;
 
+	fs::File file=SPIFFS.open("/settingsBackground.raw.hs");
+
+	background = CompressedFile::open(file, 14, 13);
 }
 
 void Settings::Settings::start(){
@@ -102,21 +106,38 @@ void Settings::Settings::stop(){
 }
 
 void Settings::Settings::draw(){
-	screen.getSprite()->clear(TFT_BLACK);
+	screen.getSprite()->drawIcon(buffer, 0, 0, 160, 128, 1);
 
-	for(int i=0;i<3;i++){
-		if(!reinterpret_cast<SettingsElement*>(screenLayout.getChild(i))->isSelected()){
+	for(int i = 0; i < 3; i++){
+		if(!reinterpret_cast<SettingsElement *>(screenLayout.getChild(i))->isSelected()){
 			screenLayout.getChild(i)->draw();
 		}
 	}
 	for(int i = 0; i < 3; i++){
-		if(reinterpret_cast<SettingsElement*>(screenLayout.getChild(i))->isSelected()){
+		if(reinterpret_cast<SettingsElement *>(screenLayout.getChild(i))->isSelected()){
 			screenLayout.getChild(i)->draw();
 		}
 	}
 
 
 }
+
+void Settings::Settings::pack(){
+	Context::pack();
+	free(buffer);
+}
+
+void Settings::Settings::unpack(){
+	Context::unpack();
+	buffer= static_cast<Color *>(ps_malloc(160 * 128 * 2));
+	if(buffer== nullptr){
+		Serial.println("Greška");
+	}
+	background.seek(0);
+	background.read(reinterpret_cast<uint8_t *>(buffer), 160 * 128 * 2);
+
+}
+
 
 void Settings::Settings::buildUI(){
 	screenLayout.setWHType(PARENT, PARENT);
