@@ -11,6 +11,9 @@ void Settings::DropDownSetting::activate(){
 }
 
 void Settings::DropDownSetting::selectNext(){
+	if(dropDownContent.empty()){
+		return;
+	}
 	index = index + 1;
 	int size = dropDownContent.size() - 1;
 	index = min(index, size);
@@ -18,6 +21,9 @@ void Settings::DropDownSetting::selectNext(){
 }
 
 void Settings::DropDownSetting::selectPrev(){
+	if(dropDownContent.empty()){
+		return;
+	}
 	index = index - 1;
 	index = max(index, 0);
 }
