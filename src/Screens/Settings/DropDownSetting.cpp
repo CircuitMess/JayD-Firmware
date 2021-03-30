@@ -7,19 +7,19 @@ Settings::DropDownSetting::DropDownSetting(ElementContainer *partent, String nam
 }
 
 void Settings::DropDownSetting::activate(){
-	showDropDown=!showDropDown;
+	showDropDown = !showDropDown;
 }
 
 void Settings::DropDownSetting::selectNext(){
 	index = index + 1;
-	int size=dropDownContent.size()-1;
-	index=min(index,size);
+	int size = dropDownContent.size() - 1;
+	index = min(index, size);
 
 }
 
 void Settings::DropDownSetting::selectPrev(){
 	index = index - 1;
-	index=max(index,0);
+	index = max(index, 0);
 }
 
 void Settings::DropDownSetting::drawControl(){
