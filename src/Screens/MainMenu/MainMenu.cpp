@@ -12,7 +12,7 @@ MainMenu::MainMenu *MainMenu::MainMenu::instance = nullptr;
 MainMenu::MainMenu::MainMenu(Display &display) : Context(display), screenLayout(new LinearLayout(&screen, HORIZONTAL)){
 
 
-	for(int i = 0; i < 2; i++){
+	for(int i = 0; i < 3; i++){
 		item.push_back(new MainMenuItem(screenLayout, static_cast<MenuItemType>(i)));
 	}
 
@@ -42,8 +42,8 @@ void MainMenu::MainMenu::start(){
 		instance->itemNum = instance->itemNum + value;
 
 		if(instance->itemNum < 0){
-			instance->itemNum = 1;
-		}else if(instance->itemNum > 1){
+			instance->itemNum = instance->item.size()-1;
+		}else if(instance->itemNum >= instance->item.size()){
 			instance->itemNum = 0;
 		}
 
