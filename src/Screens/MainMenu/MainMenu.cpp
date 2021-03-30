@@ -27,7 +27,7 @@ MainMenu::MainMenu::MainMenu(Display &display) : Context(display), screenLayout(
 }
 
 MainMenu::MainMenu::~MainMenu(){
-
+	background.close();
 	instance = nullptr;
 }
 
