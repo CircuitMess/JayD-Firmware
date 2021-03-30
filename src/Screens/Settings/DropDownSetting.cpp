@@ -15,8 +15,7 @@ void Settings::DropDownSetting::selectNext(){
 		return;
 	}
 	index = index + 1;
-	int size = dropDownContent.size() - 1;
-	index = min(index, size);
+	index = min(index, (int) dropDownContent.size() - 1);
 
 }
 
