@@ -124,6 +124,9 @@ void MixScreen::MixScreen::start(){
 
 	InputJayD::getInstance()->addListener(this);
 
+	leftSongName->checkScrollUpdate();
+	rightSongName->checkScrollUpdate();
+	
 	draw();
 	screen.commit();
 

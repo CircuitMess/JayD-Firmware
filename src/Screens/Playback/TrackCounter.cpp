@@ -7,10 +7,6 @@ Playback::TrackCounter::TrackCounter(ElementContainer *parent) : CustomElement(p
 
 void Playback::TrackCounter::draw(){
 	float fillSeekBar;
-	getSprite()->setTextFont(1);
-	getSprite()->setTextColor(TFT_WHITE);
-	getSprite()->setTextSize(1);
-	getSprite()->setCursor(getTotalX()+10, getTotalY());
 	if(currentDuration==0){
 		fillSeekBar=0;
 	}
@@ -19,9 +15,14 @@ void Playback::TrackCounter::draw(){
 	}
 	getSprite()->fillRoundRect(getTotalX()+10, getTotalY() + 10, fillSeekBar, 8, 5, TFT_GREENYELLOW);
 	getSprite()->drawRoundRect(getTotalX()+10, getTotalY() + 10, 140, 8, 5, TFT_WHITE);
-	getSprite()->printf("%02d:%02d", currentDuration / 60, currentDuration - (currentDuration / 60) * 60);
-	getSprite()->setCursor(getTotalX() + 117, getTotalY());
-	getSprite()->printf("%02d:%02d", totalDuration / 60, totalDuration - (totalDuration / 60) * 60);
+	FontWriter u8f = getSprite()->startU8g2Fonts();
+	u8f.setCursor(getTotalX()+10, getTotalY());
+	u8f.setFont(u8g2_font_HelvetiPixel_tr);
+	u8f.setFontMode(1);
+	u8f.setForegroundColor(TFT_WHITE);
+	u8f.printf("%02d:%02d", currentDuration / 60, currentDuration - (currentDuration / 60) * 60);
+	u8f.setCursor(getTotalX() + 117, getTotalY());
+	u8f.printf("%02d:%02d", totalDuration / 60, totalDuration - (totalDuration / 60) * 60);
 
 }
 

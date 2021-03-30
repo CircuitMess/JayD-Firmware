@@ -29,8 +29,11 @@ void Playback::Playback::loop(uint micros){
 		i2s->loop(micros);
 	}
 
-	if(((int) wav->getElapsed()) != trackCount->getCurrentDuration()){
-		trackCount->setCurrentDuration(wav->getElapsed());
+	bool songNameUpdate = songName->checkScrollUpdate();
+	if(((int) wav->getElapsed()) != trackCount->getCurrentDuration() || songNameUpdate){
+		if(((int) wav->getElapsed()) != trackCount->getCurrentDuration()){
+			trackCount->setCurrentDuration(wav->getElapsed());
+		}
 		draw();
 		screen.commit();
 	}
@@ -112,6 +115,7 @@ void Playback::Playback::start(){
 	i2s = new OutputI2S(i2s_config, i2s_pin_config, I2S_NUM_0);
 	i2s->setSource(wav);
 	i2s->setGain(0.01);
+	LoopManager::addListener(this);
 }
 
 void Playback::Playback::stop(){
@@ -149,6 +153,7 @@ void Playback::Playback::buildUI(){
 	songNameLayout->setWHType(PARENT, FIXED);
 	songNameLayout->setHeight(35);
 	songNameLayout->setGutter(5);
+	songNameLayout->setPadding(5);
 	songNameLayout->addChild(songName);
 
 	timeElapsedLayout->setWHType(PARENT, FIXED);
