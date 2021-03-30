@@ -13,8 +13,9 @@ namespace MixScreen {
 		void draw();
 
 		void setTotalDuration(int totalDuration);
-
 		void setCurrentDuration(int currentDuration);
+
+		int getCurrentDuration() const;
 
 	private:
 		bool playing = false;

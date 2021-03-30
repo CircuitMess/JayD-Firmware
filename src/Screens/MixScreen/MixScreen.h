@@ -10,6 +10,7 @@
 #include <AudioLib/EffectProcessor.h>
 #include <AudioLib/Mixer.h>
 #include <AudioLib/OutputI2S.h>
+#include <AudioLib/SpeedModifier.h>
 #include <unordered_map>
 #include <Input/InputJayD.h>
 #include <Util/Task.h>
@@ -59,6 +60,9 @@ namespace MixScreen {
 		SongName* leftSongName;
 		SongName* rightSongName;
 
+		SpeedModifier* speedLeft = nullptr;
+		SpeedModifier* speedRight = nullptr;
+
 		EffectElement* effectElements[6] = { nullptr };
 
 		bool isPlaying = false;
@@ -76,6 +80,8 @@ namespace MixScreen {
 
 		static const std::unordered_map<uint8_t, uint8_t> mapBtn;
 		static const std::unordered_map<uint8_t, uint8_t> mapEnc;
+
+		uint32_t lastDraw = 0;
 	};
 }
 
