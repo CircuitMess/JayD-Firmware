@@ -131,7 +131,7 @@ void Settings::Settings::unpack(){
 	Context::unpack();
 	buffer= static_cast<Color *>(ps_malloc(160 * 128 * 2));
 	if(buffer== nullptr){
-		Serial.println("Greška");
+		Serial.println("Settings background unpack error");
 	}
 	background.seek(0);
 	background.read(reinterpret_cast<uint8_t *>(buffer), 160 * 128 * 2);
