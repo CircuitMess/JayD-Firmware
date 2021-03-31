@@ -11,12 +11,17 @@ SettingsScreen::SettingsScreen::SettingsScreen(Display &display) : Context(displ
 
 	instance = this;
 	buildUI();
-	firstElement.setIsSelected(true);
+	volumeSlider.setIsSelected(true);
 	newValue = 0;
 
 	fs::File file = SPIFFS.open("/settingsBackground.raw.hs");
 
 	background = CompressedFile::open(file, 14, 13);
+
+	volumeSlider.setSliderValue(Settings.get().volumeLevel);
+
+	brightnessSlider.setSliderValue(Settings.get().brightnessLevel);
+
 }
 
 void SettingsScreen::SettingsScreen::start(){
@@ -24,17 +29,16 @@ void SettingsScreen::SettingsScreen::start(){
 	screen.commit();
 	InputJayD::getInstance()->setEncoderMovedCallback(0, [](int8_t value){
 		if(instance == nullptr) return;
-		if(instance->disableMainSelector && instance->newValue == 1){
-			if(value > 0){
-				instance->secondElement.selectNext();
-			}else if(value < 0){
-				instance->secondElement.selectPrev();
-			}
+		if(instance->disableMainSelector && instance->newValue == 0){
+			instance->volumeSlider.moveSliderValue(value);
+			Settings.get().volumeLevel=instance->volumeSlider.getSliderValue();
 			instance->draw();
 			instance->screen.commit();
 			return;
-		}else if(instance->disableMainSelector && instance->newValue == 2){
-			instance->thirdElement.moveSliderValue(value);
+		}
+		if(instance->disableMainSelector && instance->newValue == 1){
+			instance->brightnessSlider.moveSliderValue(value);
+			Settings.get().brightnessLevel=instance->brightnessSlider.getSliderValue();
 			instance->draw();
 			instance->screen.commit();
 			return;
