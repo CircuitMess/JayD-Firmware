@@ -19,6 +19,13 @@ Display display(160, 128, -1, -1);
 
 void setup(){
 	Serial.begin(115200);
+
+	if(psramFound()){
+		Serial.printf("PSRAM init: %s, free: %d B\n", psramInit() ? "Yes" : "No", ESP.getFreePsram());
+	}else{
+		Serial.println("No PSRAM detected");
+	}
+
 	pinMode(blPin, OUTPUT);
 	digitalWrite(blPin, HIGH);
 
@@ -28,15 +35,12 @@ void setup(){
 	disableCore0WDT();
 	disableCore1WDT();
 
-	SPI.begin(18, 19, 23);
+	SPI.begin(18, 19, 23, -1);
 	SPI.setFrequency(60000000);
 	if(!SD.begin(22, SPI)){
 		Serial.println("No SD card");
 		//for(;;);
 	}
-
-	psramInit();
-	SPIFFS.begin();
 
 	display.begin();
 	SPI.setFrequency(20000000);
@@ -49,6 +53,7 @@ void setup(){
 	introScreen->start();
 
 	digitalWrite(blPin, LOW);
+	LoopManager::addListener(&Sched);
 }
 
 void loop(){
