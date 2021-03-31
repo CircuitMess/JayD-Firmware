@@ -202,6 +202,16 @@ void MixScreen::MixScreen::loop(uint micros){
 		update |= element->needsUpdate();
 	}
 
+	if(system && system->getDuration(0) != leftSeekBar->getTotalDuration()){
+		leftSeekBar->setTotalDuration(system->getDuration(0));
+		update = true;
+	}
+
+	if(system && system->getDuration(1) != rightSeekBar->getTotalDuration()){
+		rightSeekBar->setTotalDuration(system->getDuration(1));
+		update = true;
+	}
+
 	if(system && system->getElapsed(0) != leftSeekBar->getCurrentDuration()){
 		leftSeekBar->setCurrentDuration(system->getElapsed(0));
 		update = true;
@@ -216,7 +226,7 @@ void MixScreen::MixScreen::loop(uint micros){
 	bool songNameUpdateR = rightSongName->checkScrollUpdate();
 	if(update || songNameUpdateL || songNameUpdateR){
 		uint32_t now = millis();
-		if(lastDraw == 0 || now - lastDraw >= 300){
+		if(lastDraw == 0 || now - lastDraw >= 50){
 			draw();
 			screen.commit();
 			lastDraw = now;
@@ -289,7 +299,7 @@ void MixScreen::MixScreen::encoderMove(uint8_t id, int8_t value){
 
 			if(type == EffectType::SPEED){
 				system->addSpeed(index >= 3);
-				element->setIntensity(85);
+				element->setIntensity(255 / 2);
 				return;
 			}
 
