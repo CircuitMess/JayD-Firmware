@@ -35,7 +35,6 @@ namespace SettingsScreen {
 
 		SliderElement volumeSlider;
 		SliderElement brightnessSlider;
-		//	SettingsElement fourthElement;
 
 		int newValue = 0;
 
