@@ -1,27 +1,25 @@
-#include "Settings.h"
+#include "SettingsScreen.h"
 #include <Input/InputJayD.h>
 #include <SPIFFS.h>
 #include <FS/CompressedFile.h>
+#include <Settings.h>
 
-Settings::Settings *Settings::Settings::instance = nullptr;
+SettingsScreen::SettingsScreen *SettingsScreen::SettingsScreen::instance = nullptr;
 
-Settings::Settings::Settings(Display &display) : Context(display), screenLayout(&screen, VERTICAL),
-												 firstElement(&screenLayout, "Song"),
-												 secondElement(&screenLayout, "Color",
-															   {"Blue", "Red", "Yellow", "Green", "Orange", "Purple"}),
-												 thirdElement(&screenLayout, "Brightness"){
+SettingsScreen::SettingsScreen::SettingsScreen(Display &display) : Context(display), screenLayout(&screen, VERTICAL),
+																   volumeSlider(&screenLayout, "Volume"), brightnessSlider(&screenLayout, "Brightness"){
 
 	instance = this;
 	buildUI();
 	firstElement.setIsSelected(true);
 	newValue = 0;
 
-	fs::File file=SPIFFS.open("/settingsBackground.raw.hs");
+	fs::File file = SPIFFS.open("/settingsBackground.raw.hs");
 
 	background = CompressedFile::open(file, 14, 13);
 }
 
-void Settings::Settings::start(){
+void SettingsScreen::SettingsScreen::start(){
 	draw();
 	screen.commit();
 	InputJayD::getInstance()->setEncoderMovedCallback(0, [](int8_t value){
@@ -42,26 +40,23 @@ void Settings::Settings::start(){
 			return;
 		}
 		instance->newValue = instance->newValue + value;
+
 		if(instance->newValue < 0){
-			instance->newValue = 2;
-		}else if(instance->newValue > 2){
+			instance->newValue = 1;
+		}else if(instance->newValue > 1){
 			instance->newValue = 0;
 		}
 		if(instance->newValue == 0){
-			instance->firstElement.setIsSelected(true);
-		}else{
-			instance->firstElement.setIsSelected(false);
-		}
-		if(instance->newValue == 1){
-			instance->secondElement.setIsSelected(true);
-		}else{
-			instance->secondElement.setIsSelected(false);
-		}
-		if(instance->newValue == 2){
-			instance->thirdElement.setIsSelected(true);
+			instance->volumeSlider.setIsSelected(true);
 
 		}else{
-			instance->thirdElement.setIsSelected(false);
+			instance->volumeSlider.setIsSelected(false);
+		}
+		if(instance->newValue == 1){
+			instance->brightnessSlider.setIsSelected(true);
+
+		}else{
+			instance->brightnessSlider.setIsSelected(false);
 		}
 		instance->draw();
 		instance->screen.commit();
@@ -77,16 +72,12 @@ void Settings::Settings::start(){
 	InputJayD::getInstance()->setBtnPressCallback(2, [](){
 		if(instance == nullptr) return;
 		if(instance->newValue == 0){
-			instance->firstElement.activate();
-			instance->draw();
-			instance->screen.commit();
-		}else if(instance->newValue == 1){
-			instance->secondElement.activate();
+			instance->volumeSlider.activate();
 			instance->disableMainSelector = !instance->disableMainSelector;
 			instance->draw();
 			instance->screen.commit();
-		}else if(instance->newValue == 2){
-			instance->thirdElement.activate();
+		}else if(instance->newValue == 1){
+			instance->brightnessSlider.activate();
 			instance->disableMainSelector = !instance->disableMainSelector;
 			instance->draw();
 			instance->screen.commit();
@@ -100,20 +91,22 @@ void Settings::Settings::start(){
 	instance->screen.commit();
 }
 
-void Settings::Settings::stop(){
+void SettingsScreen::SettingsScreen::stop(){
 	InputJayD::getInstance()->removeEncoderMovedCallback(0);
 	InputJayD::getInstance()->removeBtnPressCallback(2);
+	Settings.store();
+
 }
 
-void Settings::Settings::draw(){
+void SettingsScreen::SettingsScreen::draw(){
 	screen.getSprite()->drawIcon(buffer, 0, 0, 160, 128, 1);
 
-	for(int i = 0; i < 3; i++){
+	for(int i = 0; i < 2; i++){
 		if(!reinterpret_cast<SettingsElement *>(screenLayout.getChild(i))->isSelected()){
 			screenLayout.getChild(i)->draw();
 		}
 	}
-	for(int i = 0; i < 3; i++){
+	for(int i = 0; i < 2; i++){
 		if(reinterpret_cast<SettingsElement *>(screenLayout.getChild(i))->isSelected()){
 			screenLayout.getChild(i)->draw();
 		}
@@ -122,16 +115,16 @@ void Settings::Settings::draw(){
 
 }
 
-void Settings::Settings::pack(){
+void SettingsScreen::SettingsScreen::pack(){
 	Context::pack();
 	free(buffer);
 }
 
-void Settings::Settings::unpack(){
+void SettingsScreen::SettingsScreen::unpack(){
 	Context::unpack();
-	buffer= static_cast<Color *>(ps_malloc(160 * 128 * 2));
-	if(buffer== nullptr){
-		Serial.println("Settings background unpack error");
+	buffer = static_cast<Color *>(ps_malloc(160 * 128 * 2));
+	if(buffer == nullptr){
+		Serial.println("SettingsScreen background unpack error");
 		return;
 	}
 	background.seek(0);
@@ -140,12 +133,11 @@ void Settings::Settings::unpack(){
 }
 
 
-void Settings::Settings::buildUI(){
+void SettingsScreen::SettingsScreen::buildUI(){
 	screenLayout.setWHType(PARENT, PARENT);
 	screenLayout.setGutter(5);
-	screenLayout.addChild(&firstElement);
-	screenLayout.addChild(&secondElement);
-	screenLayout.addChild(&thirdElement);
+	screenLayout.addChild(&volumeSlider);
+	screenLayout.addChild(&brightnessSlider);
 	//screenLayout.addChild(&fourthElement);
 
 	screenLayout.reflow();
@@ -153,7 +145,7 @@ void Settings::Settings::buildUI(){
 	screen.repos();
 }
 
-Settings::Settings::~Settings(){
+SettingsScreen::SettingsScreen::~SettingsScreen(){
 	instance = nullptr;
 	background.close();
 
