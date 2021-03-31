@@ -55,3 +55,7 @@ void MixScreen::SongSeekBar::setCurrentDuration(int currentDuration){
 int MixScreen::SongSeekBar::getCurrentDuration() const{
 	return currentDuration;
 }
+
+int MixScreen::SongSeekBar::getTotalDuration() const{
+	return totalDuration;
+}
