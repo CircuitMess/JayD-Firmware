@@ -3,11 +3,11 @@
 
 #include "SettingsElement.h"
 
-namespace Settings {
-	class DropDownSetting : public SettingsElement {
+namespace SettingsScreen {
+	class DropDownElement : public SettingsElement {
 	public:
 
-		DropDownSetting(ElementContainer *partent, String name, std::vector<String> dropDownContent);
+		DropDownElement(ElementContainer *partent, String name, std::vector<String> dropDownContent);
 
 		void activate() override;
 
