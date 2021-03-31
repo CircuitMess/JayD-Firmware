@@ -35,7 +35,11 @@ void setup(){
 		//for(;;);
 	}
 
+	psramInit();
+	SPIFFS.begin();
+
 	display.begin();
+	SPI.setFrequency(20000000);
 
 	LoopManager::addListener(new InputJayD());
 	InputJayD::getInstance()->begin();

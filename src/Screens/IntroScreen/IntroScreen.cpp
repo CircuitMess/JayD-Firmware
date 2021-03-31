@@ -1,36 +1,47 @@
 #include "IntroScreen.h"
-#include "Bitmaps/introGIF.h"
 #include <FS.h>
-#include <FS/PGMFile.h>
 #include <Loop/LoopManager.h>
+#include <FS/CompressedFile.h>
 #include "../MainMenu/MainMenu.h"
 
 
 IntroScreen::IntroScreen *IntroScreen::IntroScreen::instance = nullptr;
 
 
-IntroScreen::IntroScreen::IntroScreen(Display &display) : Context(display), gifIntro(screen.getSprite(), fs::File(std::make_shared<PGMFile>(intro_gif, sizeof(intro_gif)))){
-
+IntroScreen::IntroScreen::IntroScreen(Display &display) : Context(display){
 	instance = this;
 
-	gifIntro.setXY(screen.getTotalX(), screen.getTotalY());
+	fs::File f = SPIFFS.open("/introGIF.g565.hs");
+	if(!f){
+		Serial.println("Error opening intro gif");
+		pack();
+		return;
+	}
+
+	gif = new AnimatedSprite(screen.getSprite(), CompressedFile::open(f, 9, 8, 34537));
+	gif->setSwapBytes(true);
+	gif->setXY(0, 0);
 
 	pack();
 }
 
 IntroScreen::IntroScreen::~IntroScreen(){
+	delete gif;
 	instance = nullptr;
 }
 
 void IntroScreen::IntroScreen::draw(){
-	gifIntro.push();
+	gif->nextFrame();
+	gif->push();
 }
 
 void IntroScreen::IntroScreen::start(){
 	draw();
 	screen.commit();
 
-	gifIntro.setLoopDoneCallback([]{
+	if(!gif) return;
+
+	gif->setLoopDoneCallback([]{
 		if(instance == nullptr) return;
 
 		Display& display = *instance->getScreen().getDisplay();
@@ -51,7 +62,7 @@ void IntroScreen::IntroScreen::stop(){
 }
 
 void IntroScreen::IntroScreen::loop(uint micros){
-	if(!gifIntro.checkFrame()) return;
+	if(!gif || !gif->checkFrame()) return;
 
 	draw();
 	screen.commit();
