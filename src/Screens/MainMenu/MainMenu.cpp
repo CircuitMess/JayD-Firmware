@@ -3,8 +3,9 @@
 #include "MainMenu.h"
 #include "Bitmaps/mainMenu_background.hpp"
 #include "../MixScreen/MixScreen.h"
-#include "../SongList/SongList.h"
-#include "../Playback/Playback.h"
+#include <Loop/LoopManager.h>
+#include <FS/CompressedFile.h>
+#include <SPIFFS.h>
 
 MainMenu::MainMenu *MainMenu::MainMenu::instance = nullptr;
 
@@ -15,33 +16,38 @@ MainMenu::MainMenu::MainMenu(Display &display) : Context(display), screenLayout(
 		item.push_back(new MainMenuItem(screenLayout, static_cast<MenuItemType>(i)));
 	}
 
+	fs::File file = SPIFFS.open("/mainMenuBackground.raw.hs");
+
+	background = CompressedFile::open(file, 14, 10);
+
 	instance = this;
 	instance->item[0]->isSelected(true);
 	buildUI();
-	pack();
+	//pack();
 }
 
 MainMenu::MainMenu::~MainMenu(){
+	background.close();
 	instance = nullptr;
 }
 
 void MainMenu::MainMenu::start(){
+	LoopManager::addListener(this);
 	draw();
 	screen.commit();
 
 	InputJayD::getInstance()->setEncoderMovedCallback(0, [](int8_t value){
 		if(instance == nullptr) return;
 		if(value == 0) return;
-
 		instance->itemNum = instance->itemNum + value;
 
 		if(instance->itemNum < 0){
-			instance->itemNum = 2;
-		}else if(instance->itemNum > 2){
+			instance->itemNum = instance->item.size()-1;
+		}else if(instance->itemNum >= instance->item.size()){
 			instance->itemNum = 0;
 		}
 
-		for(MainMenuItem* i : instance->item){
+		for(MainMenuItem *i : instance->item){
 			i->isSelected(false);
 		}
 		instance->item[instance->itemNum]->isSelected(true);
@@ -53,7 +59,7 @@ void MainMenu::MainMenu::start(){
 	InputJayD::getInstance()->setBtnPressCallback(BTN_MID, [](){
 		if(instance == nullptr) return;
 
-		Display& display = *instance->getScreen().getDisplay();
+		Display &display = *instance->getScreen().getDisplay();
 		int8_t selected = instance->itemNum;
 		Serial.println(selected);
 
@@ -63,9 +69,9 @@ void MainMenu::MainMenu::start(){
 		if(selected == 0){
 			//Playback::Playback* playback = new Playback::Playback(display);
 
-			SongList::SongList* list = new SongList::SongList(display);
+			/*SongList::SongList* list = new SongList::SongList(display);
 			list->unpack();
-			list->start();
+			list->start();*/
 		}
 	});
 }
@@ -76,8 +82,10 @@ void MainMenu::MainMenu::stop(){
 }
 
 void MainMenu::MainMenu::draw(){
-	screen.getSprite()->clear(TFT_BLACK);
+
+	screen.getSprite()->drawIcon(buffer, 0, 0, 160, 128, 1);
 	screen.draw();
+
 }
 
 void MainMenu::MainMenu::buildUI(){
@@ -96,10 +104,31 @@ void MainMenu::MainMenu::buildUI(){
 }
 
 void MainMenu::MainMenu::loop(uint micros){
-	for(int i = 0; i < item.size(); i++){
-		if(item[i]->needsUpdate()){
-			draw();
-			screen.commit();
-		}
+	bool update = false;
+	for(const auto &i : item){
+		update |= i->needsUpdate();
+	}
+	if(update){
+		draw();
+		screen.commit();
 	}
 }
+
+void MainMenu::MainMenu::pack(){
+	Context::pack();
+	free(buffer);
+}
+
+void MainMenu::MainMenu::unpack(){
+	Context::unpack();
+	buffer = static_cast<Color *>(ps_malloc(160 * 128 * 2));
+	if(buffer == nullptr){
+		Serial.println("Settings background unpack error");
+		return;
+	}
+	background.seek(0);
+	background.read(reinterpret_cast<uint8_t *>(buffer), 160 * 128 * 2);
+
+}
+
+

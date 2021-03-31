@@ -5,7 +5,7 @@
 #include <Display/AnimatedSprite.h>
 
 enum MenuItemType {
-	PLAYBACK, DJ, SETTINGS
+	DJ, PLAYBACK, SETTINGS
 };
 
 namespace MainMenu {
@@ -14,11 +14,14 @@ namespace MainMenu {
 
 		MainMenuItem(ElementContainer *parent, MenuItemType type);
 
+		virtual ~MainMenuItem();
+
 		void draw();
 
 		void isSelected(bool selected);
 
 		bool needsUpdate();
+
 
 	private:
 
@@ -26,7 +29,9 @@ namespace MainMenu {
 
 		bool selected = false;
 
-		AnimatedSprite gif;
+		AnimatedSprite* gif= nullptr;
+
+	//	String gifIcons[MenuItemType::PLAYBACK];
 	};
 }
 #endif //JAYD_FIRMWARE_MAINMENUITEM_H

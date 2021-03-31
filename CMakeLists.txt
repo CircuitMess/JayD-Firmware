@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 project(JayD-Firmware)
-set(PORT COM18)
+set(PORT /dev/ttyUSB0)
 set(DEVICE cm:esp32:spencer) # Arduino device FQBN
 set(CMAKE_CXX_STANDARD 11)
 
@@ -28,7 +28,6 @@ include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/FS/s
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/SD/src)
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/SPI/src)
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/WiFi/src)
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/SPIFFS/src)
 
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/cores/esp32)
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/tools/sdk)
@@ -45,6 +44,7 @@ include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/TFT_
 include_directories(${ArduinoLibs}/JayD-Library/src)
 
 
+
 # Source directories
 AUX_SOURCE_DIRECTORY(src SOURCES)
 AUX_SOURCE_DIRECTORY(src/Matrix SOURCES)
@@ -56,6 +56,7 @@ AUX_SOURCE_DIRECTORY(src/Screens/MixScreen SOURCES)
 AUX_SOURCE_DIRECTORY(src/Screens/MixScreen/Bitmaps SOURCES)
 AUX_SOURCE_DIRECTORY(src/Screens/MainMenu SOURCES)
 AUX_SOURCE_DIRECTORY(src/Screens/IntroScreen SOURCES)
+AUX_SOURCE_DIRECTORY(src/Screens/Settings SOURCES)
 
 # Defines
 add_definitions(-DDEBUG)

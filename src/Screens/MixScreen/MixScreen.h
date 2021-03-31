@@ -14,6 +14,7 @@
 #include <unordered_map>
 #include <Input/InputJayD.h>
 #include <Util/Task.h>
+#include <AudioLib/Systems/MixSystem.h>
 
 namespace MixScreen {
 	class MixScreen : public Context, public LoopListener, public JayDInputListener {
@@ -32,23 +33,12 @@ namespace MixScreen {
 
 		virtual ~MixScreen();
 
-		static void audioThread(Task* task);
-
 	private:
 		static MixScreen *instance;
 
-		Task audioTask;
-
 		fs::File f1;
 		fs::File f2;
-
-		SourceWAV* s1;
-		SourceWAV* s2;
-
-		EffectProcessor* effector1;
-		EffectProcessor* effector2;
-		Mixer* mixer;
-		OutputI2S* out;
+		MixSystem* system = nullptr;
 
 		LinearLayout* screenLayout;
 		LinearLayout* leftLayout;
@@ -60,14 +50,9 @@ namespace MixScreen {
 		SongName* leftSongName;
 		SongName* rightSongName;
 
-		SpeedModifier* speedLeft = nullptr;
-		SpeedModifier* speedRight = nullptr;
-
 		EffectElement* effectElements[6] = { nullptr };
 
 		bool isPlaying = false;
-
-		Effect* effects[6] = { nullptr };
 
 		void buildUI();
 

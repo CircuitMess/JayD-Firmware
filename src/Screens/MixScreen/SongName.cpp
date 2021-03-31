@@ -5,36 +5,37 @@ MixScreen::SongName::SongName(ElementContainer *parent) : CustomElement(parent, 
 }
 
 void MixScreen::SongName::draw(){
-	getSprite()->setTextColor(TFT_WHITE);
-	getSprite()->setTextSize(1);
-	getSprite()->setTextFont(1);
-	getSprite()->setTextWrap(false);
+	FontWriter u8f = getSprite()->startU8g2Fonts();
+	u8f.setFont(u8g2_font_HelvetiPixel_tr);
+	u8f.setForegroundColor(TFT_WHITE);
+	u8f.setFontMode(1);
+
 	if(scrolling){
 		String temp = songName;
-		while(scrollCursor + (nameLength - getSprite()->textWidth(temp)) < 0){
+		while(scrollCursor + (nameLength - u8f.getUTF8Width(temp.c_str())) < 0){
 			temp.remove(0, 1);
 		}
-		int32_t correctedCursor = scrollCursor + (nameLength - getSprite()->textWidth(temp));
-		while(correctedCursor + getSprite()->textWidth(temp) >= (int)(getWidth())){
+		int32_t correctedCursor = scrollCursor + (nameLength - u8f.getUTF8Width(temp.c_str()));
+		while(correctedCursor + u8f.getUTF8Width(temp.c_str()) >= (int)(getWidth())){
 			temp.remove(temp.length() - 1);
 		}
-		getSprite()->setCursor(getTotalX() + correctedCursor, getTotalY() - 12);
-		getSprite()->print(temp);
+		u8f.setCursor(getTotalX() + correctedCursor, getTotalY() - 6);
+		u8f.print(temp);
 
 		temp = songName;
-		if(scrollCursor + 20 + nameLength > getWidth()) return;
-		while((scrollCursor + 20 + nameLength) + (nameLength - getSprite()->textWidth(temp)) < 0 && temp.length() > 0){
+		if(scrollCursor + scrollOffset + nameLength > getWidth()) return;
+		while((scrollCursor + scrollOffset + nameLength) + (nameLength - u8f.getUTF8Width(temp.c_str())) < 0 && temp.length() > 0){
 			temp.remove(0, 1);
 		}
-		correctedCursor = (scrollCursor + 20 + nameLength) + (nameLength - getSprite()->textWidth(temp));
-		while(correctedCursor + getSprite()->textWidth(temp) >= (int)(getWidth()) && temp.length() > 0){
+		correctedCursor = (scrollCursor + scrollOffset + nameLength) + (nameLength - u8f.getUTF8Width(temp.c_str()));
+		while(correctedCursor + u8f.getUTF8Width(temp.c_str()) >= (int)(getWidth()) && temp.length() > 0){
 			temp.remove(temp.length() - 1);
 		}
-		getSprite()->setCursor(getTotalX() + correctedCursor, getTotalY() - 12);
-		getSprite()->print(temp);
+		u8f.setCursor(getTotalX() + correctedCursor, getTotalY() - 6);
+		u8f.print(temp);
 	}else{
-		getSprite()->setCursor(getTotalX() + scrollCursor, getTotalY() - 12);
-		getSprite()->print(songName);
+		u8f.setCursor(getTotalX() + scrollCursor, getTotalY() - 6);
+		u8f.print(songName);
 	}
 }
 
@@ -45,7 +46,7 @@ bool MixScreen::SongName::checkScrollUpdate(){
 		currentTime = millis();
 		scrollCursor-=1;
 		if(scrollCursor <= -nameLength){
-			scrollCursor = 20;
+			scrollCursor = scrollOffset;
 		}
 		return true;
 	}
@@ -54,9 +55,11 @@ bool MixScreen::SongName::checkScrollUpdate(){
 void MixScreen::SongName::setSongName(const String& songName){
 	SongName::songName = songName;
 
-	getSprite()->setTextSize(1);
-	getSprite()->setTextFont(1);
-	nameLength = getSprite()->textWidth(songName);
+	FontWriter u8f = getSprite()->startU8g2Fonts();
+	u8f.setFont(u8g2_font_HelvetiPixel_tr);
+	u8f.setForegroundColor(TFT_WHITE);
+	u8f.setFontMode(1);
+	nameLength = u8f.getUTF8Width(songName.c_str());
 	if(nameLength >= (getWidth() - 2)){
 		scrolling = true;
 		currentTime = millis();

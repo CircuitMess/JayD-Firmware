@@ -14,6 +14,7 @@ namespace MainMenu {
 	public:
 
 		MainMenu(Display &display);
+
 		virtual ~MainMenu();
 
 		void start();
@@ -21,17 +22,26 @@ namespace MainMenu {
 		void stop();
 
 		void draw();
+
 		void loop(uint micros) override;
+
+		void pack() override;
+
+		void unpack() override;
 
 	private:
 
 		static MainMenu *instance;
 
-		LinearLayout* screenLayout;
+		LinearLayout *screenLayout;
 
 		std::vector<MainMenuItem *> item;
 
 		int8_t itemNum = 0;
+
+		fs::File background;
+
+		Color* buffer= nullptr;
 
 		void buildUI();
 	};
