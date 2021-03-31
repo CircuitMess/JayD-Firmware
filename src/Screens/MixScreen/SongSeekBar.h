@@ -16,6 +16,7 @@ namespace MixScreen {
 		void setCurrentDuration(int currentDuration);
 
 		int getCurrentDuration() const;
+		int getTotalDuration() const;
 
 	private:
 		bool playing = false;
