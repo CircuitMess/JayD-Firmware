@@ -3,6 +3,8 @@
 #include <JayD.hpp>
 #include <Loop/LoopManager.h>
 #include "Playback.h"
+#include <SPIFFS.h>
+#include <FS/CompressedFile.h>
 #include "Bitmaps/playback _pozadina.hpp"
 
 Playback::Playback *Playback::Playback::instance = nullptr;
@@ -11,9 +13,11 @@ Playback::Playback::Playback(Display &display) : Context(display), screenLayout(
 												 songNameLayout(new LinearLayout(screenLayout, HORIZONTAL)),
 												 timeElapsedLayout(new LinearLayout(screenLayout, HORIZONTAL)), buttonLayout(new LinearLayout(
 				screenLayout, HORIZONTAL)), songName(new SongName(songNameLayout)), playOrPause(new PlayPause(buttonLayout)),
-																							trackCount(new TrackCounter(timeElapsedLayout))
-																							{
+												 trackCount(new TrackCounter(timeElapsedLayout)){
 
+	fs::File file = SPIFFS.open("/playbackBackground.raw.hs");
+
+	background = CompressedFile::open(file, 10, 9);
 
 	instance = this;
 	buildUI();
@@ -21,6 +25,7 @@ Playback::Playback::Playback(Display &display) : Context(display), screenLayout(
 }
 
 Playback::Playback::~Playback(){
+	background.close();
 	instance = nullptr;
 }
 
@@ -138,8 +143,7 @@ void Playback::Playback::stop(){
 
 
 void Playback::Playback::draw(){
-	screen.getSprite()->clear(TFT_BLACK);
-	screenLayout->getSprite()->drawIcon(playback_pozadina, screenLayout->getTotalX(), screenLayout->getTotalY(), 160, 128, 1, TFT_TRANSPARENT);
+	screen.getSprite()->drawIcon(buffer, 0, 0, 160, 128, 1);
 	screen.draw();
 }
 
@@ -174,5 +178,22 @@ void Playback::Playback::buildUI(){
 	screen.addChild(screenLayout);
 	screen.repos();
 
+}
+
+void Playback::Playback::pack(){
+	Context::pack();
+	free(buffer);
+
+}
+
+void Playback::Playback::unpack(){
+	Context::unpack();
+	buffer = static_cast<Color *>(ps_malloc(160 * 128 * 2));
+	if(buffer == nullptr){
+		Serial.println("Settings background unpack error");
+		return;
+	}
+	background.seek(0);
+	background.read(reinterpret_cast<uint8_t *>(buffer), 160 * 128 * 2);
 }
 
