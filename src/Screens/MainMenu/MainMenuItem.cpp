@@ -9,9 +9,9 @@
 #include <SPIFFS.h>
 
 
-uint16_t *icons[] = { dj, playback, settings};
+uint16_t *icons[] = {  playback,dj, settings};
 
-String gifIcons[] = {"/dj.g565", "/playbackGIF.g565", "/settingsGIF.g565"};
+String gifIcons[] = {"/playbackGIF.g565","/djGIF.g565" , "/settingsGIF.g565"};
 
 //size_t gifIconsSize[] = {sizeof(playback_gif), sizeof(dj_gif), sizeof(settings_gif)};
 
