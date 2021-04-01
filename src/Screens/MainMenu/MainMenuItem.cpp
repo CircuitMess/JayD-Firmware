@@ -45,11 +45,11 @@ void MainMenu::MainMenuItem::draw(){
 	getSprite()->setTextSize(2);
 
 	if(selected && gif){
-		gif->setXY(getTotalX(), getTotalY() + 40);
+		gif->setXY(getTotalX()+7, getTotalY() + 60);
 		gif->nextFrame();
 		gif->push();
 	}else{
-		getSprite()->drawIcon(buffer, getTotalX(), getTotalY() + 45, 45, 42, 1, TFT_BLACK);
+		getSprite()->drawIcon(buffer, getTotalX()+7, getTotalY() + 60, 45, 42, 1, TFT_BLACK);
 
 	}
 
