@@ -39,11 +39,15 @@ namespace MainMenu {
 
 		int8_t itemNum = 0;
 
-		fs::File background;
+		fs::File backgroundPicture;
+		fs::File jayDlogo;
 
-		Color* buffer= nullptr;
+		fs::File picture[2];
+
+		Color *buffer[];
 
 		void buildUI();
+
 	};
 }
 #endif //JAYD_FIRMWARE_MAINMENU_H
