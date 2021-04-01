@@ -11,14 +11,17 @@ namespace Playback {
 
 		void togglePlaying();
 
+		virtual ~PlayPause();
+
 		void draw();
 
 		void setPlaying(bool playing);
 
 
-
 	private:
 		bool playing = false;
+
+		Color *buffer[];
 	};
 }
 
