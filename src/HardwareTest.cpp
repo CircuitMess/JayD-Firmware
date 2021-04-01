@@ -16,7 +16,6 @@ HardwareTest::HardwareTest(Display &_display) : canvas(_display.getBaseSprite())
 	tests.push_back({HardwareTest::nuvotonTest, "Nuvoton"});
 	tests.push_back({HardwareTest::sdTest, "SD Card"});
 	tests.push_back({HardwareTest::matrixTest, "LED Matrix"});
-	tests.push_back({ HardwareTest::soundTest, "Sound File"});
 
 	SPI.begin(18, 19, 23);
 	SPI.setFrequency(60000000);
@@ -203,19 +202,6 @@ bool HardwareTest::matrixTest(){
 		delete ledMatrix;
 
 		test->log("LED Matrix","Begin successful.");
-		return true;
-	}
-}
-
-bool HardwareTest::soundTest(){
-
-	File file = SD.open("/SandstormCut.wav");
-	/* File opening test */
-	if(!(file)){
-		test->log("Sound File","File Error");
-		return false;
-	}
-	else{
 		return true;
 	}
 }
