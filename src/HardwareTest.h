@@ -36,6 +36,7 @@ private:
 	void log(const char* property, float value);
 	void log(const char* property, double value);
 	void log(const char* property, bool value);
+	void log(const char *property, uint32_t value);
 
 	static bool nuvotonTest();
 	static bool sdTest();

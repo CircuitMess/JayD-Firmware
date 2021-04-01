@@ -340,6 +340,10 @@ void HardwareTest::log(const char *property, float value){
 	Serial.printf("\n%s:%s:%f\n", currentTest, property, value);
 }
 
+void HardwareTest::log(const char *property, uint32_t value){
+	Serial.printf("\n%s:%s:%u\n", currentTest, property, value);
+}
+
 void HardwareTest::log(const char *property, double value){
 	Serial.printf("\n%s:%s:%lf\n", currentTest, property, value);
 }
