@@ -12,6 +12,7 @@ HardwareTest::HardwareTest(Display &_display) : canvas(_display.getBaseSprite())
 
 	test = this;
 
+	tests.push_back({HardwareTest::psram, "PSRAM"});
 	tests.push_back({HardwareTest::nuvotonTest, "Nuvoton"});
 	tests.push_back({HardwareTest::sdTest, "SD Card"});
 	tests.push_back({HardwareTest::matrixTest, "LED Matrix"});
@@ -81,6 +82,18 @@ void HardwareTest::start(){
 	}
 }
 
+bool HardwareTest::psram(){
+	if(!(psramFound() && psramInit())) return false;
+
+	uint32_t free = ESP.getFreePsram();
+
+	if(free != 4194252){
+		test->log("free", free);
+		return false;
+	}
+
+	return true;
+}
 
 bool HardwareTest::nuvotonTest(){
 

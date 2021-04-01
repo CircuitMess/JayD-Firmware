@@ -38,6 +38,7 @@ private:
 	void log(const char* property, bool value);
 	void log(const char *property, uint32_t value);
 
+	static bool psram();
 	static bool nuvotonTest();
 	static bool sdTest();
 	static bool matrixTest();
