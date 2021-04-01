@@ -9,9 +9,6 @@
 #include "AudioLib/OutputI2S.h"
 #include "AudioLib/SourceWAV.h"
 
-#define MAX_BRIGHTNESS 256
-#define NUM_LED 16*9
-
 struct Test {
 	bool (*test)();
 	const char* name;
@@ -42,7 +39,6 @@ private:
 	static bool nuvotonTest();
 	static bool sdTest();
 	static bool matrixTest();
-	static bool soundTest();
 
 	void visualMatrixTest();
 	void auditorySoundTest();

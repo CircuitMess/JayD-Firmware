@@ -4,7 +4,6 @@
 #include "Wire.h"
 #include "JayD.hpp"
 #include "Devices/LEDmatrix/LEDmatrix.h"
-#include "Matrix/MatrixR.h"
 
 HardwareTest *HardwareTest::test = nullptr;
 
@@ -24,10 +23,11 @@ HardwareTest::HardwareTest(Display &_display) : canvas(_display.getBaseSprite())
 }
 
 void HardwareTest::start(){
-
-	printf("\nStarting test ...\n");
-	printf("CPU Freq: %d MHz\n", ESP.getCpuFreqMHz());
-	printf("I2C Frequency: %zu Hz\n\n", Wire.getClock());
+	Serial.println();
+	uint64_t mac = ESP.getEfuseMac();
+	uint32_t upper = mac >> 32;
+	uint32_t lower = mac & 0xffffffff;
+	Serial.printf("TEST:begin:%x%x\n", upper, lower);
 
 	canvas->clear(TFT_BLACK);
 	canvas->setTextColor(TFT_GOLD);
@@ -58,27 +58,20 @@ void HardwareTest::start(){
 	}
 
 	if(pass){
+		Serial.println("TEST:pass");
+
 		canvas->setTextColor(TFT_CYAN);
 		canvas->printf("\n");
 		canvas->printCenter("Test Successful!");
 		display->commit();
 
-		printf("HW test completed successfully.\n\n");
-		printf("Prepare for visual & auditory test...\n");
-
-		delay(1000);
-
-		visualMatrixTest();
-		delay(100);
 		auditorySoundTest();
-
-		for(;;);
-
+		visualMatrixTest();
 	}else{
-
-		printf("Test failed at %s checkpoint.\n", currentTest);
-		for(;;);
+		Serial.printf("TEST:fail:%s\n", currentTest);
 	}
+
+	for(;;);
 }
 
 bool HardwareTest::psram(){
@@ -119,7 +112,6 @@ bool HardwareTest::nuvotonTest(){
 	Wire.requestFrom(JDNV_ADDR, 1);
 	if(Wire.available()){
 		if(Wire.read() == JDNV_ADDR){
-			test->log("Identification", "Passed");
 			return true;
 		}else{
 			test->log("Identification", "Failed -> Wrong data acquired.");
@@ -179,29 +171,29 @@ bool HardwareTest::sdTest(){
 		test->log("SD Compare", "Write buffer not equal to read buffer.");
 		free(readBuff);
 		return false;
-	}else{
-		test->log("SD Card","Test Successful.");
-		free(readBuff);
-		return true;
 	}
 
+	file.close();
+	SD.remove("/SDCardTest.txt");
+
+	free(readBuff);
+	return true;
 }
 
 bool HardwareTest::matrixTest(){
 
-	auto *ledMatrix = new LEDmatrixImpl(16, 9);
+	LEDmatrixImpl* ledMatrix = new LEDmatrixImpl(16, 9);
 
 	/* Matrix begin test */
 	if(!ledMatrix->begin(26, 27)){
 		test->log("LED Matrix","Begin failed.");
+		delete ledMatrix;
 		return false;
 	}else{
 		ledMatrix->clear();
 		ledMatrix->push();
 
 		delete ledMatrix;
-
-		test->log("LED Matrix","Begin successful.");
 		return true;
 	}
 }
@@ -209,8 +201,7 @@ bool HardwareTest::matrixTest(){
 void HardwareTest::auditorySoundTest(){
 
 	File file;
-	if(!(file = SD.open("/SandstormCut.wav"))){
-		printf("File error\n");
+	if(!(file = SD.open("/Walter.wav"))){
 		for(;;);
 	}
 
@@ -218,25 +209,24 @@ void HardwareTest::auditorySoundTest(){
 
 	auto *i2s = new OutputI2S({
 									  .mode = i2s_mode_t(I2S_MODE_MASTER | I2S_MODE_TX),
-									  .sample_rate = 44100,
+									  .sample_rate = 48000,
 									  .bits_per_sample = I2S_BITS_PER_SAMPLE_32BIT,
 									  .channel_format = I2S_CHANNEL_FMT_ONLY_LEFT,
 									  .communication_format = i2s_comm_format_t(
 											  I2S_COMM_FORMAT_I2S | I2S_COMM_FORMAT_I2S_MSB),
 									  .intr_alloc_flags = 0,
-									  .dma_buf_count = 6,
+									  .dma_buf_count = 32,
 									  .dma_buf_len = 512,
 									  .use_apll = false
 							  }, i2s_pin_config, I2S_NUM_0);
 
 	i2s->setSource(wav);
 
-	i2s->setGain(0.2);
+	i2s->setGain(0.1);
 	i2s->start();
 
 	/* I2S running test*/
 	if(!i2s->isRunning()){
-		printf("I2S not running.\n");
 		for(;;);
 	}
 
@@ -246,6 +236,8 @@ void HardwareTest::auditorySoundTest(){
 		uint32_t currTime = millis();
 
 		while(task->running){
+			Sched.loop(0);
+
 			if(i2s->isRunning() && (millis()-currTime) < 6000){
 				i2s->loop(0);
 			}
@@ -259,22 +251,6 @@ void HardwareTest::auditorySoundTest(){
 	audioTask.arg = (void *) i2s;
 
 	audioTask.start(1, 0);
-
-	/* Audio task running test */
-	if(!audioTask.running){
-		printf("Audio task not running.\n");
-	}
-
-	/* Scheduler loop */
-	for(;;){
-		Sched.loop(0);
-		if(!audioTask.running){
-			break;
-		}
-	}
-
-	printf("I2S sound test completed.\n");
-
 }
 
 void HardwareTest::visualMatrixTest(){
@@ -282,52 +258,47 @@ void HardwareTest::visualMatrixTest(){
 	auto *ledMatrix = new LEDmatrixImpl(16, 9);
 
 	/* Matrix begin test */
-	if(!ledMatrix->begin(26, 27)){
-		printf("LED Matrix begin failed.\n");
+	if(!ledMatrix->begin(I2C_SDA, I2C_SCL)){
 		for(;;);
 	}
 
+	const int brightness = 255;
 
 	ledMatrix->clear();
-	ledMatrix->setBrightness(MAX_BRIGHTNESS / 2);
+	ledMatrix->setBrightness(150);
 
 	/* Individual LED test */
-	for(int i = 0; i < NUM_LED; ++i){
+	for(int i = 0; i < 144; ++i){
 
-		ledMatrix->drawPixel(i, MAX_BRIGHTNESS / 2);
+		ledMatrix->drawPixel(i, brightness / 2);
 		ledMatrix->push();
-		delay(50);
+		delay(5);
 	}
-	printf("Individual LED test completed.\n");
 
 	/* Brightness change test */
-	for(int i = MAX_BRIGHTNESS - 1; i >= 0; i -= 5){
+	for(int i = brightness - 1; i >= 0; i -= 5){
 
 		ledMatrix->setBrightness(i);
 		ledMatrix->push();
-		delay(10);
+		delay(5);
 	}
 	/* Brightness change test */
-	for(int i = 0; i < MAX_BRIGHTNESS - 1; i += 5){
+	for(int i = 0; i < brightness - 1; i += 5){
 
 		ledMatrix->setBrightness(i);
 		ledMatrix->push();
-		delay(10);
+		delay(5);
 	}
 	/* Brightness change test */
-	for(int i = MAX_BRIGHTNESS - 1; i >= 0; i -= 5){
+	for(int i = brightness - 1; i >= 0; i -= 5){
 
 		ledMatrix->setBrightness(i);
 		ledMatrix->push();
-		delay(10);
+		delay(5);
 	}
-	printf("Brightness test completed.\n");
 
 	ledMatrix->clear();
 	ledMatrix->push();
-
-	printf("LED Matrix test completed.\n\n");
-
 }
 
 
