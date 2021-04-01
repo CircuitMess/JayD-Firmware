@@ -190,7 +190,7 @@ void Playback::Playback::unpack(){
 	Context::unpack();
 	buffer = static_cast<Color *>(ps_malloc(160 * 128 * 2));
 	if(buffer == nullptr){
-		Serial.println("Settings background unpack error");
+		Serial.println("Playback background unpack error");
 		return;
 	}
 	background.seek(0);
