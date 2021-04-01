@@ -33,7 +33,6 @@ namespace MainMenu {
 
 		Color *buffer = nullptr;
 
-		//	String gifIcons[MenuItemType::PLAYBACK];
 	};
 }
 #endif //JAYD_FIRMWARE_MAINMENUITEM_H

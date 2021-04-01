@@ -5,13 +5,12 @@
 #include "Bitmaps/djGIF.hpp"
 #include "Bitmaps/playbackGIF.hpp"
 #include "Bitmaps/settingsGIF.hpp"
-#include <FS/PGMFile.h>
 #include <SPIFFS.h>
 #include <FS/CompressedFile.h>
 
 String gifIcons[] = {"/playbackGIF.g565", "/djGIF.g565", "/settingsGIF.g565"};
 
-String icons[] = {"/playback.raw.hs","/dj.raw.hs" , "/settings.raw.hs"};
+String icons[] = {"/playback.raw.hs", "/dj.raw.hs", "/settings.raw.hs"};
 
 
 MainMenu::MainMenuItem::MainMenuItem(ElementContainer *parent, MenuItemType type) : CustomElement(parent, 20, 20), type(type){
@@ -26,7 +25,7 @@ MainMenu::MainMenuItem::MainMenuItem(ElementContainer *parent, MenuItemType type
 	gif->setMaskingColor(TFT_BLACK);
 
 	fs::File iconsPictures = SPIFFS.open(icons[type]);
-	fs::File picture=CompressedFile::open(iconsPictures, 7, 6);
+	fs::File picture = CompressedFile::open(iconsPictures, 7, 6);
 
 	buffer = static_cast<Color *>(ps_malloc(160 * 128 * 2));
 	if(buffer == nullptr){
