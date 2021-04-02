@@ -41,10 +41,17 @@ void setup(){
 		Serial.println("No SD card");
 		//for(;;);
 	}
-
+	if(!SPIFFS.begin()){
+		Serial.println("SPIFFS error");
+	}
 	display.begin();
 	SPI.setFrequency(20000000);
 
+	if(!LEDmatrix.begin(26, 27)){
+		Serial.println("couldn't start matrix");
+		for(;;);
+	}
+	LoopManager::addListener(&matrixManager);
 	LoopManager::addListener(new InputJayD());
 	InputJayD::getInstance()->begin();
 
