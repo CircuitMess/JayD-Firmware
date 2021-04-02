@@ -4,10 +4,10 @@
 
 
 Playback::PlayPause::PlayPause(ElementContainer *parent) : CustomElement(parent, 160, 10){
-	fs::File fw = SPIFFS.open("/fw.raw");
-	fs::File rew = SPIFFS.open("/rew.raw");
-	fs::File play = SPIFFS.open("/play.raw");
-	fs::File pause = SPIFFS.open("/pause.raw");
+	fs::File fw = SPIFFS.open("/data/playback/playPausePictures/fw.raw");
+	fs::File rew = SPIFFS.open("/data/playback/playPausePictures/rew.raw");
+	fs::File play = SPIFFS.open("/data/playback/playPausePictures/play.raw");
+	fs::File pause = SPIFFS.open("/data/playback/playPausePictures/pause.raw");
 	fs::File picture[]={};
 	picture[0] = fw;
 	picture[1]=rew;
