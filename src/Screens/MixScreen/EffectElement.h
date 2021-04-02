@@ -10,19 +10,26 @@ namespace MixScreen {
 	public:
 		EffectElement(ElementContainer *parent, bool mirrored);
 
+		virtual ~EffectElement();
+
 		void draw();
 
 		void setType(EffectType effect);
+
 		EffectType getType() const;
 
 		void setIntensity(uint8_t intensity);
+
 		uint8_t getIntensity() const;
 
 		void setSelected(bool selected);
+
 		bool isSelected() const;
 
 		bool needsUpdate();
+
 		void repos() override;
+
 	private:
 		EffectType effect = EffectType::NONE;
 		uint8_t intensity = 0;
@@ -32,10 +39,12 @@ namespace MixScreen {
 
 		void setupGif();
 
-		static const uint16_t* const iconsNotMirrored[EffectType::COUNT];
-		static const uint16_t* const iconsMirrored[EffectType::COUNT];
-		static const uint8_t* const gifIcons[EffectType::COUNT];
-		static const size_t gifIconSizes[EffectType::COUNT];
+		static const String iconsNotMirrored[EffectType::COUNT];
+		static const String iconsMirrored[EffectType::COUNT];
+		static const String gifIcons[EffectType::COUNT];
+
+		Color *bufferNotMirrored = nullptr;
+		Color *bufferMirrored = nullptr;
 	};
 
 }
