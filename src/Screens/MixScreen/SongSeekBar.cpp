@@ -1,6 +1,5 @@
 #include "SongSeekBar.h"
-#include "Bitmaps/pause_dj.hpp"
-#include "Bitmaps/play_dj.hpp"
+
 
 MixScreen::SongSeekBar::SongSeekBar(ElementContainer *parent) : CustomElement(parent, 10, 10){
 
