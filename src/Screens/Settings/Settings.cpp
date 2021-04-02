@@ -16,7 +16,7 @@ Settings::Settings::Settings(Display &display) : Context(display), screenLayout(
 	firstElement.setIsSelected(true);
 	newValue = 0;
 
-	fs::File file=SPIFFS.open("/settingsBackground.raw.hs");
+	fs::File file=SPIFFS.open("/data/settingsScreen/settingsBackground.raw.hs");
 
 	background = CompressedFile::open(file, 14, 13);
 }
