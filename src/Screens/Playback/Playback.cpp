@@ -5,7 +5,6 @@
 #include "Playback.h"
 #include <SPIFFS.h>
 #include <FS/CompressedFile.h>
-#include "Bitmaps/playback _pozadina.hpp"
 
 Playback::Playback *Playback::Playback::instance = nullptr;
 
