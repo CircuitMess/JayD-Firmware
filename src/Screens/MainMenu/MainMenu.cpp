@@ -14,8 +14,8 @@ MainMenu::MainMenu::MainMenu(Display &display) : Context(display), screenLayout(
 		item.push_back(new MainMenuItem(screenLayout, static_cast<MenuItemType>(i)));
 	}
 
-	backgroundPicture = SPIFFS.open("/mainMenuBackground.raw.hs");
-	jayDlogo = SPIFFS.open("/jayD_logo.raw.hs");
+	backgroundPicture = SPIFFS.open("/data/mainMenu/mainMenuBackground.raw.hs");
+	jayDlogo = SPIFFS.open("/data/mainMenu/pictures/jayD_logo.raw.hs");
 
 	picture[0] = CompressedFile::open(backgroundPicture, 14, 10);
 	picture[1]= CompressedFile::open(jayDlogo, 8, 7);
