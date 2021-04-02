@@ -5,7 +5,7 @@
 #include <Display/AnimatedSprite.h>
 
 enum MenuItemType {
-	/* PLAYBACK,*/ DJ, SETTINGS
+	DJ, PLAYBACK, SETTINGS
 };
 
 namespace MainMenu {

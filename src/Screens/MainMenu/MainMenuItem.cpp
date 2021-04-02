@@ -9,14 +9,19 @@
 #include <SPIFFS.h>
 
 
-uint16_t *icons[] = {/*playback,*/ dj, settings};
+uint16_t *icons[] = { dj, playback, settings};
 
-String gifIcons[] = {/*"/playbackGIF.g565",*/"/dj.g565", "/settingsGIF.g565"};
+String gifIcons[] = {"/dj.g565", "/playbackGIF.g565", "/settingsGIF.g565"};
 
 //size_t gifIconsSize[] = {sizeof(playback_gif), sizeof(dj_gif), sizeof(settings_gif)};
 
 MainMenu::MainMenuItem::MainMenuItem(ElementContainer *parent, MenuItemType type) : CustomElement(parent, 20, 20), type(type){
 
+	fs::File f = SPIFFS.open(gifIcons[type]);
+	if(!f){
+		Serial.printf("Can't open file %s\n", gifIcons[type].c_str());
+		return;
+	}
 	gif = new AnimatedSprite(getSprite(), SPIFFS.open(gifIcons[type]));
 	gif->setLoop(true);
 	gif->setMaskingColor(TFT_BLACK);
@@ -29,7 +34,7 @@ void MainMenu::MainMenuItem::draw(){
 	getSprite()->setTextColor(TFT_WHITE);
 	getSprite()->setTextSize(2);
 
-	if(selected){
+	if(selected && gif){
 		gif->setXY(getTotalX(), getTotalY() + 40);
 		gif->nextFrame();
 		gif->push();
