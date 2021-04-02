@@ -1,7 +1,6 @@
 #include <Input/InputJayD.h>
 #include <FS/CompressedFile.h>
 #include "TextInputScreen.h"
-#include "Bitmaps/backgroundTextEntry.hpp"
 #include <SPIFFS.h>
 
 TextInputScreen::TextInputScreen *TextInputScreen::TextInputScreen::instance = nullptr;
