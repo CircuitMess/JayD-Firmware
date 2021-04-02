@@ -1,10 +1,4 @@
 #include "MainMenuItem.h"
-#include "Bitmaps/settings.hpp"
-#include "Bitmaps/dj.hpp"
-#include "Bitmaps/playback.hpp"
-#include "Bitmaps/djGIF.hpp"
-#include "Bitmaps/playbackGIF.hpp"
-#include "Bitmaps/settingsGIF.hpp"
 #include <SPIFFS.h>
 #include <FS/CompressedFile.h>
 

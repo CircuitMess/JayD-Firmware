@@ -1,7 +1,6 @@
 #include <Input/InputJayD.h>
 #include <JayD.hpp>
 #include "MainMenu.h"
-#include "Bitmaps/mainMenu_background.hpp"
 #include <Loop/LoopManager.h>
 #include <FS/CompressedFile.h>
 #include <SPIFFS.h>
