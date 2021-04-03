@@ -46,6 +46,11 @@ void MainMenu::MainMenuItem::draw(){
 
 void MainMenu::MainMenuItem::isSelected(bool selected){
 	MainMenuItem::selected = selected;
+	if(selected){
+		gif->reset();
+	}else{
+		gif->stop();
+	}
 }
 
 bool MainMenu::MainMenuItem::needsUpdate(){
