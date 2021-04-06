@@ -4,7 +4,7 @@
 
 String gifIcons[] = {"/data/mainMenu/gifs/playbackGIF.g565", "/data/mainMenu/gifs/djGIF.g565", "/data/mainMenu/gifs/settingsGIF.g565"};
 
-String icons[] = {"//data/mainMenu/pictures/playback.raw.hs", "/data/mainMenu/pictures/dj.raw.hs", "/data/mainMenu/pictures/settings.raw.hs"};
+String icons[] = {"/data/mainMenu/pictures/playback.raw.hs", "/data/mainMenu/pictures/dj.raw.hs", "/data/mainMenu/pictures/settings.raw.hs"};
 
 
 MainMenu::MainMenuItem::MainMenuItem(ElementContainer *parent, MenuItemType type) : CustomElement(parent, 20, 20), type(type){
@@ -21,9 +21,9 @@ MainMenu::MainMenuItem::MainMenuItem(ElementContainer *parent, MenuItemType type
 	fs::File iconsPictures = SPIFFS.open(icons[type]);
 	fs::File picture = CompressedFile::open(iconsPictures, 7, 6);
 
-	buffer = static_cast<Color *>(ps_malloc(160 * 128 * 2));
+	buffer = static_cast<Color *>(ps_malloc(45 * 42 * 2));
 	if(buffer == nullptr){
-		Serial.println("MainMenuItem pictures unpack error");
+		Serial.printf("MainMenuItem picture %s unpack error\n",icons[type].c_str());
 		return;
 	}
 	picture.seek(0);
