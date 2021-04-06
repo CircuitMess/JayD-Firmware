@@ -4,19 +4,18 @@
 
 
 Playback::PlayPause::PlayPause(ElementContainer *parent) : CustomElement(parent, 160, 10){
-	fs::File fw = SPIFFS.open("/data/playback/playPausePictures/fw.raw");
-	fs::File rew = SPIFFS.open("/data/playback/playPausePictures/rew.raw");
-	fs::File play = SPIFFS.open("/data/playback/playPausePictures/play.raw");
-	fs::File pause = SPIFFS.open("/data/playback/playPausePictures/pause.raw");
-	fs::File picture[]={};
-	picture[0] = fw;
-	picture[1]=rew;
-	picture[2]=play;
-	picture[3]=pause;
+	fs::File picture[4]={
+			SPIFFS.open("/fw.raw"),
+			SPIFFS.open("/rew.raw"),
+			SPIFFS.open("/play.raw"),
+			SPIFFS.open("/pause.raw")
+
+	};
 	for(int i=0;i<4;i++){
+
 		buffer[i] = static_cast<Color *>(ps_malloc((i==0 || i==1)?(10*8*2):(14*18*2)));
 		if(buffer[i] == nullptr){
-			Serial.println("PlayPause pictures unpack error");
+			Serial.println("PlayPause picture unpack error");
 			return;
 		}
 		picture[i].seek(0);
