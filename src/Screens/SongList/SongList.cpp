@@ -18,6 +18,9 @@ SongList::SongList::SongList(Display &display) : Context(display){
 
 	background = CompressedFile::open(file, 10, 9);
 
+	buildUI();
+	pack();
+
 	SD.end();
 	insertedSD = SD.begin(22, SPI);
 
@@ -28,8 +31,6 @@ SongList::SongList::SongList(Display &display) : Context(display){
 		}
 	}
 
-	buildUI();
-	pack();
 }
 
 SongList::SongList::~SongList(){
@@ -74,10 +75,10 @@ void SongList::SongList::loop(uint t){
 	if(millis() - prevSDCheck > SD_CARD_INTERVAL){
 
 		SD.end();
-		if(insertedSD != SD.begin(22, SPI)){
+		bool ins = SD.begin(22, SPI);
 
-			SD.end();
-			insertedSD = SD.begin(22, SPI);
+		if(insertedSD != ins){
+			insertedSD = ins;
 
 			if(insertedSD){
 				populateList();
@@ -85,7 +86,8 @@ void SongList::SongList::loop(uint t){
 					selectedElement = 0;
 					songs[selectedElement]->setSelected(true);
 				}
-				scrollLayout->setY(18);
+				//scrollLayout->setY(18);
+				scrollLayout->scrollIntoView(selectedElement,2);
 			}
 		}
 		prevSDCheck = millis();
@@ -147,10 +149,10 @@ void SongList::SongList::draw(){
 	canvas->setTextColor(TFT_WHITE);
 
 	if(!insertedSD){
-		canvas->setCursor(0, 50);
+		canvas->setCursor(0, 55);
 		canvas->printCenter("Not inserted!");
 	}else if(songs.empty()){
-		canvas->setCursor(0, 50);
+		canvas->setCursor(0, 55);
 		canvas->printCenter("Empty!");
 	}else{
 		screen.draw();
