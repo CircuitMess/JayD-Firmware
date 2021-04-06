@@ -14,7 +14,7 @@ Playback::Playback::Playback(Display &display) : Context(display), screenLayout(
 				screenLayout, HORIZONTAL)), songName(new SongName(songNameLayout)), playOrPause(new PlayPause(buttonLayout)),
 												 trackCount(new TrackCounter(timeElapsedLayout)){
 
-	fs::File file = SPIFFS.open("/data/playback/playbackBackground.raw.hs");
+	fs::File file = SPIFFS.open("/playbackBackground.raw.hs");
 
 	background = CompressedFile::open(file, 10, 9);
 
