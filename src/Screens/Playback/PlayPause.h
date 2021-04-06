@@ -21,7 +21,7 @@ namespace Playback {
 	private:
 		bool playing = false;
 
-		Color *buffer[];
+		Color *buffer[4];
 	};
 }
 
