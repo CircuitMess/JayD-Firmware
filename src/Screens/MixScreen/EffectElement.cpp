@@ -4,9 +4,9 @@
 #include <FS/PGMFile.h>
 
 
-const String MixScreen::EffectElement::iconsNotMirrored[] = {"/data/mixScreen/pictures/noEffectRed.raw", "/data/mixScreen/pictures/speedRed.raw", "/data/mixScreen/pictures/lowpassRed.raw", "/data/mixScreen/pictures/highpassRed.raw", "/data/mixScreen/pictures/reverbRed.raw", "/data/mixScreen/pictures/bitrusherRed.raw"};
-const String MixScreen::EffectElement::iconsMirrored[] = {"/data/mixScreen/pictures/noEffectBlue.raw", "/data/mixScreen/pictures/speedBlue.raw", "/data/mixScreen/pictures/lowpassBlue.raw", "/data/mixScreen/pictures/highpassBlue.raw", "/data/mixScreen/pictures/reverbBlue.raw", "/data/mixScreen/pictures/bitrusherBlue.raw"};
-const String MixScreen::EffectElement::gifIcons[] = {"/data/mixScreen/gifs/noEffect.g565", "/data/mixScreen/gifs/speed.g565", "/data/mixScreen/gifs/lowpass.g565", "/data/mixScreen/gifs/highpass.g565", "/data/mixScreen/gifs/reverb.g565", "/data/mixScreen/gifs/bitcrusher.g565"};
+const String MixScreen::EffectElement::iconsNotMirrored[] = {"/noEffectRed.raw", "/speedRed.raw", "/lowpassRed.raw", "/highpassRed.raw", "/reverbRed.raw", "/bitrusherRed.raw"};
+const String MixScreen::EffectElement::iconsMirrored[] = {"/noEffectBlue.raw", "/speedBlue.raw", "/lowpassBlue.raw", "/highpassBlue.raw", "/reverbBlue.raw", "/bitrusherBlue.raw"};
+const String MixScreen::EffectElement::gifIcons[] = {"/noEffect.g565", "/speed.g565", "/lowpass.g565", "/highpass.g565", "/reverb.g565", "/bitcrusher.g565"};
 
 MixScreen::EffectElement::EffectElement(ElementContainer *parent, bool mirrored) : CustomElement(parent, 10, 10), mirrored(mirrored){
 	fs::File iconsNotMirroredFile = SPIFFS.open(iconsNotMirrored[effect]);
