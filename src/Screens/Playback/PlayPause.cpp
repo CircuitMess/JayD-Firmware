@@ -14,13 +14,13 @@ Playback::PlayPause::PlayPause(ElementContainer *parent) : CustomElement(parent,
 	picture[2]=play;
 	picture[3]=pause;
 	for(int i=0;i<4;i++){
-		buffer[i] = static_cast<Color *>(ps_malloc(160 * 128 * 2));
+		buffer[i] = static_cast<Color *>(ps_malloc((i==0 || i==1)?(10*8*2):(14*18*2)));
 		if(buffer[i] == nullptr){
 			Serial.println("PlayPause pictures unpack error");
 			return;
 		}
 		picture[i].seek(0);
-		picture[i].read(reinterpret_cast<uint8_t *>(buffer[i]), 160 * 128 * 2);
+		picture[i].read(reinterpret_cast<uint8_t *>(buffer[i]), (i==0 || i==1)?(10*8*2):(14*18*2));
 	}
 }
 Playback::PlayPause::~PlayPause(){
