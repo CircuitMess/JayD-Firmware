@@ -2,9 +2,9 @@
 #include <SPIFFS.h>
 #include <FS/CompressedFile.h>
 
-String gifIcons[] = {"/data/mainMenu/gifs/playbackGIF.g565", "/data/mainMenu/gifs/djGIF.g565", "/data/mainMenu/gifs/settingsGIF.g565"};
+String gifIcons[] = {"/playbackGIF.g565", "/djGIF.g565", "/settingsGIF.g565"};
 
-String icons[] = {"/data/mainMenu/pictures/playback.raw.hs", "/data/mainMenu/pictures/dj.raw.hs", "/data/mainMenu/pictures/settings.raw.hs"};
+String icons[] = {"/playback.raw.hs", "/dj.raw.hs", "/settings.raw.hs"};
 
 
 MainMenu::MainMenuItem::MainMenuItem(ElementContainer *parent, MenuItemType type) : CustomElement(parent, 20, 20), type(type){
