@@ -331,6 +331,9 @@ void MixScreen::MixScreen::encoderMove(uint8_t id, int8_t value){
 void MixScreen::MixScreen::potMove(uint8_t id, uint8_t value){
 	if(id == POT_MID){
 		system->setMix(value);
+		matrixManager.matrixMid.clear();
+		matrixManager.matrixMid.vu(value);
+		matrixManager.matrixMid.push();
 	}else if(id == POT_L){
 		system->setVolume(0, value);
 	}else if(id == POT_R){
