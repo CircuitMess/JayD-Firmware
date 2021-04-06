@@ -126,13 +126,13 @@ void MainMenu::MainMenu::unpack(){
 	Context::unpack();
 	for(int i=0;i<2;i++){
 		buffer[i]= nullptr;
-		buffer[i] = static_cast<Color *>(ps_malloc(160 * 128 * 2));
+		buffer[i] = static_cast<Color *>(ps_malloc(i==0 ? (160*128*2) : (45 * 42 * 2)));
 		if(buffer[i] == nullptr){
 			Serial.println("MainMenu pictures unpack error");
 			return;
 		}
 		picture[i].seek(0);
-		picture[i].read(reinterpret_cast<uint8_t *>(buffer[i]), 160 * 128 * 2);
+		picture[i].read(reinterpret_cast<uint8_t *>(buffer[i]), i==0 ? (160*128*2) : (45 * 42 * 2));
 	}
 
 }
