@@ -8,6 +8,8 @@
 #include <SPIFFS.h>
 
 MainMenu::MainMenu *MainMenu::MainMenu::instance = nullptr;
+MatrixPartition *partitions[4] = {&matrixManager.matrixL, &matrixManager.matrixR, &matrixManager.matrixMid, &matrixManager.matrixBig};
+const char* partitionNames[4] = {"left", "right", "mid", "big"};
 
 MainMenu::MainMenu::MainMenu(Display &display) : Context(display), screenLayout(new LinearLayout(&screen, HORIZONTAL)){
 
@@ -23,6 +25,12 @@ MainMenu::MainMenu::MainMenu(Display &display) : Context(display), screenLayout(
 	instance = this;
 	instance->item[0]->isSelected(true);
 	buildUI();
+
+	for(uint8_t j = 0; j < 4; j++){
+		for(uint8_t i = 1; i < totalAnimations + 1; i++){
+			gifData[j].unusedIdleAnimations.push_back(i);
+		}
+	}
 	//pack();
 }
 
@@ -74,9 +82,14 @@ void MainMenu::MainMenu::start(){
 			list->start();*/
 		}
 	});
+
+	for(uint8_t j = 0; j < 4; j++){
+		startRandomAnimation(j);
+	}
 }
 
 void MainMenu::MainMenu::stop(){
+	matrixManager.stopAnimation();
 	InputJayD::getInstance()->removeEncoderMovedCallback(0);
 	InputJayD::getInstance()->removeBtnPressCallback(BTN_MID);
 }
@@ -104,6 +117,22 @@ void MainMenu::MainMenu::buildUI(){
 }
 
 void MainMenu::MainMenu::loop(uint micros){
+
+	for(uint8_t i = 0; i < 4; i++){
+		MatrixPartition *partition = partitions[i];
+		if(partition->getAnimationCompletionRate() >= 99.0 && !gifData[i].animationLoopDone){
+			gifData[i].animationLoopCounter++;
+			gifData[i].animationLoopDone = true;
+			if(gifData[i].animationLoopCounter > gifData[i].requiredAnimationLoops - 1){
+				startRandomAnimation(i);
+			}
+		}
+		if(partition->getAnimationCompletionRate() <= 1){
+			gifData[i].animationLoopDone = false;
+		}
+	}
+	
+
 	bool update = false;
 	for(const auto &i : item){
 		update |= i->needsUpdate();
@@ -131,4 +160,23 @@ void MainMenu::MainMenu::unpack(){
 
 }
 
+void MainMenu::MainMenu::startRandomAnimation(uint8_t i)
+{
+	uint animationIndex = 0;
+	uint randomIndex = random(0, gifData[i].unusedIdleAnimations.size());
+	animationIndex = gifData[i].unusedIdleAnimations[randomIndex];
+	gifData[i].unusedIdleAnimations.erase(gifData[i].unusedIdleAnimations.begin()+randomIndex);
 
+	gifData[i].usedIdleAnimations.push_back(animationIndex);
+	if(gifData[i].usedIdleAnimations.size() == (int(totalAnimations/2) + 1)){
+		gifData[i].unusedIdleAnimations.push_back(gifData[i].usedIdleAnimations[0]);
+		gifData[i].usedIdleAnimations.erase(gifData[i].usedIdleAnimations.begin());
+	}
+	char buffer[25];
+	sprintf(buffer, "/matrixGIF/%s%d.gif", partitionNames[i], animationIndex);
+	gifData[i].requiredAnimationLoops = 3;
+	Serial.println(buffer);
+	delay(5);
+	partitions[i]->startAnimation(new Animation(new File(SPIFFS.open(buffer))), true);
+	gifData[i].animationLoopCounter = 0;
+}

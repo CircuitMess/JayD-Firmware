@@ -28,6 +28,7 @@ include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/FS/s
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/SD/src)
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/SPI/src)
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/WiFi/src)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/SPIFFS/src)
 
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/cores/esp32)
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/tools/sdk)
@@ -42,6 +43,7 @@ include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/TFT_
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.1.1/libraries/TFT_eSPI/Extensions)
 
 include_directories(${ArduinoLibs}/JayD-Library/src)
+include_directories(${ArduinoLibs}/U8g2_for_TFT_eSPI/src)
 
 
 
