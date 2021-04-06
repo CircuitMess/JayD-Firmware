@@ -7,7 +7,7 @@ TextInputScreen::TextInputScreen *TextInputScreen::TextInputScreen::instance = n
 
 TextInputScreen::TextInputScreen::TextInputScreen(Display &display) : Context(display){
 
-	fs::File file = SPIFFS.open("/data/textInputScreen/backgroundBlack.raw.hs");
+	fs::File file = SPIFFS.open("/backgroundBlack.raw.hs");
 
 	background = CompressedFile::open(file, 10, 9);
 	instance = this;
