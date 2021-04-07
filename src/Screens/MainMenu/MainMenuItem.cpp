@@ -6,6 +6,8 @@ String gifIcons[] = {"/playbackGIF.g565", "/djGIF.g565", "/settingsGIF.g565"};
 
 String icons[] = {"/playback.raw.hs", "/dj.raw.hs", "/settings.raw.hs"};
 
+String texts[] = { "Playback", "DJ", "Settings" };
+
 
 MainMenu::MainMenuItem::MainMenuItem(ElementContainer *parent, MenuItemType type) : CustomElement(parent, 20, 20), type(type){
 
@@ -40,25 +42,33 @@ MainMenu::MainMenuItem::~MainMenuItem(){
 
 
 void MainMenu::MainMenuItem::draw(){
-	getSprite()->setTextFont(1);
-	getSprite()->setTextColor(TFT_WHITE);
-	getSprite()->setTextSize(2);
+	uint32_t yPos = getTotalY() + 107;
 
 	if(selected && gif){
-		gif->setXY(getTotalX() + 7, getTotalY() + 60);
+		gif->setXY(getTotalX()+7, getTotalY() + 45);
 		gif->nextFrame();
 		gif->push();
-	}else{
-		getSprite()->drawIcon(buffer, getTotalX() + 7, getTotalY() + 60, 45, 42, 1, TFT_BLACK);
 
+		yPos += sin((float) (micros() - startMicros) / 200000.0f) * 6;
+	}else{
+		getSprite()->drawIcon(buffer, getTotalX()+7, getTotalY() + 45, 45, 42, 1, TFT_BLACK);
 	}
 
+	FontWriter u8f = getSprite()->startU8g2Fonts();
+	u8f.setFont(u8g2_font_HelvetiPixel_tr);
+	u8f.setForegroundColor(TFT_WHITE);
+	u8f.setFontMode(1);
+
+	int16_t width = u8f.getUTF8Width(texts[type].c_str());
+	u8f.setCursor(getTotalX() + 7 + 45/2 - width/ 2, yPos);
+	u8f.print(texts[type]);
 }
 
 void MainMenu::MainMenuItem::isSelected(bool selected){
 	MainMenuItem::selected = selected;
 	if(selected){
 		gif->reset();
+		startMicros = micros();
 	}else{
 		gif->stop();
 	}

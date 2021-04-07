@@ -41,10 +41,6 @@ MainMenu::MainMenu::~MainMenu(){
 }
 
 void MainMenu::MainMenu::start(){
-	LoopManager::addListener(this);
-	draw();
-	screen.commit();
-
 	InputJayD::getInstance()->setEncoderMovedCallback(0, [](int8_t value){
 		if(instance == nullptr) return;
 		if(value == 0) return;
@@ -87,6 +83,12 @@ void MainMenu::MainMenu::start(){
 	for(uint8_t j = 0; j < 4; j++){
 		startRandomAnimation(j);
 	}
+
+	jumpTime = 0;
+	draw();
+	screen.commit();
+
+	LoopManager::addListener(this);
 }
 
 void MainMenu::MainMenu::stop(){
@@ -97,7 +99,7 @@ void MainMenu::MainMenu::stop(){
 
 void MainMenu::MainMenu::draw(){
 	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1);
-	screen.getSprite()->drawIcon(logoBuffer, screen.getTotalX() + 48, screen.getTotalY() + 10, 64, 24, 1);
+	screen.getSprite()->drawIcon(logoBuffer,screen.getTotalX()+48 + sin((float) jumpTime / 500000.0f) * 20,screen.getTotalY()+8,64,24,1);
 	screen.draw();
 
 }
@@ -118,6 +120,7 @@ void MainMenu::MainMenu::buildUI(){
 }
 
 void MainMenu::MainMenu::loop(uint micros){
+	jumpTime += micros;
 
 	for(uint8_t i = 0; i < 4; i++){
 		MatrixPartition *partition = partitions[i];
@@ -132,12 +135,15 @@ void MainMenu::MainMenu::loop(uint micros){
 			gifData[i].animationLoopDone = false;
 		}
 	}
-
+	
 
 	bool update = false;
 	for(const auto &i : item){
 		update |= i->needsUpdate();
 	}
+
+	update |= floor(sin((float) (jumpTime - micros) / 500000.0f)) != floor(sin((float) jumpTime / 500000.0f));
+
 	if(update){
 		draw();
 		screen.commit();
@@ -151,7 +157,6 @@ void MainMenu::MainMenu::pack(){
 	free(logoBuffer);
 	logoBuffer= nullptr;
 }
-
 
 void MainMenu::MainMenu::unpack(){
 	Context::unpack();

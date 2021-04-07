@@ -55,6 +55,8 @@ namespace MainMenu {
 
 		void buildUI();
 
+		uint32_t jumpTime;
+
 		MatrixPartitionGIFData gifData[4];
 		static const uint totalAnimations = 10;
 
