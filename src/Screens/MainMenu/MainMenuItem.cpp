@@ -23,19 +23,20 @@ MainMenu::MainMenuItem::MainMenuItem(ElementContainer *parent, MenuItemType type
 
 	buffer = static_cast<Color *>(ps_malloc(45 * 42 * 2));
 	if(buffer == nullptr){
-		Serial.printf("MainMenuItem picture %s unpack error\n",icons[type].c_str());
+		Serial.printf("MainMenuItem picture %s unpack error\n", icons[type].c_str());
 		return;
 	}
 	picture.seek(0);
 	picture.read(reinterpret_cast<uint8_t *>(buffer), 160 * 128 * 2);
 
-
+	iconsPictures.close();
+	picture.close();
 }
+
 MainMenu::MainMenuItem::~MainMenuItem(){
 	free(buffer);
 	delete gif;
 }
-
 
 
 void MainMenu::MainMenuItem::draw(){
@@ -44,11 +45,11 @@ void MainMenu::MainMenuItem::draw(){
 	getSprite()->setTextSize(2);
 
 	if(selected && gif){
-		gif->setXY(getTotalX()+7, getTotalY() + 60);
+		gif->setXY(getTotalX() + 7, getTotalY() + 60);
 		gif->nextFrame();
 		gif->push();
 	}else{
-		getSprite()->drawIcon(buffer, getTotalX()+7, getTotalY() + 60, 45, 42, 1, TFT_BLACK);
+		getSprite()->drawIcon(buffer, getTotalX() + 7, getTotalY() + 60, 45, 42, 1, TFT_BLACK);
 
 	}
 
