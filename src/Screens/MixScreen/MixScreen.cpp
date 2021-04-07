@@ -143,9 +143,11 @@ void MixScreen::MixScreen::stop(){
 	InputJayD::getInstance()->removeListener(this);
 	LoopManager::removeListener(this);
 
-	system->stop();
-	delete system;
-	system = nullptr;
+	if(system){
+		system->stop();
+		delete system;
+		system = nullptr;
+	}
 }
 
 void MixScreen::MixScreen::draw(){
