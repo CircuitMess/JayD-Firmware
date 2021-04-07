@@ -50,7 +50,9 @@ void SongList::SongList::populateList(){
 		songs.clear();
 	}
 
+	File root = SD.open("/");
 	searchDirectories(root);
+	root.close();
 
 	for(int i = 0; i < songs.size(); i++){
 		list->addChild(songs[i]);
@@ -60,16 +62,15 @@ void SongList::SongList::populateList(){
 	list->repos();
 }
 
-void SongList::SongList::searchDirectories(const char *path){
+void SongList::SongList::searchDirectories(File file){
 
-	File dir = SD.open(path);
 	File f;
 
-	while(f = dir.openNextFile()){
+	while(f = file.openNextFile()){
 		if(f.isDirectory()){
 
-			path = f.name();
-			searchDirectories(path);
+			searchDirectories(SD.open(f.name()));
+			continue;
 		}
 
 		if(!String(f.name()).endsWith(".aac")) continue;
@@ -83,8 +84,6 @@ void SongList::SongList::searchDirectories(const char *path){
 
 		f.close();
 	}
-
-	dir.close();
 }
 
 void SongList::SongList::loop(uint t){
