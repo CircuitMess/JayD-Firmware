@@ -29,9 +29,10 @@ namespace MainMenu {
 
 		bool selected = false;
 
-		AnimatedSprite* gif= nullptr;
+		AnimatedSprite *gif = nullptr;
 
-	//	String gifIcons[MenuItemType::PLAYBACK];
+		Color *buffer = nullptr;
+
 	};
 }
 #endif //JAYD_FIRMWARE_MAINMENUITEM_H
