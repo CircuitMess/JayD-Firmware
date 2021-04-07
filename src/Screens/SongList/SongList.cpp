@@ -35,6 +35,8 @@ SongList::SongList::SongList(Display &display) : Context(display){
 
 SongList::SongList::~SongList(){
 	instance = nullptr;
+	background.close();
+	free(buffer);
 }
 
 void SongList::SongList::populateList(){
@@ -193,6 +195,7 @@ void SongList::SongList::buildUI(){
 void SongList::SongList::pack(){
 	Context::pack();
 	free(buffer);
+	buffer = nullptr;
 }
 
 void SongList::SongList::unpack(){
