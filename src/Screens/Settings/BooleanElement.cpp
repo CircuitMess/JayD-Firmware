@@ -1,15 +1,15 @@
-#include "BooleanSetting.h"
+#include "BooleanElement.h"
 
-Settings::BooleanSetting::BooleanSetting(ElementContainer *partent, String name)
+SettingsScreen::BooleanElement::BooleanElement(ElementContainer *partent, String name)
 		: SettingsElement(partent, name){
 
 }
 
-void Settings::BooleanSetting::activate(){
+void SettingsScreen::BooleanElement::activate(){
 	booleanSwitch = !booleanSwitch;
 }
 
-void Settings::BooleanSetting::drawControl(){
+void SettingsScreen::BooleanElement::drawControl(){
 	getSprite()->setTextColor(TFT_BLACK);
 	getSprite()->setTextSize(1);
 	getSprite()->setTextFont(1);

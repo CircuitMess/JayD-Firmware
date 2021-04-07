@@ -3,7 +3,7 @@
 
 #include <UI/CustomElement.h>
 
-namespace Settings {
+namespace SettingsScreen {
 	class SettingsElement : public CustomElement {
 	public:
 

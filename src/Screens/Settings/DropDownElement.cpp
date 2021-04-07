@@ -1,16 +1,16 @@
-#include "DropDownSetting.h"
+#include "DropDownElement.h"
 
-Settings::DropDownSetting::DropDownSetting(ElementContainer *partent, String name, std::vector<String> dropDownContent)
+SettingsScreen::DropDownElement::DropDownElement(ElementContainer *partent, String name, std::vector<String> dropDownContent)
 		: SettingsElement(partent, name), dropDownContent(dropDownContent){
 
 
 }
 
-void Settings::DropDownSetting::activate(){
+void SettingsScreen::DropDownElement::activate(){
 	showDropDown = !showDropDown;
 }
 
-void Settings::DropDownSetting::selectNext(){
+void SettingsScreen::DropDownElement::selectNext(){
 	if(dropDownContent.empty()){
 		return;
 	}
@@ -19,7 +19,7 @@ void Settings::DropDownSetting::selectNext(){
 
 }
 
-void Settings::DropDownSetting::selectPrev(){
+void SettingsScreen::DropDownElement::selectPrev(){
 	if(dropDownContent.empty()){
 		return;
 	}
@@ -27,7 +27,7 @@ void Settings::DropDownSetting::selectPrev(){
 	index = max(index, 0);
 }
 
-void Settings::DropDownSetting::drawControl(){
+void SettingsScreen::DropDownElement::drawControl(){
 	getSprite()->setTextColor(TFT_BLACK);
 	getSprite()->setTextSize(1);
 	getSprite()->setTextFont(1);

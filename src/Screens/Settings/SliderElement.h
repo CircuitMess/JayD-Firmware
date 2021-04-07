@@ -4,20 +4,24 @@
 #include "SettingsElement.h"
 
 
-namespace Settings {
-	class SliderSetting : public SettingsElement {
+namespace SettingsScreen {
+	class SliderElement : public SettingsElement {
 	public:
-		SliderSetting(ElementContainer *partent, String name);
+		SliderElement(ElementContainer *partent, String name);
 
 		void activate() override;
 
 		void moveSliderValue(int8_t value);
 
+		void setSliderValue(uint8_t sliderValue);
+
+		uint8_t getSliderValue() const;
+
 	private:
 
 		bool sliderIsSelected = false;
 
-		uint8_t sliderValue = 0;
+		uint8_t sliderValue=0 ;
 
 	protected:
 		void drawControl() override;
