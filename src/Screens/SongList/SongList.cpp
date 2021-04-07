@@ -101,31 +101,32 @@ void SongList::SongList::loop(uint t){
 
 void SongList::SongList::start(){
 
-	InputJayD::getInstance()->setEncoderMovedCallback(ENC_L1, [](int8_t value){
+	InputJayD::getInstance()->setEncoderMovedCallback(ENC_MID, [](int8_t value){
 		if(instance == nullptr) return;
 
-		if(!instance->songs.empty()){
-			instance->songs[instance->selectedElement]->setSelected(false);
-			instance->selectedElement += value;
-			if(instance->selectedElement < 0){
-				instance->selectedElement = 0;
-			}else if(instance->selectedElement >= instance->songs.size()){
-				instance->selectedElement = instance->songs.size() - 1;
-			}
+		if(instance->songs.empty() || !instance->insertedSD || instance->songs.size()<=instance->selectedElement) return;
 
-			instance->songs[instance->selectedElement]->setSelected(true);
+		instance->songs[instance->selectedElement]->setSelected(false);
+		instance->selectedElement += value;
+		if(instance->selectedElement < 0){
+			instance->selectedElement = 0;
+		}else if(instance->selectedElement >= instance->songs.size()){
+			instance->selectedElement = instance->songs.size() - 1;
+		}
 
-			instance->scrollLayout->scrollIntoView(instance->selectedElement, 2);
-			instance->draw();
-			instance->screen.commit();
-		}
-		else{
-			return;
-		}
+		instance->songs[instance->selectedElement]->setSelected(true);
+
+		instance->scrollLayout->scrollIntoView(instance->selectedElement, 2);
+		instance->draw();
+		instance->screen.commit();
+
+
 	});
 
-	InputJayD::getInstance()->setBtnPressCallback(BTN_L1, [](){
+	InputJayD::getInstance()->setBtnPressCallback(BTN_MID, [](){
 		if(instance == nullptr) return;
+
+		if(instance->songs.empty() || !instance->insertedSD || instance->songs.size()<=instance->selectedElement) return;
 
 		instance->pop(new String(instance->songs[instance->selectedElement]->getName()));
 	});
