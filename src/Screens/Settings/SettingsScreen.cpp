@@ -112,7 +112,8 @@ void SettingsScreen::SettingsScreen::draw(){
 
 void SettingsScreen::SettingsScreen::pack(){
 	Context::pack();
-	free(buffer);
+	free(backgroundBuffer);
+	backgroundBuffer = nullptr;
 }
 
 void SettingsScreen::SettingsScreen::unpack(){
@@ -142,5 +143,6 @@ void SettingsScreen::SettingsScreen::buildUI(){
 SettingsScreen::SettingsScreen::~SettingsScreen(){
 	instance = nullptr;
 	background.close();
+	free(backgroundBuffer);
 
 }
