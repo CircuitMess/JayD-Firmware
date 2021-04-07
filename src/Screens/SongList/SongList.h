@@ -46,8 +46,7 @@ namespace SongList {
 
 		void populateList();
 
-		void searchDirectories(const char* path);
-		const char* root = "/";
+		void searchDirectories(File file);
 
 		bool insertedSD = false;
 
