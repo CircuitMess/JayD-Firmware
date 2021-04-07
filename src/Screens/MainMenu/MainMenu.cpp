@@ -7,7 +7,7 @@
 
 MainMenu::MainMenu *MainMenu::MainMenu::instance = nullptr;
 MatrixPartition *partitions[4] = {&matrixManager.matrixL, &matrixManager.matrixR, &matrixManager.matrixMid, &matrixManager.matrixBig};
-const char* partitionNames[4] = {"left", "right", "mid", "big"};
+const char *partitionNames[4] = {"left", "right", "mid", "big"};
 
 MainMenu::MainMenu::MainMenu(Display &display) : Context(display), screenLayout(new LinearLayout(&screen, HORIZONTAL)){
 
@@ -96,8 +96,8 @@ void MainMenu::MainMenu::stop(){
 }
 
 void MainMenu::MainMenu::draw(){
-	screen.getSprite()->drawIcon(buffer[0], 0, 0, 160, 128, 1);
-	screen.getSprite()->drawIcon(buffer[1],screen.getTotalX()+48,screen.getTotalY()+10,64,24,1);
+	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1);
+	screen.getSprite()->drawIcon(logoBuffer, screen.getTotalX() + 48, screen.getTotalY() + 10, 64, 24, 1);
 	screen.draw();
 
 }
@@ -132,7 +132,7 @@ void MainMenu::MainMenu::loop(uint micros){
 			gifData[i].animationLoopDone = false;
 		}
 	}
-	
+
 
 	bool update = false;
 	for(const auto &i : item){
@@ -155,28 +155,33 @@ void MainMenu::MainMenu::pack(){
 
 void MainMenu::MainMenu::unpack(){
 	Context::unpack();
-	for(int i=0;i<2;i++){
-		buffer[i]= nullptr;
-		buffer[i] = static_cast<Color *>(ps_malloc(i==0 ? (160*128*2) : (45 * 42 * 2)));
-		if(buffer[i] == nullptr){
-			Serial.println("MainMenu pictures unpack error");
-			return;
-		}
-		picture[i].seek(0);
-		picture[i].read(reinterpret_cast<uint8_t *>(buffer[i]), i==0 ? (160*128*2) : (45 * 42 * 2));
+	backgroundBuffer = static_cast<Color *>(ps_malloc(160 * 128 * 2));
+	if(backgroundBuffer == nullptr){
+		Serial.println("MainMenu background picture unpack error");
+		return;
 	}
 
+	backgroundPicture.seek(0);
+	backgroundPicture.read(reinterpret_cast<uint8_t *>(backgroundBuffer), (160 * 128 * 2));
+
+	logoBuffer = static_cast<Color *>(ps_malloc(45 * 42 * 2));
+	if(logoBuffer == nullptr){
+		Serial.println("MainMenu background picture unpack error");
+		return;
+	}
+
+	jayDlogo.seek(0);
+	jayDlogo.read(reinterpret_cast<uint8_t *>(logoBuffer), (45 * 42 * 2));
 }
 
-void MainMenu::MainMenu::startRandomAnimation(uint8_t i)
-{
+void MainMenu::MainMenu::startRandomAnimation(uint8_t i){
 	uint animationIndex = 0;
 	uint randomIndex = random(0, gifData[i].unusedIdleAnimations.size());
 	animationIndex = gifData[i].unusedIdleAnimations[randomIndex];
-	gifData[i].unusedIdleAnimations.erase(gifData[i].unusedIdleAnimations.begin()+randomIndex);
+	gifData[i].unusedIdleAnimations.erase(gifData[i].unusedIdleAnimations.begin() + randomIndex);
 
 	gifData[i].usedIdleAnimations.push_back(animationIndex);
-	if(gifData[i].usedIdleAnimations.size() == (int(totalAnimations/2) + 1)){
+	if(gifData[i].usedIdleAnimations.size() == (int(totalAnimations / 2) + 1)){
 		gifData[i].unusedIdleAnimations.push_back(gifData[i].usedIdleAnimations[0]);
 		gifData[i].usedIdleAnimations.erase(gifData[i].usedIdleAnimations.begin());
 	}
