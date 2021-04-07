@@ -25,7 +25,6 @@ Playback::PlayPause::PlayPause(ElementContainer *parent) : CustomElement(parent,
 Playback::PlayPause::~PlayPause(){
 	for(int i=0;i<4;i++){
 		free(playPauseBuffer[i]);
-		playPauseBuffer[i]=nullptr;
 	}
 }
 
