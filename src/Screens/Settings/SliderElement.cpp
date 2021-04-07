@@ -19,13 +19,13 @@ void SettingsScreen::SliderElement::drawControl(){
 	}else{
 		movingCursor = ((float) sliderValue / 255) * 51.0f;
 	}
-	getSprite()->drawRect(getTotalX() + 100, getTotalY() + 10, 2, 5, TFT_WHITE);
-	getSprite()->drawRect(getTotalX() + 153, getTotalY() + 10, 2, 5, TFT_WHITE);
-	getSprite()->drawRect(getTotalX() + 100, getTotalY() + 12, 55, 1, TFT_WHITE);
+	getSprite()->drawRect(getTotalX() + 100, getTotalY() + 30, 2, 5, TFT_WHITE);
+	getSprite()->drawRect(getTotalX() + 153, getTotalY() + 30, 2, 5, TFT_WHITE);
+	getSprite()->drawRect(getTotalX() + 100, getTotalY() + 32, 55, 1, TFT_WHITE);
 	if(sliderIsSelected){
-		getSprite()->drawRect(getTotalX() + 101 + movingCursor, getTotalY() + 10, 2, 5, TFT_RED);
+		getSprite()->drawRect(getTotalX() + 101 + movingCursor, getTotalY() + 30, 2, 5, TFT_RED);
 	}else{
-		getSprite()->drawRect(getTotalX() + 101 + movingCursor, getTotalY() + 10, 2, 5, TFT_WHITE);
+		getSprite()->drawRect(getTotalX() + 101 + movingCursor, getTotalY() + 30, 2, 5, TFT_WHITE);
 
 	}
 
