@@ -55,7 +55,7 @@ void SongList::SongList::populateList(){
 
 	while(f = root.openNextFile()){
 		if(f.isDirectory()) continue;
-		if(!String(f.name()).endsWith(".wav")) continue;
+		if(!String(f.name()).endsWith(".aac")) continue;
 
 		songs.push_back(new ListItem(list, f.name()));
 
