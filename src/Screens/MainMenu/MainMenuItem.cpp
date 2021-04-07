@@ -31,6 +31,11 @@ MainMenu::MainMenuItem::MainMenuItem(ElementContainer *parent, MenuItemType type
 
 
 }
+MainMenu::MainMenuItem::~MainMenuItem(){
+	free(buffer);
+	delete gif;
+}
+
 
 
 void MainMenu::MainMenuItem::draw(){
@@ -66,12 +71,6 @@ bool MainMenu::MainMenuItem::needsUpdate(){
 	}
 }
 
-MainMenu::MainMenuItem::~MainMenuItem(){
-
-	free(buffer);
-
-	delete gif;
-}
 
 
 
