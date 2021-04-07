@@ -45,6 +45,9 @@ namespace SongList {
 		void buildUI();
 
 		void populateList();
+
+		void searchDirectories(File file);
+
 		bool insertedSD = false;
 
 		uint32_t prevSDCheck = 0;

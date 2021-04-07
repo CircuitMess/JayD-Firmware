@@ -40,8 +40,6 @@ SongList::SongList::~SongList(){
 }
 
 void SongList::SongList::populateList(){
-	File root = SD.open("/");
-	File f;
 
 	if(!songs.empty()){
 
@@ -52,17 +50,9 @@ void SongList::SongList::populateList(){
 		songs.clear();
 	}
 
-
-	while(f = root.openNextFile()){
-		if(f.isDirectory()) continue;
-		if(!String(f.name()).endsWith(".aac")) continue;
-
-		songs.push_back(new ListItem(list, f.name()));
-
-		f.close();
-	}
+	File root = SD.open("/");
+	searchDirectories(root);
 	root.close();
-
 
 	for(int i = 0; i < songs.size(); i++){
 		list->addChild(songs[i]);
@@ -70,6 +60,29 @@ void SongList::SongList::populateList(){
 
 	list->reflow();
 	list->repos();
+}
+
+void SongList::SongList::searchDirectories(File file){
+
+	File f;
+
+	while(f = file.openNextFile()){
+		if(f.isDirectory()){
+
+			searchDirectories(f);
+			f.close();
+			continue;
+		}
+
+		if(!String(f.name()).endsWith(".aac")) continue;
+
+		String fileName(f.name());
+		int idx = fileName.lastIndexOf('/');
+
+		songs.push_back(new ListItem(list, fileName.substring(idx)));
+
+		f.close();
+	}
 }
 
 void SongList::SongList::loop(uint t){
@@ -104,7 +117,9 @@ void SongList::SongList::start(){
 	InputJayD::getInstance()->setEncoderMovedCallback(ENC_MID, [](int8_t value){
 		if(instance == nullptr) return;
 
-		if(instance->songs.empty() || !instance->insertedSD || instance->songs.size()<=instance->selectedElement) return;
+		if(instance->songs.empty() || !instance->insertedSD ||
+		   instance->songs.size() <= instance->selectedElement)
+			return;
 
 		instance->songs[instance->selectedElement]->setSelected(false);
 		instance->selectedElement += value;
@@ -126,7 +141,9 @@ void SongList::SongList::start(){
 	InputJayD::getInstance()->setBtnPressCallback(BTN_MID, [](){
 		if(instance == nullptr) return;
 
-		if(instance->songs.empty() || !instance->insertedSD || instance->songs.size()<=instance->selectedElement) return;
+		if(instance->songs.empty() || !instance->insertedSD ||
+		   instance->songs.size() <= instance->selectedElement)
+			return;
 
 		instance->pop(new String(instance->songs[instance->selectedElement]->getName()));
 	});
@@ -156,11 +173,11 @@ void SongList::SongList::draw(){
 	canvas->drawIcon(buffer, 0, 0, 160, 128, 1);
 
 	if(!insertedSD){
-		u8f.setCursor(30,65);
+		u8f.setCursor(30, 65);
 		u8f.printf("Not inserted!");
 
 	}else if(songs.empty()){
-		u8f.setCursor(54,65);
+		u8f.setCursor(54, 65);
 		u8f.printf("Empty!");
 
 	}else{
@@ -169,7 +186,7 @@ void SongList::SongList::draw(){
 
 	//canvas->fillRect(0, 0, 160, 18, TFT_LIGHTGREY);
 
-	u8f.setCursor(50,15);
+	u8f.setCursor(50, 15);
 	u8f.printf("SD card");
 
 }
