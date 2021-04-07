@@ -64,13 +64,7 @@ void SettingsScreen::SettingsScreen::start(){
 		}
 		instance->draw();
 		instance->screen.commit();
-/*
-		if(instance->newValue == 3){
-			instance->fourthElement.setIsSelected(true);
-		}else{
-			instance->fourthElement.setIsSelected(false);
 
-		}*/
 
 	});
 	InputJayD::getInstance()->setBtnPressCallback(2, [](){
@@ -86,10 +80,7 @@ void SettingsScreen::SettingsScreen::start(){
 			instance->draw();
 			instance->screen.commit();
 		}
-		/*
-		else if(instance->newValue == 3){
-			instance->fourthElement.activate();
-		}*/
+
 	});
 	instance->draw();
 	instance->screen.commit();
@@ -142,7 +133,6 @@ void SettingsScreen::SettingsScreen::buildUI(){
 	screenLayout.setGutter(5);
 	screenLayout.addChild(&volumeSlider);
 	screenLayout.addChild(&brightnessSlider);
-	//screenLayout.addChild(&fourthElement);
 
 	screenLayout.reflow();
 	screen.addChild(&screenLayout);
