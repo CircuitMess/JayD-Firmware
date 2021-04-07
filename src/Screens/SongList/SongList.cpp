@@ -89,7 +89,7 @@ void SongList::SongList::loop(uint t){
 					songs[selectedElement]->setSelected(true);
 				}
 				//scrollLayout->setY(18);
-				scrollLayout->scrollIntoView(selectedElement,2);
+				scrollLayout->scrollIntoView(selectedElement, 2);
 			}
 		}
 		prevSDCheck = millis();
