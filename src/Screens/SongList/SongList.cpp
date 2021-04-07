@@ -69,18 +69,17 @@ void SongList::SongList::searchDirectories(File file){
 	while(f = file.openNextFile()){
 		if(f.isDirectory()){
 
-			searchDirectories(SD.open(f.name()));
+			searchDirectories(f);
+			f.close();
 			continue;
 		}
 
 		if(!String(f.name()).endsWith(".aac")) continue;
 
-		auto* fileName = new String(f.name());
-		int idx = fileName->lastIndexOf('/');
+		String fileName(f.name());
+		int idx = fileName.lastIndexOf('/');
 
-		songs.push_back(new ListItem(list, fileName->substring(idx)));
-
-		delete fileName;
+		songs.push_back(new ListItem(list, fileName.substring(idx)));
 
 		f.close();
 	}
