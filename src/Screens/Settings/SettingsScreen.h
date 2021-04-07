@@ -4,8 +4,6 @@
 #include <Support/Context.h>
 #include <UI/LinearLayout.h>
 #include "SettingsElement.h"
-#include "BooleanElement.h"
-#include "DropDownElement.h"
 #include "SliderElement.h"
 #include <FS.h>
 
@@ -36,7 +34,7 @@ namespace SettingsScreen {
 		SliderElement volumeSlider;
 		SliderElement brightnessSlider;
 
-		int newValue = 0;
+		int selectedSetting = 0;
 
 		bool disableMainSelector = false;
 
@@ -45,7 +43,7 @@ namespace SettingsScreen {
 
 		fs::File background;
 
-		Color* buffer= nullptr;
+		Color* backgroundBuffer= nullptr;
 
 	};
 }
