@@ -9,8 +9,6 @@
 #include "ListItem.h"
 #include <Input/InputJayD.h>
 
-#define SD_CARD_INTERVAL 500
-
 namespace SongList {
 	class SongList : public Context, public LoopListener {
 	public:
@@ -50,6 +48,8 @@ namespace SongList {
 		bool insertedSD = false;
 
 		uint32_t prevSDCheck = 0;
+
+		static const uint16_t sdCardInterval = 500;
 	};
 }
 #endif //JAYD_FIRMWARE_SONGLIST_H
