@@ -4,37 +4,13 @@
 #include <FS/PGMFile.h>
 
 
-const String MixScreen::EffectElement::iconsNotMirrored[] = {"/noEffectRed.raw", "/speedRed.raw", "/lowpassRed.raw", "/highpassRed.raw", "/reverbRed.raw", "/bitrusherRed.raw"};
-const String MixScreen::EffectElement::iconsMirrored[] = {"/noEffectBlue.raw", "/speedBlue.raw", "/lowpassBlue.raw", "/highpassBlue.raw", "/reverbBlue.raw", "/bitrusherBlue.raw"};
+const String MixScreen::EffectElement::iconsNotMirrored[] = {"/noEffectRed.raw", "/speedRed.raw", "/lowpassRed.raw", "/highpassRed.raw", "/reverbRed.raw", "/bitcrusherRed.raw"};
+const String MixScreen::EffectElement::iconsMirrored[] = {"/noEffectBlue.raw", "/speedBlue.raw", "/lowpassBlue.raw", "/highpassBlue.raw", "/reverbBlue.raw", "/bitcrusherBlue.raw"};
 const String MixScreen::EffectElement::gifIcons[] = {"/noEffect.g565", "/speed.g565", "/lowpass.g565", "/highpass.g565", "/reverb.g565", "/bitcrusher.g565"};
 
 MixScreen::EffectElement::EffectElement(ElementContainer *parent, bool mirrored) : CustomElement(parent, 10, 10), mirrored(mirrored){
-	fs::File iconsNotMirroredFile = SPIFFS.open(iconsNotMirrored[effect]);
 
-	bufferNotMirrored = static_cast<Color *>(ps_malloc(16 * 16 * 2));
-	if(bufferNotMirrored == nullptr){
-		Serial.println("EffectNotMirrored pictures unpack error");
-		return;
-	}
-	iconsNotMirroredFile.seek(0);
-	iconsNotMirroredFile.read(reinterpret_cast<uint8_t *>(bufferNotMirrored), 16 * 16 * 2);
-
-	fs::File iconsMirroredFile = SPIFFS.open(iconsMirrored[effect]);
-
-	bufferMirrored = static_cast<Color *>(ps_malloc(16 * 16 * 2));
-	if(bufferMirrored == nullptr){
-		Serial.println("EffectMirrored pictures unpack error");
-		return;
-	}
-	iconsMirroredFile.seek(0);
-	iconsMirroredFile.read(reinterpret_cast<uint8_t *>(bufferMirrored), 16 * 16 * 2);
-
-	fs::File gifIconsFile = SPIFFS.open(gifIcons[effect]);
-
-	if(!gifIconsFile){
-		Serial.printf("Can't open file %s\n", gifIcons[effect].c_str());
-		return;
-	}
+	setType(NONE);
 
 }
 
@@ -48,7 +24,7 @@ void MixScreen::EffectElement::setupGif(){
 }
 
 void MixScreen::EffectElement::draw(){
-	if(effect != EffectType::NONE){
+
 	if(selected){
 
 		gif->nextFrame();
@@ -61,9 +37,9 @@ void MixScreen::EffectElement::draw(){
 		}
 */
 	}else{
-		getSprite()->drawIcon((mirrored ? bufferMirrored : bufferNotMirrored), getTotalX() + 61 * mirrored, getTotalY() + 25, 16, 16, 1, TFT_BLACK);
+		getSprite()->drawIcon(bufferIcons, getTotalX() + 61 * mirrored, getTotalY() + 25, 16, 16, 1, TFT_BLACK);
 	}
-	}
+
 
 	getSprite()->fillRoundRect(getTotalX() + 6 + 19 * !mirrored, getTotalY() + 30, (((float) intensity) / 255.0f) * 45.0f, 8, 3, TFT_GREENYELLOW);
 	getSprite()->drawRoundRect(getTotalX() + 6 + 19 * !mirrored, getTotalY() + 30, 45, 8, 3, TFT_WHITE);
@@ -76,8 +52,20 @@ void MixScreen::EffectElement::repos(){
 	}
 }
 
+
 void MixScreen::EffectElement::setType(EffectType effect){
 	EffectElement::effect = effect;
+
+	fs::File iconsFile = SPIFFS.open(mirrored ? iconsMirrored[effect] : iconsNotMirrored[effect]);
+
+	bufferIcons = static_cast<Color *>(ps_malloc(16 * 16 * 2));
+	if(bufferIcons == nullptr){
+		Serial.println("EffectIcon pictures unpack error");
+		return;
+	}
+	iconsFile.seek(0);
+	iconsFile.read(reinterpret_cast<uint8_t *>(bufferIcons), 16 * 16 * 2);
+
 	delete gif;
 	gif = nullptr;
 	gif = new AnimatedSprite(getSprite(), SPIFFS.open(gifIcons[effect]));
@@ -116,7 +104,6 @@ EffectType MixScreen::EffectElement::getType() const{
 }
 
 MixScreen::EffectElement::~EffectElement(){
-	free(bufferNotMirrored);
-	free(bufferMirrored);
+	free(bufferIcons);
 
 }
