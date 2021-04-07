@@ -23,7 +23,7 @@ void SettingsScreen::SliderElement::drawControl(){
 	getSprite()->drawRect(getTotalX() + 153, getTotalY() + 10, 2, 5, TFT_WHITE);
 	getSprite()->drawRect(getTotalX() + 100, getTotalY() + 12, 55, 1, TFT_WHITE);
 	if(sliderIsSelected){
-		getSprite()->drawRect(getTotalX() + 101 + movingCursor, getTotalY() + 9, 2, 6, TFT_BLUE);
+		getSprite()->drawRect(getTotalX() + 101 + movingCursor, getTotalY() + 10, 2, 5, TFT_RED);
 	}else{
 		getSprite()->drawRect(getTotalX() + 101 + movingCursor, getTotalY() + 10, 2, 5, TFT_WHITE);
 
