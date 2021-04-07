@@ -1,7 +1,9 @@
 #include "SongSeekBar.h"
-
+#include <FS.h>
+#include <SPIFFS.h>
 
 MixScreen::SongSeekBar::SongSeekBar(ElementContainer *parent) : CustomElement(parent, 10, 10){
+
 	fs::File picture[2]={
 			SPIFFS.open("/pause_dj.raw"),
 			SPIFFS.open("/play_dj.raw")
