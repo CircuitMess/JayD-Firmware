@@ -45,6 +45,10 @@ namespace SongList {
 		void buildUI();
 
 		void populateList();
+
+		void searchDirectories(const char* path);
+		const char* root = "/";
+
 		bool insertedSD = false;
 
 		uint32_t prevSDCheck = 0;
