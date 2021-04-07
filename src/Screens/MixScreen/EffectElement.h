@@ -43,8 +43,7 @@ namespace MixScreen {
 		static const String iconsMirrored[EffectType::COUNT];
 		static const String gifIcons[EffectType::COUNT];
 
-		Color *bufferNotMirrored = nullptr;
-		Color *bufferMirrored = nullptr;
+		Color *bufferIcons= nullptr;
 	};
 
 }
