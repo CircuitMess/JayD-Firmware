@@ -3,6 +3,7 @@
 #include <SPIFFS.h>
 #include <FS/CompressedFile.h>
 #include <Settings.h>
+#include <JayD.hpp>
 
 SettingsScreen::SettingsScreen *SettingsScreen::SettingsScreen::instance = nullptr;
 
@@ -12,7 +13,7 @@ SettingsScreen::SettingsScreen::SettingsScreen(Display &display) : Context(displ
 	instance = this;
 	buildUI();
 	volumeSlider.setIsSelected(true);
-	newValue = 0;
+	selectedSetting = 0;
 
 	fs::File file = SPIFFS.open("/settingsBackground.raw.hs");
 
@@ -27,36 +28,36 @@ SettingsScreen::SettingsScreen::SettingsScreen(Display &display) : Context(displ
 void SettingsScreen::SettingsScreen::start(){
 	draw();
 	screen.commit();
-	InputJayD::getInstance()->setEncoderMovedCallback(0, [](int8_t value){
+	InputJayD::getInstance()->setEncoderMovedCallback(ENC_MID, [](int8_t value){
 		if(instance == nullptr) return;
-		if(instance->disableMainSelector && instance->newValue == 0){
+		if(instance->disableMainSelector && instance->selectedSetting == 0){
 			instance->volumeSlider.moveSliderValue(value);
-			Settings.get().volumeLevel=instance->volumeSlider.getSliderValue();
+			Settings.get().volumeLevel = instance->volumeSlider.getSliderValue();
 			instance->draw();
 			instance->screen.commit();
 			return;
 		}
-		if(instance->disableMainSelector && instance->newValue == 1){
+		if(instance->disableMainSelector && instance->selectedSetting == 1){
 			instance->brightnessSlider.moveSliderValue(value);
-			Settings.get().brightnessLevel=instance->brightnessSlider.getSliderValue();
+			Settings.get().brightnessLevel = instance->brightnessSlider.getSliderValue();
 			instance->draw();
 			instance->screen.commit();
 			return;
 		}
-		instance->newValue = instance->newValue + value;
+		instance->selectedSetting = instance->selectedSetting + value;
 
-		if(instance->newValue < 0){
-			instance->newValue = 1;
-		}else if(instance->newValue > 1){
-			instance->newValue = 0;
+		if(instance->selectedSetting < 0){
+			instance->selectedSetting = 1;
+		}else if(instance->selectedSetting > 1){
+			instance->selectedSetting = 0;
 		}
-		if(instance->newValue == 0){
+		if(instance->selectedSetting == 0){
 			instance->volumeSlider.setIsSelected(true);
 
 		}else{
 			instance->volumeSlider.setIsSelected(false);
 		}
-		if(instance->newValue == 1){
+		if(instance->selectedSetting == 1){
 			instance->brightnessSlider.setIsSelected(true);
 
 		}else{
@@ -67,14 +68,14 @@ void SettingsScreen::SettingsScreen::start(){
 
 
 	});
-	InputJayD::getInstance()->setBtnPressCallback(2, [](){
+	InputJayD::getInstance()->setBtnPressCallback(BTN_MID, [](){
 		if(instance == nullptr) return;
-		if(instance->newValue == 0){
+		if(instance->selectedSetting == 0){
 			instance->volumeSlider.activate();
 			instance->disableMainSelector = !instance->disableMainSelector;
 			instance->draw();
 			instance->screen.commit();
-		}else if(instance->newValue == 1){
+		}else if(instance->selectedSetting == 1){
 			instance->brightnessSlider.activate();
 			instance->disableMainSelector = !instance->disableMainSelector;
 			instance->draw();
@@ -94,7 +95,7 @@ void SettingsScreen::SettingsScreen::stop(){
 }
 
 void SettingsScreen::SettingsScreen::draw(){
-	screen.getSprite()->drawIcon(buffer, 0, 0, 160, 128, 1);
+	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1);
 
 	for(int i = 0; i < 2; i++){
 		if(!reinterpret_cast<SettingsElement *>(screenLayout.getChild(i))->isSelected()){
@@ -118,13 +119,13 @@ void SettingsScreen::SettingsScreen::pack(){
 
 void SettingsScreen::SettingsScreen::unpack(){
 	Context::unpack();
-	buffer = static_cast<Color *>(ps_malloc(160 * 128 * 2));
-	if(buffer == nullptr){
+	backgroundBuffer = static_cast<Color *>(ps_malloc(160 * 128 * 2));
+	if(backgroundBuffer == nullptr){
 		Serial.println("SettingsScreen background unpack error");
 		return;
 	}
 	background.seek(0);
-	background.read(reinterpret_cast<uint8_t *>(buffer), 160 * 128 * 2);
+	background.read(reinterpret_cast<uint8_t *>(backgroundBuffer), 160 * 128 * 2);
 
 }
 
