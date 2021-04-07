@@ -16,11 +16,8 @@ MainMenu::MainMenu::MainMenu(Display &display) : Context(display), screenLayout(
 		item.push_back(new MainMenuItem(screenLayout, static_cast<MenuItemType>(i)));
 	}
 
-	backgroundPicture = SPIFFS.open("/mainMenuBackground.raw.hs");
-	jayDlogo = SPIFFS.open("/jayD_logo.raw.hs");
-
-	picture[0] = CompressedFile::open(backgroundPicture, 14, 10);
-	picture[1]= CompressedFile::open(jayDlogo, 8, 7);
+	backgroundPicture = CompressedFile::open(SPIFFS.open("/mainMenuBackground.raw.hs"), 14, 10);
+	jayDlogo = CompressedFile::open(SPIFFS.open("/jayD_logo.raw.hs"), 8, 7);
 
 	instance = this;
 	instance->item[0]->isSelected(true);
@@ -38,6 +35,9 @@ MainMenu::MainMenu::~MainMenu(){
 	backgroundPicture.close();
 	jayDlogo.close();
 	instance = nullptr;
+	free(backgroundBuffer);
+	free(logoBuffer);
+
 }
 
 void MainMenu::MainMenu::start(){
@@ -146,10 +146,12 @@ void MainMenu::MainMenu::loop(uint micros){
 
 void MainMenu::MainMenu::pack(){
 	Context::pack();
-	for(int i=0;i<2;i++){
-		free(buffer[i]);
-	}
+	free(backgroundBuffer);
+	backgroundBuffer = nullptr;
+	free(logoBuffer);
+	logoBuffer= nullptr;
 }
+
 
 void MainMenu::MainMenu::unpack(){
 	Context::unpack();
