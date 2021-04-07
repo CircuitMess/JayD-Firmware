@@ -72,7 +72,7 @@ void SongList::SongList::populateList(){
 
 void SongList::SongList::loop(uint t){
 
-	if(millis() - prevSDCheck > SD_CARD_INTERVAL){
+	if(millis() - prevSDCheck > sdCardInterval){
 
 		SD.end();
 		bool ins = SD.begin(22, SPI);
