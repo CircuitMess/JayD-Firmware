@@ -4,6 +4,7 @@
 #include <Loop/LoopManager.h>
 #include <SPIFFS.h>
 #include <FS/CompressedFile.h>
+#include <U8g2_for_TFT_eSPI.h>
 
 SongList::SongList *SongList::SongList::instance = nullptr;
 
@@ -30,7 +31,6 @@ SongList::SongList::SongList(Display &display) : Context(display){
 			songs[selectedElement]->setSelected(true);
 		}
 	}
-
 }
 
 SongList::SongList::~SongList(){
@@ -144,29 +144,33 @@ void SongList::SongList::stop(){
 }
 
 void SongList::SongList::draw(){
+
 	Sprite *canvas = screen.getSprite();
 
+	FontWriter u8f = canvas->startU8g2Fonts();
+
+	u8f.setFont(u8g2_font_DigitalDisco_tf);
+	u8f.setForegroundColor(TFT_WHITE);
+	u8f.setFontMode(1);
+
 	canvas->drawIcon(buffer, 0, 0, 160, 128, 1);
-	canvas->setTextFont(2);
-	canvas->setTextSize(1);
-	canvas->setTextColor(TFT_WHITE);
 
 	if(!insertedSD){
-		canvas->setCursor(0, 55);
-		canvas->printCenter("Not inserted!");
+		u8f.setCursor(30,65);
+		u8f.printf("Not inserted!");
+
 	}else if(songs.empty()){
-		canvas->setCursor(0, 55);
-		canvas->printCenter("Empty!");
+		u8f.setCursor(54,65);
+		u8f.printf("Empty!");
+
 	}else{
 		screen.draw();
 	}
 
-	canvas->fillRect(0, 0, 160, 18, TFT_LIGHTGREY);
-	canvas->setTextFont(2);
-	canvas->setTextSize(1);
-	canvas->setTextColor(TFT_BLACK);
-	canvas->setCursor(0, 1);
-	canvas->printCenter("SD card");
+	//canvas->fillRect(0, 0, 160, 18, TFT_LIGHTGREY);
+
+	u8f.setCursor(50,15);
+	u8f.printf("SD card");
 
 }
 
