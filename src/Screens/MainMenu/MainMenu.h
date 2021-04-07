@@ -8,6 +8,15 @@
 #include "MainMenuItem.h"
 #include <Display/AnimatedSprite.h>
 
+struct MatrixPartitionGIFData
+{
+	std::vector<uint> usedIdleAnimations;
+	std::vector<uint> unusedIdleAnimations;
+	uint8_t animationLoopCounter = 0;
+	bool animationLoopDone = 0;
+	int8_t requiredAnimationLoops = 0;
+};
+
 
 namespace MainMenu {
 	class MainMenu : public Context, public LoopListener {
@@ -39,11 +48,18 @@ namespace MainMenu {
 
 		int8_t itemNum = 0;
 
-		fs::File background;
+		fs::File backgroundPicture;
+		fs::File jayDlogo;
 
-		Color* buffer= nullptr;
+		fs::File picture[2];
+		Color* buffer[2];
 
 		void buildUI();
+
+		MatrixPartitionGIFData gifData[4];
+		static const uint totalAnimations = 10;
+		void startRandomAnimation(uint8_t index);
+		
 	};
 }
 #endif //JAYD_FIRMWARE_MAINMENU_H

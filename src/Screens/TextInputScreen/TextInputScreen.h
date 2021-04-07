@@ -3,6 +3,7 @@
 
 
 #include <Support/Context.h>
+#include <FS.h>
 
 namespace TextInputScreen {
 	class TextInputScreen : public Context {
@@ -10,11 +11,17 @@ namespace TextInputScreen {
 
 		TextInputScreen(Display &display);
 
+		virtual ~TextInputScreen();
+
 		void start();
 
 		void stop();
 
 		void draw();
+
+		void pack() override;
+
+		void unpack() override;
 
 	private:
 
@@ -28,6 +35,10 @@ namespace TextInputScreen {
 		bool shiftLetters = false;
 
 		int selectedIndex = 0;
+
+		fs::File background;
+
+		Color* buffer= nullptr;
 	};
 }
 

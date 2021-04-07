@@ -1,11 +1,15 @@
 #include <Input/InputJayD.h>
+#include <FS/CompressedFile.h>
 #include "TextInputScreen.h"
-#include "Bitmaps/backgroundTextEntry.hpp"
+#include <SPIFFS.h>
 
 TextInputScreen::TextInputScreen *TextInputScreen::TextInputScreen::instance = nullptr;
 
 TextInputScreen::TextInputScreen::TextInputScreen(Display &display) : Context(display){
 
+	fs::File file = SPIFFS.open("/backgroundBlack.raw.hs");
+
+	background = CompressedFile::open(file, 10, 9);
 	instance = this;
 
 }
@@ -53,8 +57,7 @@ void TextInputScreen::TextInputScreen::stop(){
 }
 
 void TextInputScreen::TextInputScreen::draw(){
-	screen.getSprite()->clear(TFT_BLACK);
-	screen.getSprite()->drawIcon(textEntryBackground, screen.getTotalX(), screen.getTotalY(), 160, 128, 1);
+	screen.getSprite()->drawIcon(buffer, 0, 0, 160, 128, 1);
 	sprite->fillRect(2, 35, 156, 1, TFT_WHITE);
 	sprite->setTextFont(1);
 	sprite->setTextSize(1);
@@ -102,5 +105,27 @@ void TextInputScreen::TextInputScreen::draw(){
 		}
 	}
 
+}
+
+
+void TextInputScreen::TextInputScreen::pack(){
+	Context::pack();
+	free(buffer);
+}
+
+void TextInputScreen::TextInputScreen::unpack(){
+	Context::unpack();
+	buffer = static_cast<Color *>(ps_malloc(160 * 128 * 2));
+	if(buffer == nullptr){
+		Serial.println("Text input background unpack error");
+		return;
+	}
+	background.seek(0);
+	background.read(reinterpret_cast<uint8_t *>(buffer), 160 * 128 * 2);
+}
+
+TextInputScreen::TextInputScreen::~TextInputScreen(){
+	background.close();
+	instance = nullptr;
 }
 

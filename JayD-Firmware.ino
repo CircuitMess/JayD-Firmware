@@ -8,10 +8,10 @@
 #include <Loop/LoopListener.h>
 #include <Loop/LoopManager.h>
 #include "src/Screens/IntroScreen/IntroScreen.h"
-#include <JayD.hpp>
 #include <Input/InputJayD.h>
 #include <WiFi.h>
 #include <SD.h>
+#include <Services/SDScheduler.h>
 
 #define blPin 25
 
@@ -41,10 +41,17 @@ void setup(){
 		Serial.println("No SD card");
 		//for(;;);
 	}
-
+	if(!SPIFFS.begin()){
+		Serial.println("SPIFFS error");
+	}
 	display.begin();
 	SPI.setFrequency(20000000);
 
+	if(!LEDmatrix.begin(I2C_SDA, I2C_SCL)){
+		Serial.println("couldn't start matrix");
+		for(;;);
+	}
+	LoopManager::addListener(&matrixManager);
 	LoopManager::addListener(new InputJayD());
 	InputJayD::getInstance()->begin();
 

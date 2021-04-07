@@ -150,7 +150,7 @@ void MixScreen::MixScreen::stop(){
 
 void MixScreen::MixScreen::draw(){
 	screen.getSprite()->fillRect(79, 0, 2, 128, TFT_BLACK);
-	screen.getSprite()->fillRect(leftLayout->getTotalX(), leftLayout->getTotalY(), 79, 128, C_RGB(249, 53, 2));
+	screen.getSprite()->fillRect(leftLayout->getTotalX(), leftLayout->getTotalY(), 79, 128, C_RGB(249, 93, 2));
 	screen.getSprite()->fillRect(rightLayout->getTotalX(), rightLayout->getTotalY(), 79, 128, C_RGB(3, 52, 135));
 	screen.draw();
 }
@@ -331,6 +331,9 @@ void MixScreen::MixScreen::encoderMove(uint8_t id, int8_t value){
 void MixScreen::MixScreen::potMove(uint8_t id, uint8_t value){
 	if(id == POT_MID){
 		system->setMix(value);
+		matrixManager.matrixMid.clear();
+		matrixManager.matrixMid.vu(value);
+		matrixManager.matrixMid.push();
 	}else if(id == POT_L){
 		system->setVolume(0, value);
 	}else if(id == POT_R){

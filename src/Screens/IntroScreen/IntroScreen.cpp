@@ -3,6 +3,7 @@
 #include <Loop/LoopManager.h>
 #include <FS/CompressedFile.h>
 #include "../MainMenu/MainMenu.h"
+#include <SPIFFS.h>
 
 
 IntroScreen::IntroScreen *IntroScreen::IntroScreen::instance = nullptr;

@@ -1,31 +1,16 @@
 #include "EffectElement.h"
-#include "gif/lowpass.hpp"
-#include "gif/highpass.hpp"
-#include "gif/speed.hpp"
-#include "gif/reverb.hpp"
-#include "gif/walkietalkie.hpp"
-#include "Bitmaps/lowpassFadeRed.hpp"
-#include "Bitmaps/highpassFadeRed.hpp"
-#include "Bitmaps/speedFadeRed.hpp"
-#include "Bitmaps/reverbFadeRed.hpp"
-#include "Bitmaps/bitcrusherFadeRed.hpp"
-#include "Bitmaps/lowpassFadeBlue.hpp"
-#include "Bitmaps/highpassFadeBlue.hpp"
-#include "Bitmaps/speedFadeBlue.hpp"
-#include "Bitmaps/bitcrusherFadeBlue.hpp"
-#include "Bitmaps/reverbFadeBlue.hpp"
-
+#include <SPIFFS.h>
 #include <FS.h>
 #include <FS/PGMFile.h>
 
 
-const uint16_t* const MixScreen::EffectElement::iconsNotMirrored[] = { nullptr, speed_fade_red, lowpass_fade, highpass_fade_red, reverb_fade_red, bitcrusher_fade_red };
-const uint16_t* const MixScreen::EffectElement::iconsMirrored[] = { nullptr, speed_fade_blue, lowpass_fade_blue, highpass_fade_blue, reverb_fade_blue, bitcrusher_fade_blue };
-
-const uint8_t* const MixScreen::EffectElement::gifIcons[]  =  { nullptr, mix_speed_gif, mix_lowpass_gif, mix_highpass_gif, mix_reverb_gif, mix_walkietalkie_gif };
-const size_t MixScreen::EffectElement::gifIconSizes[] = { 0, sizeof(mix_speed_gif), sizeof(mix_lowpass_gif), sizeof(mix_highpass_gif), sizeof(mix_reverb_gif), sizeof(mix_walkietalkie_gif),  };
+const String MixScreen::EffectElement::iconsNotMirrored[] = {"/noEffectRed.raw", "/speedRed.raw", "/lowpassRed.raw", "/highpassRed.raw", "/reverbRed.raw", "/bitcrusherRed.raw"};
+const String MixScreen::EffectElement::iconsMirrored[] = {"/noEffectBlue.raw", "/speedBlue.raw", "/lowpassBlue.raw", "/highpassBlue.raw", "/reverbBlue.raw", "/bitcrusherBlue.raw"};
+const String MixScreen::EffectElement::gifIcons[] = {"/noEffect.g565", "/speed.g565", "/lowpass.g565", "/highpass.g565", "/reverb.g565", "/bitcrusher.g565"};
 
 MixScreen::EffectElement::EffectElement(ElementContainer *parent, bool mirrored) : CustomElement(parent, 10, 10), mirrored(mirrored){
+
+	setType(NONE);
 
 }
 
@@ -39,21 +24,22 @@ void MixScreen::EffectElement::setupGif(){
 }
 
 void MixScreen::EffectElement::draw(){
-	if(effect != EffectType::NONE){
-		if(selected){
-			gif->nextFrame();
-			gif->push();
 
-			/*if(mirrored){
-				getSprite()->fillRect(getTotalX(), getTotalY() + 25, 77, 18, C_RGB(157, 194, 255));
-			}else{
-				getSprite()->fillRect(getTotalX(), getTotalY() + 25, 77, 18, C_RGB(248, 147, 121));
-			}*/
+	if(selected){
 
+		gif->nextFrame();
+		gif->push();
+
+		/*if(mirrored){
+			getSprite()->fillRect(getTotalX(), getTotalY() + 25, 77, 18, C_RGB(157, 194, 255));
 		}else{
-			getSprite()->drawIcon((mirrored ? iconsMirrored : iconsNotMirrored)[effect], getTotalX() + 61 * mirrored, getTotalY() + 25, 16, 16, 1, TFT_BLACK);
+			getSprite()->fillRect(getTotalX(), getTotalY() + 25, 77, 18, C_RGB(248, 147, 121));
 		}
+*/
+	}else{
+		getSprite()->drawIcon(bufferIcons, getTotalX() + 61 * mirrored, getTotalY() + 25, 16, 16, 1, TFT_BLACK);
 	}
+
 
 	getSprite()->fillRoundRect(getTotalX() + 6 + 19 * !mirrored, getTotalY() + 30, (((float) intensity) / 255.0f) * 45.0f, 8, 3, TFT_GREENYELLOW);
 	getSprite()->drawRoundRect(getTotalX() + 6 + 19 * !mirrored, getTotalY() + 30, 45, 8, 3, TFT_WHITE);
@@ -66,15 +52,26 @@ void MixScreen::EffectElement::repos(){
 	}
 }
 
+
 void MixScreen::EffectElement::setType(EffectType effect){
 	EffectElement::effect = effect;
+
+	fs::File iconsFile = SPIFFS.open(mirrored ? iconsMirrored[effect] : iconsNotMirrored[effect]);
+
+	bufferIcons = static_cast<Color *>(ps_malloc(16 * 16 * 2));
+	if(bufferIcons == nullptr){
+		Serial.println("EffectIcon pictures unpack error");
+		return;
+	}
+	iconsFile.seek(0);
+	iconsFile.read(reinterpret_cast<uint8_t *>(bufferIcons), 16 * 16 * 2);
+
 	delete gif;
 	gif = nullptr;
+	gif = new AnimatedSprite(getSprite(), SPIFFS.open(gifIcons[effect]));
+	setupGif();
 
-	if(effect != EffectType::NONE){
-		gif = new AnimatedSprite(getSprite(), PGMFile::open(gifIcons[effect], gifIconSizes[effect]));
-		setupGif();
-	}
+
 }
 
 
@@ -104,4 +101,9 @@ uint8_t MixScreen::EffectElement::getIntensity() const{
 
 EffectType MixScreen::EffectElement::getType() const{
 	return effect;
+}
+
+MixScreen::EffectElement::~EffectElement(){
+	free(bufferIcons);
+
 }
