@@ -51,11 +51,11 @@ namespace Playback {
 
 		fs::File background;
 
-		Color *buffer;
+		Color *backgroundBuffer = nullptr;
 
 		bool playing = false;
-		OutputI2S* i2s = nullptr;
-		SourceWAV* wav = nullptr;
+		OutputI2S *i2s = nullptr;
+		SourceWAV *wav = nullptr;
 
 	};
 }

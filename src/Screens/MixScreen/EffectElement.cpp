@@ -30,12 +30,6 @@ void MixScreen::EffectElement::draw(){
 		gif->nextFrame();
 		gif->push();
 
-		/*if(mirrored){
-			getSprite()->fillRect(getTotalX(), getTotalY() + 25, 77, 18, C_RGB(157, 194, 255));
-		}else{
-			getSprite()->fillRect(getTotalX(), getTotalY() + 25, 77, 18, C_RGB(248, 147, 121));
-		}
-*/
 	}else{
 		getSprite()->drawIcon(bufferIcons, getTotalX() + 61 * mirrored, getTotalY() + 25, 16, 16, 1, TFT_BLACK);
 	}
@@ -71,9 +65,7 @@ void MixScreen::EffectElement::setType(EffectType effect){
 	gif = new AnimatedSprite(getSprite(), SPIFFS.open(gifIcons[effect]));
 	setupGif();
 
-
 }
-
 
 bool MixScreen::EffectElement::needsUpdate(){
 	return selected && gif != nullptr && gif->checkFrame();
