@@ -10,7 +10,7 @@ MixScreen::SongSeekBar::SongSeekBar(ElementContainer *parent) : CustomElement(pa
 
 		buffer[i] = static_cast<Color *>(ps_malloc(5*6*2));
 		if(buffer[i] == nullptr){
-			Serial.println("PlayPause picture unpack error");
+			Serial.println("SongSeekBar picture unpack error");
 			return;
 		}
 		picture[i].seek(0);
