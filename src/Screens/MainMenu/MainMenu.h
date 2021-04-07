@@ -48,9 +48,11 @@ namespace MainMenu {
 
 		int8_t itemNum = 0;
 
-		fs::File background;
+		fs::File backgroundPicture;
+		fs::File jayDlogo;
 
-		Color* buffer= nullptr;
+		fs::File picture[2];
+		Color* buffer[2];
 
 		void buildUI();
 
