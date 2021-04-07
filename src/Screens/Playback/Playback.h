@@ -26,23 +26,32 @@ namespace Playback {
 
 		void draw();
 
-		void returned(void* data) override;
+		void pack() override;
+
+		void unpack() override;
+
+		void returned(void *data) override;
+
 		void loop(uint micros) override;
 
 	private:
 		static Playback *instance;
 
-		LinearLayout* screenLayout;
-		LinearLayout* songNameLayout;
-		LinearLayout* timeElapsedLayout;
-		LinearLayout* buttonLayout;
-		SongName* songName;
-		PlayPause* playOrPause;
-		TrackCounter* trackCount;
+		LinearLayout *screenLayout;
+		LinearLayout *songNameLayout;
+		LinearLayout *timeElapsedLayout;
+		LinearLayout *buttonLayout;
+		SongName *songName;
+		PlayPause *playOrPause;
+		TrackCounter *trackCount;
 
 		void buildUI();
 
 		fs::File file;
+
+		fs::File background;
+
+		Color *buffer;
 
 		bool playing = false;
 		OutputI2S* i2s = nullptr;

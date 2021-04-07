@@ -8,6 +8,8 @@ namespace MixScreen {
 	public:
 		SongSeekBar(ElementContainer *parent);
 
+		virtual ~SongSeekBar();
+
 		void setPlaying(bool playing);
 
 		void draw();
@@ -23,6 +25,8 @@ namespace MixScreen {
 		int totalDuration = 0;
 		int currentDuration = 0;
 		float movingCursor=0;
+
+		Color *buffer[2];
 	};
 
 }
