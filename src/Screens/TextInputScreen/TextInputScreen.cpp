@@ -14,6 +14,11 @@ TextInputScreen::TextInputScreen::TextInputScreen(Display &display) : Context(di
 
 }
 
+TextInputScreen::TextInputScreen::~TextInputScreen(){
+	background.close();
+	instance = nullptr;
+}
+
 void TextInputScreen::TextInputScreen::start(){
 	instance->draw();
 	instance->screen.commit();
@@ -57,7 +62,7 @@ void TextInputScreen::TextInputScreen::stop(){
 }
 
 void TextInputScreen::TextInputScreen::draw(){
-	screen.getSprite()->drawIcon(buffer, 0, 0, 160, 128, 1);
+	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1);
 	sprite->fillRect(2, 35, 156, 1, TFT_WHITE);
 	sprite->setTextFont(1);
 	sprite->setTextSize(1);
@@ -110,22 +115,19 @@ void TextInputScreen::TextInputScreen::draw(){
 
 void TextInputScreen::TextInputScreen::pack(){
 	Context::pack();
-	free(buffer);
+	free(backgroundBuffer);
 }
 
 void TextInputScreen::TextInputScreen::unpack(){
 	Context::unpack();
-	buffer = static_cast<Color *>(ps_malloc(160 * 128 * 2));
-	if(buffer == nullptr){
+	backgroundBuffer = static_cast<Color *>(ps_malloc(160 * 128 * 2));
+	if(backgroundBuffer == nullptr){
 		Serial.println("Text input background unpack error");
 		return;
 	}
 	background.seek(0);
-	background.read(reinterpret_cast<uint8_t *>(buffer), 160 * 128 * 2);
+	background.read(reinterpret_cast<uint8_t *>(backgroundBuffer), 160 * 128 * 2);
 }
 
-TextInputScreen::TextInputScreen::~TextInputScreen(){
-	background.close();
-	instance = nullptr;
-}
+
 

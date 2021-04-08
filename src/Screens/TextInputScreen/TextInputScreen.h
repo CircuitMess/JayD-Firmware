@@ -38,7 +38,7 @@ namespace TextInputScreen {
 
 		fs::File background;
 
-		Color* buffer= nullptr;
+		Color* backgroundBuffer= nullptr;
 	};
 }
 

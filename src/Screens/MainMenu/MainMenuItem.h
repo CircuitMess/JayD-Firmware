@@ -33,6 +33,8 @@ namespace MainMenu {
 
 		Color *buffer = nullptr;
 
+		uint32_t startMicros = 0;
+
 	};
 }
 #endif //JAYD_FIRMWARE_MAINMENUITEM_H

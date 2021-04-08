@@ -8,8 +8,7 @@
 #include "MainMenuItem.h"
 #include <Display/AnimatedSprite.h>
 
-struct MatrixPartitionGIFData
-{
+struct MatrixPartitionGIFData {
 	std::vector<uint> usedIdleAnimations;
 	std::vector<uint> unusedIdleAnimations;
 	uint8_t animationLoopCounter = 0;
@@ -51,15 +50,18 @@ namespace MainMenu {
 		fs::File backgroundPicture;
 		fs::File jayDlogo;
 
-		fs::File picture[2];
-		Color* buffer[2];
+		Color *backgroundBuffer = nullptr;
+		Color *logoBuffer = nullptr;
 
 		void buildUI();
 
+		uint32_t jumpTime;
+
 		MatrixPartitionGIFData gifData[4];
-		static const uint totalAnimations = 10;
+		static const uint totalAnimations = 20;
+
 		void startRandomAnimation(uint8_t index);
-		
+
 	};
 }
 #endif //JAYD_FIRMWARE_MAINMENU_H

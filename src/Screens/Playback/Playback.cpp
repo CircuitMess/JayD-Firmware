@@ -14,9 +14,8 @@ Playback::Playback::Playback(Display &display) : Context(display), screenLayout(
 				screenLayout, HORIZONTAL)), songName(new SongName(songNameLayout)), playOrPause(new PlayPause(buttonLayout)),
 												 trackCount(new TrackCounter(timeElapsedLayout)){
 
-	fs::File file = SPIFFS.open("/playbackBackground.raw.hs");
 
-	background = CompressedFile::open(file, 10, 9);
+	background = CompressedFile::open(SPIFFS.open("/playbackBackground.raw.hs"), 10, 9);
 
 	instance = this;
 	buildUI();
@@ -26,6 +25,7 @@ Playback::Playback::Playback(Display &display) : Context(display), screenLayout(
 Playback::Playback::~Playback(){
 	background.close();
 	instance = nullptr;
+	free(backgroundBuffer);
 }
 
 void Playback::Playback::loop(uint micros){
@@ -142,7 +142,7 @@ void Playback::Playback::stop(){
 
 
 void Playback::Playback::draw(){
-	screen.getSprite()->drawIcon(buffer, 0, 0, 160, 128, 1);
+	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1);
 	screen.draw();
 }
 
@@ -181,18 +181,18 @@ void Playback::Playback::buildUI(){
 
 void Playback::Playback::pack(){
 	Context::pack();
-	free(buffer);
-
+	free(backgroundBuffer);
+	backgroundBuffer = nullptr;
 }
 
 void Playback::Playback::unpack(){
 	Context::unpack();
-	buffer = static_cast<Color *>(ps_malloc(160 * 128 * 2));
-	if(buffer == nullptr){
+	backgroundBuffer = static_cast<Color *>(ps_malloc(160 * 128 * 2));
+	if(backgroundBuffer == nullptr){
 		Serial.println("Playback background unpack error");
 		return;
 	}
 	background.seek(0);
-	background.read(reinterpret_cast<uint8_t *>(buffer), 160 * 128 * 2);
+	background.read(reinterpret_cast<uint8_t *>(backgroundBuffer), 160 * 128 * 2);
 }
 
