@@ -3,14 +3,7 @@
 
 FirstStartupTest::FirstStartupTest *FirstStartupTest::FirstStartupTest::instance = nullptr;
 
-const std::unordered_map<uint8_t, uint8_t> FirstStartupTest::FirstStartupTest::mapBtn = {
-		{ 3, 0 },
-		{ 8, 1 },
-		{ 7, 2 },
-		{ 6, 3 },
-		{ 5, 4 },
-		{ 4, 5 }
-};
+
 
 FirstStartupTest::FirstStartupTest::FirstStartupTest(Display &display) : Context(display), screenLayout(&screen, HORIZONTAL),
 																		 leftLayout(&screenLayout, VERTICAL),
@@ -47,6 +40,7 @@ FirstStartupTest::FirstStartupTest::FirstStartupTest(Display &display) : Context
 void FirstStartupTest::FirstStartupTest::start(){
 	draw();
 	screen.commit();
+	InputJayD::getInstance()->addListener(this);
 	InputJayD::getInstance()->setBtnPressCallback(0, [](){
 		if(instance == nullptr) return;
 		if(instance->bottomBtnTest[0]->isBtnPressed()) return;
@@ -269,19 +263,19 @@ void FirstStartupTest::FirstStartupTest::stop(){
 	for(int i = 0; i < 7; i++){
 		InputJayD::getInstance()->removeEncoderMovedCallback(i);
 	}
-
+	InputJayD::getInstance()->removeListener(this);
 }
 
 void FirstStartupTest::FirstStartupTest::draw(){
 	screen.getSprite()->clear(TFT_BLACK);
 	screenLayout.draw();
-	screenLayout.getSprite()->setTextColor(TFT_WHITE);
+	screenLayout.getSprite()->setTextColor(TFT_RED);
 	screenLayout.getSprite()->setTextSize(3);
 	screenLayout.getSprite()->setTextFont(1);
-	screenLayout.getSprite()->setCursor(screenLayout.getTotalX() + 10, screenLayout.getTotalY() + 20);
+	screenLayout.getSprite()->setCursor(screenLayout.getTotalX() + 30, screenLayout.getTotalY() + 40);
 
 	if(doneCounter >= 18){
-		screenLayout.getSprite()->println("ALL OK,    PRESS ANY KEY TO EXIT");
+		screenLayout.getSprite()->println("ALL OK");
 
 	}
 
@@ -297,7 +291,6 @@ void FirstStartupTest::FirstStartupTest::buildUI(){
 
 	leftLayout.setWHType(FIXED, PARENT);
 	leftLayout.setWidth(26);
-//	leftLayout.setBorder(1, TFT_RED);
 	leftLayout.setGutter(5);
 
 	for(int i = 0; i < leftEncBtnTest.size(); i++){
@@ -307,7 +300,6 @@ void FirstStartupTest::FirstStartupTest::buildUI(){
 	midLayout.setWHType(FIXED, FIXED);
 	midLayout.setWidth(106);
 	midLayout.setHeight(60);
-//	midLayout.setBorder(1, TFT_RED);
 	midLayout.setGutter(5);
 
 	for(int i = 0; i < midEncBtnTest.size(); i++){
@@ -322,16 +314,15 @@ void FirstStartupTest::FirstStartupTest::buildUI(){
 	bottomLayout.setWHType(FIXED, FIXED);
 	bottomLayout.setHeight(60);
 	bottomLayout.setWidth(106);
-	//bottomLayout.setBorder(1, TFT_RED);
 	bottomLayout.setGutter(5);
 
 	for(int i = 0; i < bottomBtnTest.size(); i++){
 		bottomLayout.addChild(bottomBtnTest[i]);
 	}
 
+
 	rightLayout.setWHType(FIXED, PARENT);
 	rightLayout.setWidth(26);
-	//rightLayout.setBorder(1, TFT_RED);
 	rightLayout.setGutter(5);
 
 	for(int i = 0; i < rightEncBtnTest.size(); i++){
@@ -359,9 +350,48 @@ FirstStartupTest::FirstStartupTest::~FirstStartupTest(){
 
 void FirstStartupTest::FirstStartupTest::checkIfDone(){
 	if(doneCounter >= 18){
-		InputJayD::getInstance()->setBtnPressCallback()
-		this->pop();
+		checkDone = true;
 	}
 }
+
+void FirstStartupTest::FirstStartupTest::buttonPress(uint8_t id){
+	if(checkDone){
+		confirmedCounter++;
+		if(confirmedCounter==2){
+			this->pop();
+		}
+	}
+}
+
+void FirstStartupTest::FirstStartupTest::encoderMove(uint8_t id, int8_t value){
+	if(checkDone){
+		confirmedCounter++;
+		if(confirmedCounter==2){
+			this->pop();
+		}
+	}
+}
+
+void FirstStartupTest::FirstStartupTest::buttonHold(uint8_t id){
+
+}
+
+
+void FirstStartupTest::FirstStartupTest::buttonRelease(uint8_t id){
+
+}
+
+void FirstStartupTest::FirstStartupTest::potMove(uint8_t id, uint8_t value){
+	if(checkDone){
+		confirmedCounter++;
+		if(confirmedCounter==2){
+			this->pop();
+		}
+	}
+
+}
+
+
+
 
 

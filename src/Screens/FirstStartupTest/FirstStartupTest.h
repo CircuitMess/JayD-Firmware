@@ -8,9 +8,10 @@
 #include "BtnTestElement.hpp"
 #include "PotTestElement.hpp"
 #include <unordered_map>
+#include <Input/InputJayD.h>
 
 namespace FirstStartupTest {
-	class FirstStartupTest : public Context {
+	class FirstStartupTest : public Context, public JayDInputListener {
 	public:
 		FirstStartupTest(Display &display);
 
@@ -33,20 +34,32 @@ namespace FirstStartupTest {
 		LinearLayout rightLayout;
 		LinearLayout bottomLayout;
 
-		std::vector<EncTestElement*> leftEncBtnTest;
-		std::vector<EncTestElement*> midEncBtnTest;
-		std::vector<EncTestElement*> rightEncBtnTest;
-		std::vector<BtnTestElement*> bottomBtnTest;
-		std::vector<PotTestElement*> potMidTest;
-		std::vector<PotTestElement*> potBotTest;
+		std::vector<EncTestElement *> leftEncBtnTest;
+		std::vector<EncTestElement *> midEncBtnTest;
+		std::vector<EncTestElement *> rightEncBtnTest;
+		std::vector<BtnTestElement *> bottomBtnTest;
+		std::vector<PotTestElement *> potMidTest;
+		std::vector<PotTestElement *> potBotTest;
 
 		void buildUI();
 
 		void checkIfDone();
 
-		static const std::unordered_map<uint8_t, uint8_t> mapBtn;
+		int doneCounter = 0;
 
-		int doneCounter=0;
+		bool checkDone=false;
+
+		int confirmedCounter=0;
+
+		void buttonPress(uint8_t id) override;
+
+		void encoderMove(uint8_t id, int8_t value) override;
+
+		void buttonHold(uint8_t id) override;
+
+		void buttonRelease(uint8_t id) override;
+
+		void potMove(uint8_t id, uint8_t value) override;
 	};
 }
 #endif //JAYD_FIRMWARE_FIRSTSTARTUPTEST_H
