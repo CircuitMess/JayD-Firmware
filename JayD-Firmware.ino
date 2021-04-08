@@ -35,7 +35,7 @@ void setup(){
 	disableCore0WDT();
 	disableCore1WDT();
 
-	SPI.begin(18, 19, 23, -1);
+	SPI.begin(SPI_SCK, SPI_MISO, SPI_MOSI, SPI_SS);
 	SPI.setFrequency(60000000);
 	if(!SD.begin(22, SPI)){
 		Serial.println("No SD card");
