@@ -8,7 +8,7 @@ void SettingsScreen::SliderElement::moveSliderValue(int8_t value){
 	sliderValue = constrain(sliderValue + value, 0, 255);
 }
 
-void SettingsScreen::SliderElement::activate(){
+void SettingsScreen::SliderElement::toggle(){
 	sliderIsSelected = !sliderIsSelected;
 }
 

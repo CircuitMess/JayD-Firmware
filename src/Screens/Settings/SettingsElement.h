@@ -13,7 +13,7 @@ namespace SettingsScreen {
 
 		void draw();
 
-		virtual void activate() = 0;
+		virtual void toggle() = 0;
 
 		bool isSelected() const;
 

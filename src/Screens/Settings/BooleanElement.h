@@ -8,7 +8,7 @@ namespace SettingsScreen {
 	public:
 		BooleanElement(ElementContainer *partent, String name);
 
-		void activate() override;
+		void toggle() override;
 
 	private:
 
