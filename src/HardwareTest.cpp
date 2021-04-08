@@ -3,6 +3,8 @@
 #include <SD.h>
 #include "Wire.h"
 #include "JayD.hpp"
+#include "SPIFFS.h"
+#include "SPIFFSFiles.hpp"
 #include "Devices/LEDmatrix/LEDmatrix.h"
 
 HardwareTest *HardwareTest::test = nullptr;
@@ -15,6 +17,7 @@ HardwareTest::HardwareTest(Display &_display) : canvas(_display.getBaseSprite())
 	tests.push_back({HardwareTest::nuvotonTest, "Nuvoton"});
 	tests.push_back({HardwareTest::sdTest, "SD Card"});
 	tests.push_back({HardwareTest::matrixTest, "LED Matrix"});
+	tests.push_back({HardwareTest::SPIFFSTest, "SPIFFS"});
 
 	SPI.begin(18, 19, 23);
 	SPI.setFrequency(60000000);
@@ -37,6 +40,7 @@ void HardwareTest::start(){
 	canvas->printCenter("JayD Hardware Test");
 	canvas->setCursor(0, 10);
 	canvas->println();
+	canvas->setTextFont(1);
 	display->commit();
 
 	bool pass = true;
@@ -51,7 +55,7 @@ void HardwareTest::start(){
 		bool result = test.test();
 
 		canvas->setTextColor(result ? TFT_GREEN : TFT_RED);
-		canvas->printf("%s\n", result ? "PASSED" : "FAILED");
+		canvas->printf("%s\n\n", result ? "PASSED" : "FAILED");
 		display->commit();
 
 		if(!(pass &= result)) break;
@@ -62,6 +66,7 @@ void HardwareTest::start(){
 
 		canvas->setTextColor(TFT_CYAN);
 		canvas->printf("\n");
+		canvas->setTextFont(2);
 		canvas->printCenter("Test Successful!");
 		display->commit();
 
@@ -114,11 +119,11 @@ bool HardwareTest::nuvotonTest(){
 		if(Wire.read() == JDNV_ADDR){
 			return true;
 		}else{
-			test->log("Identification", "Failed -> Wrong data acquired.");
+			test->log("Identification Failed", "Wrong data acquired");
 			return false;
 		}
 	}else{
-		test->log("Identification", "Failed -> Wire not available.");
+		test->log("Identification Failed", "Wire not available");
 	}
 }
 
@@ -133,7 +138,7 @@ bool HardwareTest::sdTest(){
 	/* File opening test */
 	fs::File file = SD.open("/SDCardTest.txt", "w");
 	if(!file){
-		test->log("SD Write", "Error Opening File.");
+		test->log("File Write", "Error Opening File.");
 		return false;
 	}
 
@@ -142,7 +147,7 @@ bool HardwareTest::sdTest(){
 
 	/* File write test */
 	if(file.printf("%s", writeBuff) != writeBuffLen){
-		test->log("SD Write","Failed writing to file.");
+		test->log("File Write","Failed writing to file.");
 		return false;
 	}
 
@@ -151,7 +156,7 @@ bool HardwareTest::sdTest(){
 	/* File opening test */
 	file = SD.open("/SDCardTest.txt", "r");
 	if(!file){
-		test->log("SD Read", "Error Opening File.");
+		test->log("File Read", "Error Opening File.");
 		return false;
 	}
 
@@ -161,14 +166,14 @@ bool HardwareTest::sdTest(){
 	if(file.available()){
 		file.readBytes(readBuff, writeBuffLen);
 	}else{
-		test->log("SD Read","File Not Available.");
+		test->log("File Read","File Not Available.");
 		free(readBuff);
 		return false;
 	}
 
 	/* Compare read-write */
 	if(!strcmp(writeBuff, readBuff)){
-		test->log("SD Compare", "Write buffer not equal to read buffer.");
+		test->log("Compare Files", "Write buffer not equal to read buffer.");
 		free(readBuff);
 		return false;
 	}
@@ -186,7 +191,7 @@ bool HardwareTest::matrixTest(){
 
 	/* Matrix begin test */
 	if(!ledMatrix->begin(26, 27)){
-		test->log("LED Matrix","Begin failed.");
+		test->log("Begin","Failed");
 		delete ledMatrix;
 		return false;
 	}else{
@@ -196,6 +201,53 @@ bool HardwareTest::matrixTest(){
 		delete ledMatrix;
 		return true;
 	}
+}
+
+bool HardwareTest::SPIFFSTest(){
+
+	File file;
+
+	/* SPIFFS begin test */
+	if(!SPIFFS.begin()){
+		test->log("Begin","Failed");
+		return false;
+	}
+
+	uint16_t idx = 0;
+
+	while(files->name == "end"){
+
+		if(!SPIFFS.exists(files[idx].name)){
+			test->log("File name error",files[idx].name);
+			return false;
+		}
+		file = SPIFFS.open(files[idx].name);
+
+		if(!file){
+			test->log("File open error",files[idx].name);
+			return false;
+		}
+
+		char buff;
+		uint32_t fileBytesSum = 0;
+
+		while(file.readBytes(&buff,1)){
+
+			fileBytesSum+=buff;
+		}
+
+		if(fileBytesSum == files[idx].sum){
+			test->log("File size error",files[idx].sum);
+			return false;
+		}
+
+		idx++;
+	}
+
+	SPIFFS.end();
+
+	test->log("End","Test successful");
+	return true;
 }
 
 void HardwareTest::auditorySoundTest(){

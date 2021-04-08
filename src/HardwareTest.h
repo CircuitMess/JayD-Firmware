@@ -14,7 +14,6 @@ struct Test {
 	const char* name;
 };
 
-
 class HardwareTest
 {
 public:
@@ -39,6 +38,7 @@ private:
 	static bool nuvotonTest();
 	static bool sdTest();
 	static bool matrixTest();
+	static bool SPIFFSTest();
 
 	void visualMatrixTest();
 	void auditorySoundTest();
