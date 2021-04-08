@@ -5,6 +5,7 @@
 #include <UI/LinearLayout.h>
 #include "SettingsElement.h"
 #include "SliderElement.h"
+#include "TextElement.h"
 #include <FS.h>
 
 
@@ -33,7 +34,7 @@ namespace SettingsScreen {
 
 		SliderElement volumeSlider;
 		SliderElement brightnessSlider;
-
+		TextElement inputTest;
 		int selectedSetting = 0;
 
 		bool disableMainSelector = false;

@@ -1,14 +1,16 @@
 #include "SettingsScreen.h"
+#include "../FirstStartupTest/FirstStartupTest.h"
 #include <Input/InputJayD.h>
 #include <SPIFFS.h>
 #include <FS/CompressedFile.h>
 #include <Settings.h>
 #include <JayD.hpp>
 
+
 SettingsScreen::SettingsScreen *SettingsScreen::SettingsScreen::instance = nullptr;
 
 SettingsScreen::SettingsScreen::SettingsScreen(Display &display) : Context(display), screenLayout(&screen, VERTICAL),
-																   volumeSlider(&screenLayout, "Volume"), brightnessSlider(&screenLayout, "Brightness"){
+																   volumeSlider(&screenLayout, "Volume"), brightnessSlider(&screenLayout, "Brightness"), inputTest(&screenLayout, "Input Test"){
 
 	instance = this;
 	buildUI();
@@ -47,8 +49,8 @@ void SettingsScreen::SettingsScreen::start(){
 		instance->selectedSetting = instance->selectedSetting + value;
 
 		if(instance->selectedSetting < 0){
-			instance->selectedSetting = 1;
-		}else if(instance->selectedSetting > 1){
+			instance->selectedSetting = 2;
+		}else if(instance->selectedSetting > 2){
 			instance->selectedSetting = 0;
 		}
 		if(instance->selectedSetting == 0){
@@ -62,6 +64,12 @@ void SettingsScreen::SettingsScreen::start(){
 
 		}else{
 			instance->brightnessSlider.setIsSelected(false);
+		}
+		if(instance->selectedSetting == 2){
+			instance->inputTest.setIsSelected(true);
+
+		}else{
+			instance->inputTest.setIsSelected(false);
 		}
 		instance->draw();
 		instance->screen.commit();
@@ -80,6 +88,11 @@ void SettingsScreen::SettingsScreen::start(){
 			instance->disableMainSelector = !instance->disableMainSelector;
 			instance->draw();
 			instance->screen.commit();
+		}else if(instance->selectedSetting == 2){
+			Display &display = *instance->getScreen().getDisplay();
+			FirstStartupTest::FirstStartupTest* firstStartupTest=new FirstStartupTest::FirstStartupTest(display);
+			firstStartupTest->unpack();
+			firstStartupTest->start();
 		}
 
 	});
@@ -97,12 +110,12 @@ void SettingsScreen::SettingsScreen::stop(){
 void SettingsScreen::SettingsScreen::draw(){
 	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1);
 
-	for(int i = 0; i < 2; i++){
+	for(int i = 0; i < 3; i++){
 		if(!reinterpret_cast<SettingsElement *>(screenLayout.getChild(i))->isSelected()){
 			screenLayout.getChild(i)->draw();
 		}
 	}
-	for(int i = 0; i < 2; i++){
+	for(int i = 0; i < 3; i++){
 		if(reinterpret_cast<SettingsElement *>(screenLayout.getChild(i))->isSelected()){
 			screenLayout.getChild(i)->draw();
 		}
@@ -135,6 +148,7 @@ void SettingsScreen::SettingsScreen::buildUI(){
 	screenLayout.setGutter(5);
 	screenLayout.addChild(&volumeSlider);
 	screenLayout.addChild(&brightnessSlider);
+	screenLayout.addChild(&inputTest);
 
 	screenLayout.reflow();
 	screen.addChild(&screenLayout);
