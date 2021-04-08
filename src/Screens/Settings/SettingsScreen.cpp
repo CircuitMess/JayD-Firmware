@@ -91,8 +91,7 @@ void SettingsScreen::SettingsScreen::start(){
 		}else if(instance->selectedSetting == 2){
 			Display &display = *instance->getScreen().getDisplay();
 			FirstStartupTest::FirstStartupTest* firstStartupTest=new FirstStartupTest::FirstStartupTest(display);
-			firstStartupTest->unpack();
-			firstStartupTest->start();
+			firstStartupTest->push(instance);
 		}
 
 	});
