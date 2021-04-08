@@ -40,6 +40,9 @@ void SettingsScreen::SettingsScreen::start(){
 		if(instance->disableMainSelector && instance->selectedSetting == 1){
 			instance->brightnessSlider.moveSliderValue(value);
 			Settings.get().brightnessLevel = instance->brightnessSlider.getSliderValue();
+			LEDmatrix.setBrightness(instance->brightnessSlider.getSliderValue());
+			matrixManager.clear(true);
+			matrixManager.push();
 			instance->draw();
 			instance->screen.commit();
 			return;
@@ -71,13 +74,22 @@ void SettingsScreen::SettingsScreen::start(){
 	InputJayD::getInstance()->setBtnPressCallback(BTN_MID, [](){
 		if(instance == nullptr) return;
 		if(instance->selectedSetting == 0){
-			instance->volumeSlider.activate();
+
+			instance->volumeSlider.toggle();
 			instance->disableMainSelector = !instance->disableMainSelector;
 			instance->draw();
 			instance->screen.commit();
 		}else if(instance->selectedSetting == 1){
-			instance->brightnessSlider.activate();
+			instance->brightnessSlider.toggle();
 			instance->disableMainSelector = !instance->disableMainSelector;
+			if(instance->disableMainSelector) {
+				LEDmatrix.setBrightness(instance->brightnessSlider.getSliderValue());
+				matrixManager.clear(true);
+				matrixManager.push();
+			}else{
+				matrixManager.clear(false);
+				matrixManager.push();
+			}
 			instance->draw();
 			instance->screen.commit();
 		}
