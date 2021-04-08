@@ -7,6 +7,7 @@
 #include "EncTestElement.h"
 #include "BtnTestElement.hpp"
 #include "PotTestElement.hpp"
+#include <unordered_map>
 
 namespace FirstStartupTest {
 	class FirstStartupTest : public Context {
@@ -40,6 +41,12 @@ namespace FirstStartupTest {
 		std::vector<PotTestElement*> potBotTest;
 
 		void buildUI();
+
+		void checkIfDone();
+
+		static const std::unordered_map<uint8_t, uint8_t> mapBtn;
+
+		int doneCounter=0;
 	};
 }
 #endif //JAYD_FIRMWARE_FIRSTSTARTUPTEST_H
