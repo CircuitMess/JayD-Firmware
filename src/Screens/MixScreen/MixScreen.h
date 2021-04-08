@@ -16,6 +16,7 @@
 #include <Util/Task.h>
 #include <AudioLib/Systems/MixSystem.h>
 #include <Matrix/VuVisualizer.h>
+#include <Matrix/RoundVuVisualiser.h>
 namespace MixScreen {
 	class MixScreen : public Context, public LoopListener, public JayDInputListener {
 	public:
@@ -70,6 +71,7 @@ namespace MixScreen {
 
 		VuVisualizer leftVu;
 		VuVisualizer rightVu;
+		RoundVuVisualiser midVu;
 	};
 }
 
