@@ -11,9 +11,11 @@ public:
 
 	void draw() override;
 
+	bool isBtnPressed() const;
+
 private:
 	int value=0;
-	bool pressed=false;
+	bool btnPressed=false;
 
 };
 

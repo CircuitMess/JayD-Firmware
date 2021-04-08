@@ -6,11 +6,16 @@ BtnTestElement::BtnTestElement(ElementContainer *parent) : CustomElement(parent,
 }
 
 void BtnTestElement::btnPress(){
-if(!pressed){
-	pressed= true;
+if(!btnPressed){
+	btnPressed= true;
+
 }
 }
 
 void BtnTestElement::draw(){
-	getSprite()->fillCircle(getTotalX()+15,getTotalY()+40,3,!pressed ? TFT_DARKGREY:TFT_GREEN);
+	getSprite()->fillCircle(getTotalX()+15,getTotalY()+40,3, !btnPressed ? TFT_DARKGREY : TFT_GREEN);
+}
+
+bool BtnTestElement::isBtnPressed() const{
+	return btnPressed;
 }

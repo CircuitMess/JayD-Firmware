@@ -13,10 +13,15 @@ public:
 
 	void draw() override;
 
+	bool isEncValueDone() const;
+
+	bool isEncPressed() const;
+
 private:
 	bool midLayout = false;
-	bool pressed = false;
+	bool encPressed = false;
 	uint8_t counter=5;
+	bool encValueDone=false;
 };
 
 #endif //JAYD_FIRMWARE_ENCTESTELEMENT_H
