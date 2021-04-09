@@ -10,7 +10,9 @@
 SettingsScreen::SettingsScreen *SettingsScreen::SettingsScreen::instance = nullptr;
 
 SettingsScreen::SettingsScreen::SettingsScreen(Display &display) : Context(display), screenLayout(&screen, VERTICAL),
-																   volumeSlider(&screenLayout, "Volume"), brightnessSlider(&screenLayout, "Brightness"), inputTest(&screenLayout, "Input Test"){
+																   volumeSlider(&screenLayout, "Volume"), brightnessSlider(&screenLayout, "Brightness"),
+																   inputTest(&screenLayout, "Input Test"),
+																   saveSettings(&screenLayout, "Save"){
 
 	instance = this;
 	buildUI();
@@ -49,8 +51,8 @@ void SettingsScreen::SettingsScreen::start(){
 		instance->selectedSetting = instance->selectedSetting + value;
 
 		if(instance->selectedSetting < 0){
-			instance->selectedSetting = 2;
-		}else if(instance->selectedSetting > 2){
+			instance->selectedSetting = 3;
+		}else if(instance->selectedSetting > 3){
 			instance->selectedSetting = 0;
 		}
 		if(instance->selectedSetting == 0){
@@ -71,10 +73,14 @@ void SettingsScreen::SettingsScreen::start(){
 		}else{
 			instance->inputTest.setIsSelected(false);
 		}
+		if(instance->selectedSetting == 3){
+			instance->saveSettings.setIsSelected(true);
+
+		}else{
+			instance->saveSettings.setIsSelected(false);
+		}
 		instance->draw();
 		instance->screen.commit();
-
-
 	});
 	InputJayD::getInstance()->setBtnPressCallback(BTN_MID, [](){
 		if(instance == nullptr) return;
@@ -90,8 +96,10 @@ void SettingsScreen::SettingsScreen::start(){
 			instance->screen.commit();
 		}else if(instance->selectedSetting == 2){
 			Display &display = *instance->getScreen().getDisplay();
-			InputTest::InputTest* inputTest=new InputTest::InputTest(display);
+			InputTest::InputTest *inputTest = new InputTest::InputTest(display);
 			inputTest->push(instance);
+		}else if(instance->selectedSetting == 3){
+			instance->pop();
 		}
 
 	});
@@ -107,14 +115,18 @@ void SettingsScreen::SettingsScreen::stop(){
 }
 
 void SettingsScreen::SettingsScreen::draw(){
-	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1);
-
-	for(int i = 0; i < 3; i++){
+	screenLayout.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1);
+	screenLayout.getSprite()->setTextColor(TFT_WHITE);
+	screenLayout.getSprite()->setTextSize(1);
+	screenLayout.getSprite()->setTextFont(1);
+	screenLayout.getSprite()->setCursor(screenLayout.getTotalX() + 42, screenLayout.getTotalY() + 115);
+	screenLayout.getSprite()->println("Version 1.0");
+	for(int i = 0; i < 4; i++){
 		if(!reinterpret_cast<SettingsElement *>(screenLayout.getChild(i))->isSelected()){
 			screenLayout.getChild(i)->draw();
 		}
 	}
-	for(int i = 0; i < 3; i++){
+	for(int i = 0; i < 4; i++){
 		if(reinterpret_cast<SettingsElement *>(screenLayout.getChild(i))->isSelected()){
 			screenLayout.getChild(i)->draw();
 		}
@@ -148,6 +160,7 @@ void SettingsScreen::SettingsScreen::buildUI(){
 	screenLayout.addChild(&volumeSlider);
 	screenLayout.addChild(&brightnessSlider);
 	screenLayout.addChild(&inputTest);
+	screenLayout.addChild(&saveSettings);
 
 	screenLayout.reflow();
 	screen.addChild(&screenLayout);

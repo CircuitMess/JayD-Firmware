@@ -35,6 +35,7 @@ namespace SettingsScreen {
 		SliderElement volumeSlider;
 		SliderElement brightnessSlider;
 		TextElement inputTest;
+		TextElement saveSettings;
 		int selectedSetting = 0;
 
 		bool disableMainSelector = false;
