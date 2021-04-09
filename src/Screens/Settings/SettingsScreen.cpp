@@ -4,6 +4,7 @@
 #include <FS/CompressedFile.h>
 #include <Settings.h>
 #include <JayD.hpp>
+#include <AudioLib/Systems/PlaybackSystem.h>
 
 SettingsScreen::SettingsScreen *SettingsScreen::SettingsScreen::instance = nullptr;
 
@@ -33,6 +34,7 @@ void SettingsScreen::SettingsScreen::start(){
 		if(instance->disableMainSelector && instance->selectedSetting == 0){
 			instance->volumeSlider.moveSliderValue(value);
 			Settings.get().volumeLevel = instance->volumeSlider.getSliderValue();
+			instance->playback->setVolume(instance->volumeSlider.getSliderValue());
 			instance->draw();
 			instance->screen.commit();
 			return;
@@ -79,6 +81,13 @@ void SettingsScreen::SettingsScreen::start(){
 			instance->disableMainSelector = !instance->disableMainSelector;
 			instance->draw();
 			instance->screen.commit();
+			if(instance->disableMainSelector) {
+				instance->playback->setVolume(instance->volumeSlider.getSliderValue());
+				instance->playback->seek(0, fs::SeekSet);
+				instance->playback->resume();
+			}else{
+				instance->playback->pause();
+			}
 		}else if(instance->selectedSetting == 1){
 			instance->brightnessSlider.toggle();
 			instance->disableMainSelector = !instance->disableMainSelector;
@@ -97,13 +106,20 @@ void SettingsScreen::SettingsScreen::start(){
 	});
 	instance->draw();
 	instance->screen.commit();
+	f1 = SPIFFS.open("/intro.aac");
+	playback = new PlaybackSystem(f1);
+	playback->setVolume(Settings.get().volumeLevel);
+	playback->setRepeat(true);
+	playback->start();
+	playback->pause();
 }
 
 void SettingsScreen::SettingsScreen::stop(){
 	InputJayD::getInstance()->removeEncoderMovedCallback(0);
 	InputJayD::getInstance()->removeBtnPressCallback(2);
 	Settings.store();
-
+	playback->stop();
+	delete playback;
 }
 
 void SettingsScreen::SettingsScreen::draw(){
