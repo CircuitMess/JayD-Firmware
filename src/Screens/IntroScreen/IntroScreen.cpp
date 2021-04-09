@@ -4,6 +4,8 @@
 #include <FS/CompressedFile.h>
 #include "../MainMenu/MainMenu.h"
 #include <SPIFFS.h>
+#include <AudioLib/Systems/PlaybackSystem.h>
+#include <Settings.h>
 
 
 IntroScreen::IntroScreen *IntroScreen::IntroScreen::instance = nullptr;
@@ -55,11 +57,19 @@ void IntroScreen::IntroScreen::start(){
 		main->start();
 	});
 
+	f1 = SPIFFS.open("/intro.aac");
+	playback = new PlaybackSystem(f1);
+	playback->setVolume(Settings.get().volumeLevel);
+	playback->setRepeat(true);
+	playback->start();
+
 	LoopManager::addListener(this);
 }
 
 void IntroScreen::IntroScreen::stop(){
 	LoopManager::removeListener(this);
+	playback->stop();
+	delete playback;
 }
 
 void IntroScreen::IntroScreen::loop(uint micros){
