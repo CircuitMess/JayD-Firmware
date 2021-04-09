@@ -8,7 +8,6 @@
 #include <Loop/LoopListener.h>
 #include <Loop/LoopManager.h>
 #include "src/Screens/IntroScreen/IntroScreen.h"
-#include "src/Screens/Settings/SettingsScreen.h"
 #include "src/Screens/InputTest/InputTest.h"
 #include <Input/InputJayD.h>
 #include <WiFi.h>
