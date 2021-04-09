@@ -271,12 +271,13 @@ void InputTest::InputTest::stop(){
 void InputTest::InputTest::draw(){
 	screen.getSprite()->clear(TFT_BLACK);
 	screenLayout.draw();
-	screenLayout.getSprite()->setTextColor(TFT_RED);
+	screenLayout.getSprite()->setTextColor(TFT_GREEN);
 	screenLayout.getSprite()->setTextSize(3);
 	screenLayout.getSprite()->setTextFont(1);
 	screenLayout.getSprite()->setCursor(screenLayout.getTotalX() + 30, screenLayout.getTotalY() + 20);
 
 	if(doneCounter >= 18){
+		screenLayout.getSprite()->fillRect(screenLayout.getTotalX(),screenLayout.getTotalY(),160,128,TFT_BLACK);
 		screenLayout.getSprite()->println("ALL OK\n  PRESS\n ANY KEY TO EXIT");
 
 	}
