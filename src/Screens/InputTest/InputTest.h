@@ -10,12 +10,12 @@
 #include <unordered_map>
 #include <Input/InputJayD.h>
 
-namespace FirstStartupTest {
-	class FirstStartupTest : public Context, public JayDInputListener {
+namespace InputTest {
+	class InputTest : public Context, public JayDInputListener {
 	public:
-		FirstStartupTest(Display &display);
+		InputTest(Display &display);
 
-		virtual ~FirstStartupTest();
+		virtual ~InputTest();
 
 		void start() override;
 
@@ -26,7 +26,7 @@ namespace FirstStartupTest {
 
 	private:
 
-		static FirstStartupTest *instance;
+		static InputTest *instance;
 
 		LinearLayout screenLayout;
 		LinearLayout leftLayout;

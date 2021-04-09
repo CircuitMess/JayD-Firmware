@@ -1,5 +1,5 @@
 #include "SettingsScreen.h"
-#include "../FirstStartupTest/FirstStartupTest.h"
+#include "../InputTest/InputTest.h"
 #include <Input/InputJayD.h>
 #include <SPIFFS.h>
 #include <FS/CompressedFile.h>
@@ -90,8 +90,8 @@ void SettingsScreen::SettingsScreen::start(){
 			instance->screen.commit();
 		}else if(instance->selectedSetting == 2){
 			Display &display = *instance->getScreen().getDisplay();
-			FirstStartupTest::FirstStartupTest* firstStartupTest=new FirstStartupTest::FirstStartupTest(display);
-			firstStartupTest->push(instance);
+			InputTest::InputTest* inputTest=new InputTest::InputTest(display);
+			inputTest->push(instance);
 		}
 
 	});

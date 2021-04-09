@@ -1,11 +1,11 @@
 #include <Input/InputJayD.h>
-#include "FirstStartupTest.h"
+#include "InputTest.h"
 
-FirstStartupTest::FirstStartupTest *FirstStartupTest::FirstStartupTest::instance = nullptr;
+InputTest::InputTest *InputTest::InputTest::instance = nullptr;
 
 
 
-FirstStartupTest::FirstStartupTest::FirstStartupTest(Display &display) : Context(display), screenLayout(&screen, HORIZONTAL),
+InputTest::InputTest::InputTest(Display &display) : Context(display), screenLayout(&screen, HORIZONTAL),
 																		 leftLayout(&screenLayout, VERTICAL),
 																		 midLayout(&screenLayout, HORIZONTAL),
 																		 rightLayout(&screenLayout, VERTICAL),
@@ -37,7 +37,7 @@ FirstStartupTest::FirstStartupTest::FirstStartupTest(Display &display) : Context
 }
 
 
-void FirstStartupTest::FirstStartupTest::start(){
+void InputTest::InputTest::start(){
 	draw();
 	screen.commit();
 	InputJayD::getInstance()->addListener(this);
@@ -253,7 +253,7 @@ void FirstStartupTest::FirstStartupTest::start(){
 
 }
 
-void FirstStartupTest::FirstStartupTest::stop(){
+void InputTest::InputTest::stop(){
 	for(int i = 0; i < 9; i++){
 		InputJayD::getInstance()->removeBtnPressCallback(i);
 	}
@@ -266,7 +266,7 @@ void FirstStartupTest::FirstStartupTest::stop(){
 	InputJayD::getInstance()->removeListener(this);
 }
 
-void FirstStartupTest::FirstStartupTest::draw(){
+void InputTest::InputTest::draw(){
 	screen.getSprite()->clear(TFT_BLACK);
 	screenLayout.draw();
 	screenLayout.getSprite()->setTextColor(TFT_RED);
@@ -281,7 +281,7 @@ void FirstStartupTest::FirstStartupTest::draw(){
 
 }
 
-void FirstStartupTest::FirstStartupTest::buildUI(){
+void InputTest::InputTest::buildUI(){
 	screenLayout.setWHType(PARENT, PARENT);
 	screenLayout.setGutter(1);
 	screenLayout.addChild(&leftLayout);
@@ -344,17 +344,17 @@ void FirstStartupTest::FirstStartupTest::buildUI(){
 
 }
 
-FirstStartupTest::FirstStartupTest::~FirstStartupTest(){
+InputTest::InputTest::~InputTest(){
 	instance = nullptr;
 }
 
-void FirstStartupTest::FirstStartupTest::checkIfDone(){
+void InputTest::InputTest::checkIfDone(){
 	if(doneCounter >= 18){
 		checkDone = true;
 	}
 }
 
-void FirstStartupTest::FirstStartupTest::buttonPress(uint8_t id){
+void InputTest::InputTest::buttonPress(uint8_t id){
 	if(checkDone){
 		confirmedCounter++;
 		if(confirmedCounter==2){
@@ -363,7 +363,7 @@ void FirstStartupTest::FirstStartupTest::buttonPress(uint8_t id){
 	}
 }
 
-void FirstStartupTest::FirstStartupTest::encoderMove(uint8_t id, int8_t value){
+void InputTest::InputTest::encoderMove(uint8_t id, int8_t value){
 	if(checkDone){
 		confirmedCounter++;
 		if(confirmedCounter==2){
@@ -372,16 +372,16 @@ void FirstStartupTest::FirstStartupTest::encoderMove(uint8_t id, int8_t value){
 	}
 }
 
-void FirstStartupTest::FirstStartupTest::buttonHold(uint8_t id){
+void InputTest::InputTest::buttonHold(uint8_t id){
 
 }
 
 
-void FirstStartupTest::FirstStartupTest::buttonRelease(uint8_t id){
+void InputTest::InputTest::buttonRelease(uint8_t id){
 
 }
 
-void FirstStartupTest::FirstStartupTest::potMove(uint8_t id, uint8_t value){
+void InputTest::InputTest::potMove(uint8_t id, uint8_t value){
 	if(checkDone){
 		confirmedCounter++;
 		if(confirmedCounter==2){
