@@ -7,6 +7,8 @@
 #include <Loop/LoopListener.h>
 #include <Display/AnimatedSprite.h>
 
+class PlaybackSystem;
+
 
 namespace IntroScreen {
 
@@ -29,7 +31,8 @@ namespace IntroScreen {
 		static IntroScreen *instance;
 
 		AnimatedSprite* gif = nullptr;
-
+		PlaybackSystem* playback = nullptr;
+		fs::File f1;
 
 	};
 }
