@@ -21,7 +21,7 @@ IntroScreen::IntroScreen::IntroScreen(Display &display) : Context(display){
 		return;
 	}
 
-	gif = new AnimatedSprite(screen.getSprite(), CompressedFile::open(f, 9, 8, 34537));
+	gif = new AnimatedSprite(screen.getSprite(), CompressedFile::open(f, 9, 8, 33734));
 	gif->setSwapBytes(true);
 	gif->setXY(0, 0);
 
@@ -60,7 +60,6 @@ void IntroScreen::IntroScreen::start(){
 	f1 = SPIFFS.open("/intro.aac");
 	playback = new PlaybackSystem(f1);
 	playback->setVolume(Settings.get().volumeLevel);
-	playback->setRepeat(true);
 	playback->start();
 
 	LoopManager::addListener(this);

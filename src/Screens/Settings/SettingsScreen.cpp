@@ -83,7 +83,6 @@ void SettingsScreen::SettingsScreen::start(){
 			instance->screen.commit();
 			if(instance->disableMainSelector) {
 				instance->playback->setVolume(instance->volumeSlider.getSliderValue());
-				instance->playback->seek(0, fs::SeekSet);
 				instance->playback->resume();
 			}else{
 				instance->playback->pause();
