@@ -6,7 +6,10 @@
 #include "SettingsElement.h"
 #include "SliderElement.h"
 #include <FS.h>
+#include <AudioLib/OutputI2S.h>
+#include <AudioLib/SourceAAC.h>
 
+class PlaybackSystem;
 
 namespace SettingsScreen {
 	class SettingsScreen : public Context {
@@ -45,6 +48,8 @@ namespace SettingsScreen {
 
 		Color* backgroundBuffer= nullptr;
 
+		PlaybackSystem* playback = nullptr;
+		fs::File f1;
 	};
 }
 

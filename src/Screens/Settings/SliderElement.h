@@ -9,7 +9,7 @@ namespace SettingsScreen {
 	public:
 		SliderElement(ElementContainer *partent, String name);
 
-		void activate() override;
+		void toggle() override;
 
 		void moveSliderValue(int8_t value);
 
