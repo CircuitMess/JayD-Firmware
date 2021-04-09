@@ -272,10 +272,10 @@ void InputTest::InputTest::draw(){
 	screenLayout.getSprite()->setTextColor(TFT_RED);
 	screenLayout.getSprite()->setTextSize(3);
 	screenLayout.getSprite()->setTextFont(1);
-	screenLayout.getSprite()->setCursor(screenLayout.getTotalX() + 30, screenLayout.getTotalY() + 40);
+	screenLayout.getSprite()->setCursor(screenLayout.getTotalX() + 30, screenLayout.getTotalY() + 20);
 
 	if(doneCounter >= 18){
-		screenLayout.getSprite()->println("ALL OK");
+		screenLayout.getSprite()->println("ALL OK\n  PRESS\n ANY KEY TO EXIT");
 
 	}
 
