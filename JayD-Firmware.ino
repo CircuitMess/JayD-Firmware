@@ -59,7 +59,7 @@ void setup(){
 	LoopManager::addListener(new InputJayD());
 	InputJayD::getInstance()->begin();
 	bool firstTime = Settings.isInputTested();
-	if(firstTime){
+	if(!firstTime){
 		InputTest::InputTest *inputTest = new InputTest::InputTest(display);
 		inputTest->start();
 	}else{
