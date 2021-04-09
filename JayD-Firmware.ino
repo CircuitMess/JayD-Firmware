@@ -8,10 +8,14 @@
 #include <Loop/LoopListener.h>
 #include <Loop/LoopManager.h>
 #include "src/Screens/IntroScreen/IntroScreen.h"
+#include "src/Screens/Settings/SettingsScreen.h"
+#include "src/Screens/InputTest/InputTest.h"
 #include <Input/InputJayD.h>
 #include <WiFi.h>
 #include <SD.h>
 #include <Services/SDScheduler.h>
+#include <SPIFFS.h>
+#include <Settings.h>
 
 #define blPin 25
 
@@ -54,11 +58,15 @@ void setup(){
 	LoopManager::addListener(&matrixManager);
 	LoopManager::addListener(new InputJayD());
 	InputJayD::getInstance()->begin();
-
-	Context* introScreen = new IntroScreen::IntroScreen(display);
-	introScreen->unpack();
-	introScreen->start();
-
+	bool firstTime = Settings.isInputTested();
+	if(firstTime){
+		InputTest::InputTest *inputTest = new InputTest::InputTest(display);
+		inputTest->start();
+	}else{
+		Context *introScreen = new IntroScreen::IntroScreen(display);
+		introScreen->unpack();
+		introScreen->start();
+	}
 	digitalWrite(blPin, LOW);
 	LoopManager::addListener(&Sched);
 }

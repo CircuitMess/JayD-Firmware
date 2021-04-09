@@ -1,15 +1,16 @@
 #include <Input/InputJayD.h>
 #include "InputTest.h"
+#include "../IntroScreen/IntroScreen.h"
+#include <Settings.h>
 
 InputTest::InputTest *InputTest::InputTest::instance = nullptr;
 
 
-
 InputTest::InputTest::InputTest(Display &display) : Context(display), screenLayout(&screen, HORIZONTAL),
-																		 leftLayout(&screenLayout, VERTICAL),
-																		 midLayout(&screenLayout, HORIZONTAL),
-																		 rightLayout(&screenLayout, VERTICAL),
-																		 bottomLayout(&screenLayout, HORIZONTAL){
+													leftLayout(&screenLayout, VERTICAL),
+													midLayout(&screenLayout, HORIZONTAL),
+													rightLayout(&screenLayout, VERTICAL),
+													bottomLayout(&screenLayout, HORIZONTAL){
 
 	for(int i = 0; i < 3; i++){
 		leftEncBtnTest.push_back(new EncTestElement(&leftLayout, false));
@@ -34,6 +35,7 @@ InputTest::InputTest::InputTest(Display &display) : Context(display), screenLayo
 	instance = this;
 	buildUI();
 
+	inputTested = Settings.isInputTested();
 }
 
 
@@ -357,7 +359,13 @@ void InputTest::InputTest::checkIfDone(){
 void InputTest::InputTest::buttonPress(uint8_t id){
 	if(checkDone){
 		confirmedCounter++;
-		if(confirmedCounter==2){
+		if(confirmedCounter == 2 && !inputTested){
+			Display &display = *instance->getScreen().getDisplay();
+			Context *introScreen = new IntroScreen::IntroScreen(display);
+			Settings.setInputTested(true);
+			introScreen->unpack();
+			introScreen->start();
+		}else{
 			this->pop();
 		}
 	}
@@ -366,7 +374,13 @@ void InputTest::InputTest::buttonPress(uint8_t id){
 void InputTest::InputTest::encoderMove(uint8_t id, int8_t value){
 	if(checkDone){
 		confirmedCounter++;
-		if(confirmedCounter==2){
+		if(confirmedCounter == 2 && !inputTested){
+			Display &display = *instance->getScreen().getDisplay();
+			Context *introScreen = new IntroScreen::IntroScreen(display);
+			Settings.setInputTested(true);
+			introScreen->unpack();
+			introScreen->start();
+		}else{
 			this->pop();
 		}
 	}
@@ -384,7 +398,13 @@ void InputTest::InputTest::buttonRelease(uint8_t id){
 void InputTest::InputTest::potMove(uint8_t id, uint8_t value){
 	if(checkDone){
 		confirmedCounter++;
-		if(confirmedCounter==2){
+		if(confirmedCounter == 2 && !inputTested){
+			Display &display = *instance->getScreen().getDisplay();
+			Context *introScreen = new IntroScreen::IntroScreen(display);
+			Settings.setInputTested(true);
+			introScreen->unpack();
+			introScreen->start();
+		}else{
 			this->pop();
 		}
 	}
