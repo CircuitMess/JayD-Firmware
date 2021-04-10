@@ -73,7 +73,7 @@ namespace MixScreen {
 		VuVisualizer rightVu;
 		RoundVuVisualiser midVu;
 
-		uint8_t channel = 0;
+		uint8_t selectedChannel = 0;
 		bool hold = false;
 
 		uint8_t popBtnConfig = 0x00;
