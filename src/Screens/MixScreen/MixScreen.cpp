@@ -183,6 +183,11 @@ void MixScreen::MixScreen::draw(){
 	}else{
 		screen.getSprite()->fillCircle(157, 2, 2, TFT_WHITE);
 	}
+
+	if(isRecording){
+		screen.getSprite()->fillCircle(79, 64, 6, TFT_BLACK);
+		screen.getSprite()->fillCircle(79, 64, 4, TFT_RED);
+	}
 	screen.draw();
 }
 
