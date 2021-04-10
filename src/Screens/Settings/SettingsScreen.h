@@ -6,8 +6,6 @@
 #include "SettingsElement.h"
 #include "SliderElement.h"
 #include <FS.h>
-#include <AudioLib/OutputI2S.h>
-#include <AudioLib/SourceAAC.h>
 
 class PlaybackSystem;
 

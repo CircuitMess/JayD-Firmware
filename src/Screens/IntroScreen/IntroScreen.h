@@ -32,7 +32,7 @@ namespace IntroScreen {
 
 		AnimatedSprite* gif = nullptr;
 		PlaybackSystem* playback = nullptr;
-		fs::File f1;
+		fs::File introSong;
 
 	};
 }

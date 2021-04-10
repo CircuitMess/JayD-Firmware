@@ -57,8 +57,8 @@ void IntroScreen::IntroScreen::start(){
 		main->start();
 	});
 
-	f1 = SPIFFS.open("/intro.aac");
-	playback = new PlaybackSystem(f1);
+	introSong = SPIFFS.open("/intro.aac");
+	playback = new PlaybackSystem(introSong);
 	playback->setVolume(Settings.get().volumeLevel);
 	playback->start();
 
@@ -67,6 +67,7 @@ void IntroScreen::IntroScreen::start(){
 
 void IntroScreen::IntroScreen::stop(){
 	LoopManager::removeListener(this);
+	introSong.close();
 	playback->stop();
 	delete playback;
 }
