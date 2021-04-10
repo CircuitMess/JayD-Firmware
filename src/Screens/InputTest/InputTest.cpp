@@ -35,7 +35,6 @@ InputTest::InputTest::InputTest(Display& display) : Context(display), screenLayo
 	instance = this;
 	buildUI();
 
-	inputTested = Settings.get().inputTested;
 }
 
 
@@ -360,13 +359,7 @@ void InputTest::InputTest::checkIfDone(){
 void InputTest::InputTest::buttonPress(uint8_t id){
 	if(checkDone){
 		confirmedCounter++;
-		if(confirmedCounter == 2 && !inputTested){
-			Display& display = *instance->getScreen().getDisplay();
-			Context* introScreen = new IntroScreen::IntroScreen(display);
-			Settings.get().inputTested = true;
-			introScreen->unpack();
-			introScreen->start();
-		}else if(confirmedCounter == 2 && inputTested){
+		if(confirmedCounter == 2){
 			this->pop();
 		}
 	}
@@ -375,13 +368,7 @@ void InputTest::InputTest::buttonPress(uint8_t id){
 void InputTest::InputTest::encoderMove(uint8_t id, int8_t value){
 	if(checkDone){
 		confirmedCounter++;
-		if(confirmedCounter == 2 && !inputTested){
-			Display& display = *instance->getScreen().getDisplay();
-			Context* introScreen = new IntroScreen::IntroScreen(display);
-			Settings.get().inputTested = true;
-			introScreen->unpack();
-			introScreen->start();
-		}else if(confirmedCounter == 2 && inputTested){
+		if(confirmedCounter == 2){
 			this->pop();
 		}
 	}
@@ -399,17 +386,10 @@ void InputTest::InputTest::buttonRelease(uint8_t id){
 void InputTest::InputTest::potMove(uint8_t id, uint8_t value){
 	if(checkDone){
 		confirmedCounter++;
-		if(confirmedCounter == 2 && !inputTested){
-			Display& display = *instance->getScreen().getDisplay();
-			Context* introScreen = new IntroScreen::IntroScreen(display);
-			Settings.get().inputTested = true;
-			introScreen->unpack();
-			introScreen->start();
-		}else if(confirmedCounter == 2 && inputTested){
+		if(confirmedCounter == 2){
 			this->pop();
 		}
-	}
-
+}
 }
 
 

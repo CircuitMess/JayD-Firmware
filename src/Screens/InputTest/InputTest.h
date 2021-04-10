@@ -51,8 +51,6 @@ namespace InputTest {
 
 		int confirmedCounter=0;
 
-		bool inputTested=false;
-
 		void buttonPress(uint8_t id) override;
 
 		void encoderMove(uint8_t id, int8_t value) override;
