@@ -105,8 +105,8 @@ void SettingsScreen::SettingsScreen::start(){
 	});
 	instance->draw();
 	instance->screen.commit();
-	f1 = SPIFFS.open("/intro.aac");
-	playback = new PlaybackSystem(f1);
+	introSong = SPIFFS.open("/intro.aac");
+	playback = new PlaybackSystem(introSong);
 	playback->setVolume(Settings.get().volumeLevel);
 	playback->setRepeat(true);
 	playback->start();
@@ -118,6 +118,7 @@ void SettingsScreen::SettingsScreen::stop(){
 	InputJayD::getInstance()->removeBtnPressCallback(2);
 	Settings.store();
 	playback->stop();
+	introSong.close();
 	delete playback;
 }
 
