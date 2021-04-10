@@ -164,7 +164,6 @@ void MixScreen::MixScreen::stop(){
 	LoopManager::removeListener(&rightVu);
 	LoopManager::removeListener(&midVu);
 
-
 	if(system){
 		system->stop();
 		delete system;
@@ -278,84 +277,9 @@ void MixScreen::MixScreen::loop(uint micros){
 			lastDraw = now;
 		}
 	}
-
-	if(popBtnConfig == 0x0F && (millis()-prevPopTime) > 200){
-		Serial.println("Pop");
-		popBtnConfig = 0x00;
-		pop();
-	}
-	if(recBtnConfig == 0x03 && (millis()-prevRecTime) > 200){
-		isRecording = !isRecording;
-		recBtnConfig = 0x00;
-		Serial.println("Rec");
-	}
-
-}
-
-MixScreen::MixScreen::~MixScreen(){
-	instance = nullptr;
 }
 
 void MixScreen::MixScreen::buttonPress(uint8_t id){
-
-	if(id == 8 || id == 5 || id == 2){
-		popBtnConfig = 0x00;
-	}else{
-
-		if(millis() - prevPopTime > 100){
-			popBtnConfig = 0x00;
-		}
-
-		switch(id){
-			case 3:
-				popBtnConfig |= 0x01;
-				break;
-			case 7:
-				popBtnConfig |= 0x02;
-				break;
-			case 6:
-				popBtnConfig |= 0x04;
-				break;
-			case 4:
-				popBtnConfig |= 0x08;
-				break;
-			default:
-				break;
-		}
-		prevPopTime = millis();
-	}
-	if(popBtnConfig == 0x0F){
-		prevPopTime = millis();
-		return;
-	}
-
-
-	if(!(id == 4 || id == 7)){
-		recBtnConfig = 0x00;
-	}else{
-
-		if(millis() - prevRecTime > 100){
-			recBtnConfig = 0x00;
-		}
-
-		switch(id){
-
-			case 7:
-				recBtnConfig |= 0x01;
-				break;
-
-			case 4:
-				recBtnConfig |= 0x02;
-				break;
-			default:
-				break;
-		}
-		prevRecTime = millis();
-	}
-	if(recBtnConfig == 0x03){
-		return;
-	}
-
 
 	if(mapBtn.count(id)){
 		EffectElement* effect = effectElements[mapBtn.find(id)->second];
@@ -523,4 +447,9 @@ void MixScreen::MixScreen::potMove(uint8_t id, uint8_t value){
 	}else if(id == POT_R){
 		system->setVolume(1, value);
 	}
+}
+
+
+MixScreen::MixScreen::~MixScreen(){
+	instance = nullptr;
 }
