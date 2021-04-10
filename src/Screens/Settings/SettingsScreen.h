@@ -49,7 +49,7 @@ namespace SettingsScreen {
 		Color* backgroundBuffer= nullptr;
 
 		PlaybackSystem* playback = nullptr;
-		fs::File f1;
+		fs::File introSong;
 	};
 }
 
