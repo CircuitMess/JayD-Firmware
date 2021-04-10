@@ -8,6 +8,7 @@
 #include "TextElement.h"
 #include <FS.h>
 
+class PlaybackSystem;
 
 namespace SettingsScreen {
 	class SettingsScreen : public Context {
@@ -47,6 +48,8 @@ namespace SettingsScreen {
 
 		Color* backgroundBuffer= nullptr;
 
+		PlaybackSystem* playback = nullptr;
+		fs::File f1;
 	};
 }
 

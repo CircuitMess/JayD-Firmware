@@ -6,7 +6,7 @@ SettingsScreen::DropDownElement::DropDownElement(ElementContainer *partent, Stri
 
 }
 
-void SettingsScreen::DropDownElement::activate(){
+void SettingsScreen::DropDownElement::toggle(){
 	showDropDown = !showDropDown;
 }
 

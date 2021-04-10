@@ -15,7 +15,8 @@
 #include <Input/InputJayD.h>
 #include <Util/Task.h>
 #include <AudioLib/Systems/MixSystem.h>
-
+#include <Matrix/VuVisualizer.h>
+#include <Matrix/RoundVuVisualiser.h>
 namespace MixScreen {
 	class MixScreen : public Context, public LoopListener, public JayDInputListener {
 	public:
@@ -67,6 +68,10 @@ namespace MixScreen {
 		static const std::unordered_map<uint8_t, uint8_t> mapEnc;
 
 		uint32_t lastDraw = 0;
+
+		VuVisualizer leftVu;
+		VuVisualizer rightVu;
+		RoundVuVisualiser midVu;
 	};
 }
 

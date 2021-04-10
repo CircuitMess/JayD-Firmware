@@ -4,6 +4,8 @@
 #include <FS/CompressedFile.h>
 #include "../MainMenu/MainMenu.h"
 #include <SPIFFS.h>
+#include <AudioLib/Systems/PlaybackSystem.h>
+#include <Settings.h>
 
 
 IntroScreen::IntroScreen *IntroScreen::IntroScreen::instance = nullptr;
@@ -19,7 +21,7 @@ IntroScreen::IntroScreen::IntroScreen(Display &display) : Context(display){
 		return;
 	}
 
-	gif = new AnimatedSprite(screen.getSprite(), CompressedFile::open(f, 9, 8, 34537));
+	gif = new AnimatedSprite(screen.getSprite(), CompressedFile::open(f, 9, 8, 33734));
 	gif->setSwapBytes(true);
 	gif->setXY(0, 0);
 
@@ -55,11 +57,19 @@ void IntroScreen::IntroScreen::start(){
 		main->start();
 	});
 
+	introSong = SPIFFS.open("/intro.aac");
+	playback = new PlaybackSystem(introSong);
+	playback->setVolume(Settings.get().volumeLevel);
+	playback->start();
+
 	LoopManager::addListener(this);
 }
 
 void IntroScreen::IntroScreen::stop(){
 	LoopManager::removeListener(this);
+	introSong.close();
+	playback->stop();
+	delete playback;
 }
 
 void IntroScreen::IntroScreen::loop(uint micros){

@@ -58,7 +58,7 @@ namespace MainMenu {
 		uint32_t jumpTime;
 
 		MatrixPartitionGIFData gifData[4];
-		static const uint totalAnimations = 10;
+		static const uint totalAnimations = 20;
 
 		void startRandomAnimation(uint8_t index);
 

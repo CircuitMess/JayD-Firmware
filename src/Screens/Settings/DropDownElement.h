@@ -9,7 +9,7 @@ namespace SettingsScreen {
 
 		DropDownElement(ElementContainer *partent, String name, std::vector<String> dropDownContent);
 
-		void activate() override;
+		void toggle() override;
 
 		void selectNext();
 

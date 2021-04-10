@@ -5,7 +5,7 @@ SettingsScreen::BooleanElement::BooleanElement(ElementContainer *partent, String
 
 }
 
-void SettingsScreen::BooleanElement::activate(){
+void SettingsScreen::BooleanElement::toggle(){
 	booleanSwitch = !booleanSwitch;
 }
 

@@ -1,6 +1,10 @@
 #include <Input/InputJayD.h>
 #include <JayD.hpp>
 #include "MainMenu.h"
+#include "../Playback/Playback.h"
+#include "../SongList/SongList.h"
+#include "../MixScreen/MixScreen.h"
+#include "../Settings/SettingsScreen.h"
 #include <Loop/LoopManager.h>
 #include <FS/CompressedFile.h>
 #include <SPIFFS.h>
@@ -72,11 +76,17 @@ void MainMenu::MainMenu::start(){
 		delete instance;
 
 		if(selected == 0){
-			//Playback::Playback* playback = new Playback::Playback(display);
-
-			/*SongList::SongList* list = new SongList::SongList(display);
-			list->unpack();
-			list->start();*/
+			Playback::Playback* playback = new Playback::Playback(display);
+			SongList::SongList* list = new SongList::SongList(display);
+			list->push(playback);
+		}else if(selected == 1){
+			MixScreen::MixScreen* mix = new MixScreen::MixScreen(display);
+			mix->unpack();
+			mix->start();
+		}else if(selected == 2){
+			SettingsScreen::SettingsScreen* settings = new SettingsScreen::SettingsScreen(display);
+			settings->unpack();
+			settings->start();
 		}
 	});
 
