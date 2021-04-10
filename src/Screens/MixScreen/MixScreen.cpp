@@ -104,28 +104,30 @@ void MixScreen::MixScreen::start(){
 	leftSeekBar->setTotalDuration(system->getDuration(0));
 	rightSeekBar->setTotalDuration(system->getDuration(1));
 
-	leftSeekBar->setPlaying(true);
-	rightSeekBar->setPlaying(true);
+	leftSeekBar->setPlaying(false);
+	rightSeekBar->setPlaying(false);
 
 	InputJayD::getInstance()->setBtnPressCallback(0, [](){
 		if(instance == nullptr) return;
-		if(!instance->isPlaying){
-			instance->isPlaying = true;
+		instance->isPlaying[0] = !instance->isPlaying[0];
+		instance->leftSeekBar->setPlaying(instance->isPlaying[0]);
+		if(instance->isPlaying[0]) {
+			instance->system->resumeChannel(0);
 		}else{
-			instance->isPlaying = false;
+			instance->system->pauseChannel(0);
 		}
-		instance->leftSeekBar->setPlaying(instance->isPlaying);
 		instance->draw();
 		instance->screen.commit();
 	});
 	InputJayD::getInstance()->setBtnPressCallback(1, [](){
 		if(instance == nullptr) return;
-		if(!instance->isPlaying){
-			instance->isPlaying = true;
+		instance->isPlaying[1] = !instance->isPlaying[1];
+		instance->rightSeekBar->setPlaying(instance->isPlaying[1]);
+		if(instance->isPlaying[1]) {
+			instance->system->resumeChannel(1);
 		}else{
-			instance->isPlaying = false;
+			instance->system->pauseChannel(1);
 		}
-		instance->rightSeekBar->setPlaying(instance->isPlaying);
 		instance->draw();
 		instance->screen.commit();
 	});

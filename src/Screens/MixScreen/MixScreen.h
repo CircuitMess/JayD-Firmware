@@ -53,7 +53,7 @@ namespace MixScreen {
 
 		EffectElement* effectElements[6] = { nullptr };
 
-		bool isPlaying = false;
+		bool isPlaying[2] = {false, false};
 
 		void buildUI();
 
