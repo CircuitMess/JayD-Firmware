@@ -54,8 +54,6 @@ MixScreen::MixScreen::MixScreen(Display &display) : Context(display),
 	instance = this;
 	buildUI();
 
-	channel = 0;
-
 }
 
 Context* selector = nullptr;
