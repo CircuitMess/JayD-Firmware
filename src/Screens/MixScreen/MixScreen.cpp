@@ -258,6 +258,18 @@ void MixScreen::MixScreen::loop(uint micros){
 		update = true;
 	}
 
+	if(popBtnConfig == 0x0F && (millis()-prevPopBtnTime) > 100){
+		Serial.println("Pop");
+		popBtnConfig = 0x00;
+		pop();
+	}
+	else if(recBtnConfig == 0x03 && (millis()-prevRecBtnTime) > 100){
+		isRecording = !isRecording;
+		recBtnConfig = 0x00;
+		update = true;
+		Serial.println("Rec");
+	}
+
 	bool songNameUpdateL = leftSongName->checkScrollUpdate();
 	bool songNameUpdateR = rightSongName->checkScrollUpdate();
 	if(update || songNameUpdateL || songNameUpdateR){
