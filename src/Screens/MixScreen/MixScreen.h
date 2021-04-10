@@ -76,6 +76,9 @@ namespace MixScreen {
 		uint8_t channel = 0;
 		bool hold = false;
 
+		uint8_t popBtnConfig = 0x00;
+		uint32_t prevTime = millis();
+
 	};
 }
 

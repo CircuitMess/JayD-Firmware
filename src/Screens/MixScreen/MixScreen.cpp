@@ -257,6 +257,13 @@ void MixScreen::MixScreen::loop(uint micros){
 			lastDraw = now;
 		}
 	}
+
+	if(popBtnConfig == 0x0F){
+		popBtnConfig = 0x00;
+		pop();
+	}
+
+
 }
 
 MixScreen::MixScreen::~MixScreen(){
@@ -264,6 +271,40 @@ MixScreen::MixScreen::~MixScreen(){
 }
 
 void MixScreen::MixScreen::buttonPress(uint8_t id){
+
+	if(id == 8 || id == 5 || id == 2){
+		popBtnConfig = 0x00;
+	}else{
+
+		if(millis() - prevTime > 100){
+			popBtnConfig = 0x00;
+		}
+
+		switch(id){
+			case 3:
+				popBtnConfig |= 0x01;
+				prevTime = millis();
+				break;
+			case 7:
+				popBtnConfig |= 0x02;
+				prevTime = millis();
+				break;
+			case 6:
+				popBtnConfig |= 0x04;
+				prevTime = millis();
+				break;
+			case 4:
+				popBtnConfig |= 0x08;
+				prevTime = millis();
+				break;
+			default:
+				break;
+		}
+	}
+
+	if(popBtnConfig == 0x0F)return;
+
+
 	if(mapBtn.count(id)){
 		EffectElement* effect = effectElements[mapBtn.find(id)->second];
 		effect->setSelected(!effect->isSelected());
