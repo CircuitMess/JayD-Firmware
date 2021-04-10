@@ -138,19 +138,9 @@ void MainMenu::MainMenu::loop(uint micros){
 			gifData[i].animationLoopDone = false;
 		}
 	}
-	
 
-	bool update = false;
-	for(const auto &i : item){
-		update |= i->needsUpdate();
-	}
-
-	update |= floor(sin((float) (jumpTime - micros) / 500000.0f)) != floor(sin((float) jumpTime / 500000.0f));
-
-	if(update){
-		draw();
-		screen.commit();
-	}
+	draw();
+	screen.commit();
 }
 
 void MainMenu::MainMenu::pack(){
