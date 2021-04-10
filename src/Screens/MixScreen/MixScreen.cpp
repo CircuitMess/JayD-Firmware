@@ -174,7 +174,7 @@ void MixScreen::MixScreen::draw(){
 	screen.getSprite()->fillRect(79, 0, 2, 128, TFT_BLACK);
 	screen.getSprite()->fillRect(leftLayout->getTotalX(), leftLayout->getTotalY(), 79, 128, C_RGB(249, 93, 2));
 	screen.getSprite()->fillRect(rightLayout->getTotalX(), rightLayout->getTotalY(), 79, 128, C_RGB(3, 52, 135));
-	if(!channel){
+	if(!selectedChannel){
 		screen.getSprite()->fillCircle(2, 2, 2, TFT_WHITE);
 	}else{
 		screen.getSprite()->fillCircle(157, 2, 2, TFT_WHITE);
