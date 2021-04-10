@@ -72,6 +72,10 @@ namespace MixScreen {
 		VuVisualizer leftVu;
 		VuVisualizer rightVu;
 		RoundVuVisualiser midVu;
+
+		uint8_t channel = 0;
+		bool hold = false;
+
 	};
 }
 

@@ -33,10 +33,13 @@ const std::unordered_map<uint8_t, uint8_t> MixScreen::MixScreen::mapEnc = {
 		{ 2, 5 },
 };
 
-MixScreen::MixScreen::MixScreen(Display &display) : Context(display), screenLayout(new LinearLayout(&screen, HORIZONTAL)),
+MixScreen::MixScreen::MixScreen(Display &display) : Context(display),
+													screenLayout(new LinearLayout(&screen, HORIZONTAL)),
 													leftLayout(new LinearLayout(screenLayout, VERTICAL)),
-													rightLayout(new LinearLayout(screenLayout, VERTICAL)), leftSeekBar(new SongSeekBar(leftLayout)),
-													rightSeekBar(new SongSeekBar(rightLayout)), leftSongName(new SongName(leftLayout)),
+													rightLayout(new LinearLayout(screenLayout, VERTICAL)),
+													leftSeekBar(new SongSeekBar(leftLayout)),
+													rightSeekBar(new SongSeekBar(rightLayout)),
+													leftSongName(new SongName(leftLayout)),
 													rightSongName(new SongName(rightLayout)), leftVu(&matrixManager.matrixL), rightVu(&matrixManager.matrixR),
 													midVu(&matrixManager.matrixBig){
 
@@ -50,6 +53,9 @@ MixScreen::MixScreen::MixScreen(Display &display) : Context(display), screenLayo
 
 	instance = this;
 	buildUI();
+
+	channel = 0;
+
 }
 
 Context* selector = nullptr;
@@ -166,6 +172,11 @@ void MixScreen::MixScreen::draw(){
 	screen.getSprite()->fillRect(79, 0, 2, 128, TFT_BLACK);
 	screen.getSprite()->fillRect(leftLayout->getTotalX(), leftLayout->getTotalY(), 79, 128, C_RGB(249, 93, 2));
 	screen.getSprite()->fillRect(rightLayout->getTotalX(), rightLayout->getTotalY(), 79, 128, C_RGB(3, 52, 135));
+	if(!channel){
+		screen.getSprite()->fillCircle(2, 2, 2, TFT_WHITE);
+	}else{
+		screen.getSprite()->fillCircle(157, 2, 2, TFT_WHITE);
+	}
 	screen.draw();
 }
 
@@ -266,6 +277,16 @@ void MixScreen::MixScreen::buttonPress(uint8_t id){
 
 void MixScreen::MixScreen::buttonRelease(uint8_t id){
 
+	if(!hold){
+
+		if(id == BTN_MID){
+			channel = !channel;
+			draw();
+			screen.commit();
+			return;
+		}
+	}
+	hold = false;
 }
 
 void MixScreen::MixScreen::buttonHold(uint8_t id){
