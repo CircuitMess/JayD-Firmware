@@ -326,7 +326,7 @@ void MixScreen::MixScreen::buttonRelease(uint8_t id){
 	if(!hold){
 
 		if(id == BTN_MID){
-			channel = !channel;
+			selectedChannel = !selectedChannel;
 			draw();
 			screen.commit();
 			return;
