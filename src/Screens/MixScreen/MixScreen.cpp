@@ -131,6 +131,7 @@ void MixScreen::MixScreen::start(){
 		instance->draw();
 		instance->screen.commit();
 	});
+	InputJayD::getInstance()->setBtnHeldCallback(BTN_MID, 1000, nullptr);
 
 	InputJayD::getInstance()->addListener(this);
 
@@ -156,7 +157,12 @@ void MixScreen::MixScreen::start(){
 
 
 void MixScreen::MixScreen::stop(){
+
 	InputJayD::getInstance()->removeListener(this);
+	InputJayD::getInstance()->removeBtnPressCallback(BTN_L);
+	InputJayD::getInstance()->removeBtnPressCallback(BTN_R);
+	InputJayD::getInstance()->removeBtnHeldCallback(BTN_MID);
+
 	LoopManager::removeListener(this);
 	LoopManager::removeListener(&leftVu);
 	LoopManager::removeListener(&rightVu);
