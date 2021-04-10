@@ -57,7 +57,7 @@ void setup(){
 	LoopManager::addListener(&matrixManager);
 	LoopManager::addListener(new InputJayD());
 	InputJayD::getInstance()->begin();
-	bool firstTime = Settings.isInputTested();
+	bool firstTime = Settings.get().inputTested;
 	if(!firstTime){
 		InputTest::InputTest *inputTest = new InputTest::InputTest(display);
 		inputTest->start();
