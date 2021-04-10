@@ -360,7 +360,11 @@ void InputTest::InputTest::buttonPress(uint8_t id){
 	if(checkDone){
 		confirmedCounter++;
 		if(confirmedCounter == 2){
-			this->pop();
+			if(doneCallback){
+				doneCallback(this);
+			}else{
+				this->pop();
+			}
 		}
 	}
 }
@@ -369,7 +373,11 @@ void InputTest::InputTest::encoderMove(uint8_t id, int8_t value){
 	if(checkDone){
 		confirmedCounter++;
 		if(confirmedCounter == 2){
-			this->pop();
+			if(doneCallback){
+				doneCallback(this);
+			}else{
+				this->pop();
+			}
 		}
 	}
 }
@@ -387,12 +395,15 @@ void InputTest::InputTest::potMove(uint8_t id, uint8_t value){
 	if(checkDone){
 		confirmedCounter++;
 		if(confirmedCounter == 2){
-			this->pop();
+			if(doneCallback){
+				doneCallback(this);
+			}else{
+				this->pop();
+			}
 		}
+	}
 }
+
+void InputTest::InputTest::setDoneCallback(void (* doneCallback)(InputTest*)){
+	InputTest::doneCallback = doneCallback;
 }
-
-
-
-
-

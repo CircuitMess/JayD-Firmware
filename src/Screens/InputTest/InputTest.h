@@ -23,6 +23,8 @@ namespace InputTest {
 
 		void draw() override;
 
+		void setDoneCallback(void (* doneCallback)(InputTest*));
+
 
 	private:
 
@@ -60,6 +62,8 @@ namespace InputTest {
 		void buttonRelease(uint8_t id) override;
 
 		void potMove(uint8_t id, uint8_t value) override;
+
+		void (*doneCallback)(InputTest* test) = nullptr;
 	};
 }
 #endif //JAYD_FIRMWARE_FIRSTSTARTUPTEST_H

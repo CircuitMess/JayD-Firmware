@@ -20,6 +20,12 @@
 
 Display display(160, 128, -1, -1);
 
+void launch(){
+	Context *introScreen = new IntroScreen::IntroScreen(display);
+	introScreen->unpack();
+	introScreen->start();
+}
+
 void setup(){
 	Serial.begin(115200);
 
@@ -57,15 +63,26 @@ void setup(){
 	LoopManager::addListener(&matrixManager);
 	LoopManager::addListener(new InputJayD());
 	InputJayD::getInstance()->begin();
-	bool firstTime = Settings.get().inputTested;
-	if(!firstTime){
-		InputTest::InputTest *inputTest = new InputTest::InputTest(display);
-		inputTest->start();
+
+	Settings.begin();
+
+	if(!Settings.get().inputTested){
+		InputTest::InputTest* test = new InputTest::InputTest(display);
+		test->setDoneCallback([](InputTest::InputTest* test){
+			//delete test;
+
+			Settings.get().inputTested = true;
+			Settings.store();
+
+			launch();
+		});
+
+		test->unpack();
+		test->start();
 	}else{
-		Context *introScreen = new IntroScreen::IntroScreen(display);
-		introScreen->unpack();
-		introScreen->start();
+		launch();
 	}
+
 	digitalWrite(blPin, LOW);
 	LoopManager::addListener(&Sched);
 }
