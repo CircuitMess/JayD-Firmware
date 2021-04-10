@@ -8,9 +8,11 @@
 #include "SongName.h"
 #include "PlayPause.h"
 #include "TrackCounter.h"
+#include "../SongList/SongList.h"
 #include <FS.h>
 #include <AudioLib/OutputI2S.h>
 #include <AudioLib/SourceWAV.h>
+#include <AudioLib/Systems/PlaybackSystem.h>
 
 namespace Playback {
 	class Playback : public Context, public LoopListener {
@@ -36,6 +38,7 @@ namespace Playback {
 
 	private:
 		static Playback *instance;
+		SongList::SongList* selector = nullptr;
 
 		LinearLayout *screenLayout;
 		LinearLayout *songNameLayout;
@@ -48,15 +51,14 @@ namespace Playback {
 		void buildUI();
 
 		fs::File file;
+		PlaybackSystem* system = nullptr;
+		bool playing = false;
 
 		fs::File background;
-
 		Color *backgroundBuffer = nullptr;
 
-		bool playing = false;
-		OutputI2S *i2s = nullptr;
-		SourceWAV *wav = nullptr;
-
+		uint32_t lastDraw = 0;
+		bool drawQueued = false;
 	};
 }
 
