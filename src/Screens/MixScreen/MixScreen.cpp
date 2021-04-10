@@ -73,14 +73,12 @@ void MixScreen::MixScreen::start(){
 	selector = nullptr;
 
 	if(!f1){
-		delete selector;
 		selector = new SongList::SongList(*getScreen().getDisplay());
 		selector->push(this);
 		return;
 	}
 
 	if(!f2){
-		delete selector;
 		selector = new SongList::SongList(*getScreen().getDisplay());
 		selector->push(this);
 		return;
