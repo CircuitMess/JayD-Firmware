@@ -260,7 +260,8 @@ void MixScreen::MixScreen::loop(uint micros){
 		}
 	}
 
-	if(popBtnConfig == 0x0F){
+	if(popBtnConfig == 0x0F && (millis()-prevPopTime) > 200){
+		Serial.println("Pop");
 		popBtnConfig = 0x00;
 		pop();
 	}
@@ -278,31 +279,33 @@ void MixScreen::MixScreen::buttonPress(uint8_t id){
 		popBtnConfig = 0x00;
 	}else{
 
-		if(millis() - prevTime > 100){
+		if(millis() - prevPopTime > 100){
 			popBtnConfig = 0x00;
 		}
 
 		switch(id){
 			case 3:
 				popBtnConfig |= 0x01;
-				prevTime = millis();
 				break;
 			case 7:
 				popBtnConfig |= 0x02;
-				prevTime = millis();
 				break;
 			case 6:
 				popBtnConfig |= 0x04;
-				prevTime = millis();
 				break;
 			case 4:
 				popBtnConfig |= 0x08;
-				prevTime = millis();
 				break;
 			default:
 				break;
 		}
+		prevPopTime = millis();
 	}
+	if(popBtnConfig == 0x0F){
+		prevPopTime = millis();
+		return;
+	}
+
 
 	if(popBtnConfig == 0x0F)return;
 
