@@ -97,6 +97,7 @@ void MainMenu::MainMenu::stop(){
 	matrixManager.stopAnimation();
 	InputJayD::getInstance()->removeEncoderMovedCallback(0);
 	InputJayD::getInstance()->removeBtnPressCallback(BTN_MID);
+	LoopManager::removeListener(this);
 }
 
 void MainMenu::MainMenu::draw(){
