@@ -8,7 +8,7 @@ namespace SettingsScreen {
 	public:
 		TextElement(ElementContainer *partent, String name);
 
-		void activate() override;
+		void toggle() override;
 
 	private:
 
