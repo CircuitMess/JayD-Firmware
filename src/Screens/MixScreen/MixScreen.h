@@ -77,11 +77,12 @@ namespace MixScreen {
 		bool hold = false;
 
 		uint8_t popBtnConfig = 0x00;
-		uint32_t prevPopTime = millis();
+		uint32_t prevPopBtnTime = millis();
 
 		bool isRecording = false;
 		uint8_t recBtnConfig = 0x00;
-		uint32_t prevRecTime = millis();
+		uint32_t prevRecBtnTime = millis();
+
 	};
 }
 
