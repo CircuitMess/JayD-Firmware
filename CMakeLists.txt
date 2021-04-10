@@ -48,7 +48,7 @@ include_directories(${ArduinoLibs}/U8g2_for_TFT_eSPI/src)
 
 
 # Source directories
-file(GLOB_RECURSE SOURCES "src/**/*.cpp" "src/**/*.c" "src/**/*.hpp" "src/**/*.h")
+file(GLOB_RECURSE SOURCES "src/**.cpp" "src/**.c" "src/**.hpp" "src/**.h")
 
 
 # Defines
