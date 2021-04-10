@@ -2,7 +2,6 @@
 #include <JayD.hpp>
 #include "MainMenu.h"
 #include "../Playback/Playback.h"
-#include "../SongList/SongList.h"
 #include "../MixScreen/MixScreen.h"
 #include "../Settings/SettingsScreen.h"
 #include <Loop/LoopManager.h>
@@ -70,23 +69,16 @@ void MainMenu::MainMenu::start(){
 
 		Display &display = *instance->getScreen().getDisplay();
 		int8_t selected = instance->itemNum;
-		Serial.println(selected);
-
-		instance->stop();
-		delete instance;
 
 		if(selected == 0){
 			Playback::Playback* playback = new Playback::Playback(display);
-			SongList::SongList* list = new SongList::SongList(display);
-			list->push(playback);
+			playback->push(instance);
 		}else if(selected == 1){
 			MixScreen::MixScreen* mix = new MixScreen::MixScreen(display);
-			mix->unpack();
-			mix->start();
+			mix->push(instance);
 		}else if(selected == 2){
 			SettingsScreen::SettingsScreen* settings = new SettingsScreen::SettingsScreen(display);
-			settings->unpack();
-			settings->start();
+			settings->push(instance);
 		}
 	});
 
