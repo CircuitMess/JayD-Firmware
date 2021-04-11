@@ -44,6 +44,8 @@ MainMenu::MainMenu::~MainMenu(){
 }
 
 void MainMenu::MainMenu::start(){
+	InputJayD::getInstance()->setHoldTime(0);
+
 	InputJayD::getInstance()->setEncoderMovedCallback(0, [](int8_t value){
 		if(instance == nullptr) return;
 		if(value == 0) return;
