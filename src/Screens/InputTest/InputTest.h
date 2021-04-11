@@ -13,7 +13,7 @@
 namespace InputTest {
 	class InputTest : public Context, public JayDInputListener {
 	public:
-		InputTest(Display &display);
+		InputTest(Display& display);
 
 		virtual ~InputTest();
 
@@ -28,7 +28,7 @@ namespace InputTest {
 
 	private:
 
-		static InputTest *instance;
+		static InputTest* instance;
 
 		LinearLayout screenLayout;
 		LinearLayout leftLayout;
@@ -36,12 +36,12 @@ namespace InputTest {
 		LinearLayout rightLayout;
 		LinearLayout bottomLayout;
 
-		std::vector<EncTestElement *> leftEncBtnTest;
-		std::vector<EncTestElement *> midEncBtnTest;
-		std::vector<EncTestElement *> rightEncBtnTest;
-		std::vector<BtnTestElement *> bottomBtnTest;
-		std::vector<PotTestElement *> potMidTest;
-		std::vector<PotTestElement *> potBotTest;
+		std::vector<EncTestElement*> leftEncBtnTest;
+		std::vector<EncTestElement*> midEncBtnTest;
+		std::vector<EncTestElement*> rightEncBtnTest;
+		std::vector<BtnTestElement*> bottomBtnTest;
+		std::vector<PotTestElement*> potMidTest;
+		std::vector<PotTestElement*> potBotTest;
 
 		void buildUI();
 
@@ -49,9 +49,9 @@ namespace InputTest {
 
 		int doneCounter = 0;
 
-		bool checkDone=false;
+		bool checkDone = false;
 
-		int confirmedCounter=0;
+		int confirmedCounter = 0;
 
 		void buttonPress(uint8_t id) override;
 
@@ -63,7 +63,9 @@ namespace InputTest {
 
 		void potMove(uint8_t id, uint8_t value) override;
 
-		void (*doneCallback)(InputTest* test) = nullptr;
+		void (* doneCallback)(InputTest* test) = nullptr;
+
+		void checkIfTestIsDone();
 	};
 }
 #endif //JAYD_FIRMWARE_FIRSTSTARTUPTEST_H

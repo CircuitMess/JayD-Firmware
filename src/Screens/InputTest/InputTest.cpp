@@ -357,29 +357,11 @@ void InputTest::InputTest::checkIfDone(){
 }
 
 void InputTest::InputTest::buttonPress(uint8_t id){
-	if(checkDone){
-		confirmedCounter++;
-		if(confirmedCounter == 2){
-			if(doneCallback){
-				doneCallback(this);
-			}else{
-				this->pop();
-			}
-		}
-	}
+	checkIfTestIsDone();
 }
 
 void InputTest::InputTest::encoderMove(uint8_t id, int8_t value){
-	if(checkDone){
-		confirmedCounter++;
-		if(confirmedCounter == 2){
-			if(doneCallback){
-				doneCallback(this);
-			}else{
-				this->pop();
-			}
-		}
-	}
+	checkIfTestIsDone();
 }
 
 void InputTest::InputTest::buttonHold(uint8_t id){
@@ -392,6 +374,14 @@ void InputTest::InputTest::buttonRelease(uint8_t id){
 }
 
 void InputTest::InputTest::potMove(uint8_t id, uint8_t value){
+	checkIfTestIsDone();
+}
+
+void InputTest::InputTest::setDoneCallback(void (* doneCallback)(InputTest*)){
+	InputTest::doneCallback = doneCallback;
+}
+
+void InputTest::InputTest::checkIfTestIsDone(){
 	if(checkDone){
 		confirmedCounter++;
 		if(confirmedCounter == 2){
@@ -404,6 +394,3 @@ void InputTest::InputTest::potMove(uint8_t id, uint8_t value){
 	}
 }
 
-void InputTest::InputTest::setDoneCallback(void (* doneCallback)(InputTest*)){
-	InputTest::doneCallback = doneCallback;
-}
