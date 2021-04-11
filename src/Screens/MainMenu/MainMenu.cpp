@@ -47,13 +47,13 @@ void MainMenu::MainMenu::start(){
 	InputJayD::getInstance()->setEncoderMovedCallback(0, [](int8_t value){
 		if(instance == nullptr) return;
 		if(value == 0) return;
-		instance->itemNum = instance->itemNum + value;
 
-		if(instance->itemNum < 0){
-			instance->itemNum = instance->item.size() - 1;
-		}else if(instance->itemNum >= instance->item.size()){
-			instance->itemNum = 0;
-		}
+		int8_t newSelected = instance->itemNum + value;
+		newSelected = max(newSelected, (int8_t) 0);
+		newSelected = min(newSelected, (int8_t) 2);
+
+		if(instance->itemNum == newSelected) return;
+		instance->itemNum = newSelected;
 
 		for(MainMenuItem *i : instance->item){
 			i->isSelected(false);
