@@ -49,7 +49,7 @@ void MainMenu::MainMenuItem::draw(){
 		gif->nextFrame();
 		gif->push();
 
-		yPos += sin((float) (micros() - startMicros) / 200000.0f) * 6;
+		yPos += sin((float) (micros() - startMicros) / 200000.0f) * -6;
 	}else{
 		getSprite()->drawIcon(buffer, getTotalX()+7, getTotalY() + 45, 45, 42, 1, TFT_BLACK);
 	}
