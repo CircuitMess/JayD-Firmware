@@ -92,6 +92,10 @@ namespace MixScreen {
 		uint8_t recBtnConfig = 0x00;
 		uint32_t prevRecBtnTime = millis();
 
+
+		bool multipleBtnPressCheck = false;
+		uint32_t prevMultipleBtnTime = millis();
+
 		bool btn0Pressed = false;
 		bool btn1Pressed = false;
 		uint32_t prevTime = 0;
