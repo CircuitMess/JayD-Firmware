@@ -2,13 +2,14 @@
 #include <JayD.hpp>
 #include <Loop/LoopManager.h>
 #include <Input/InputJayD.h>
+#include "MixScreen.h"
 
 MixScreen::MatrixPopUpPicker* MixScreen::MatrixPopUpPicker::instance = nullptr;
 
 
 MixScreen::MatrixPopUpPicker::MatrixPopUpPicker(Context& context) : Modal(context, 100, 100),
 																	screenLayout(&screen, VERTICAL),
-																	parent(&context){
+																	parent(static_cast<MixScreen*>(&context)){
 
 	instance = this;
 
@@ -35,11 +36,16 @@ void MixScreen::MatrixPopUpPicker::start(){
 	});
 	InputJayD::getInstance()->setBtnPressCallback(BTN_MID, [](){
 		if(instance == nullptr) return;
-		Context* parent = instance->parent;
+		MixScreen* parent = instance->parent;
+		int8_t matrixAnimationNumber = instance->bigMatrixNumber;
 		instance->stop();
 		delete instance;
 		parent->unpack();
 		parent->start();
+		if(matrixAnimationNumber == 2){
+			matrixManager.matrixBig.stopAnimation();
+			parent->startBigVu();
+		}
 	});
 
 
@@ -58,9 +64,7 @@ void MixScreen::MatrixPopUpPicker::stop(){
 
 void MixScreen::MatrixPopUpPicker::unpack(){
 	Context::unpack();
-	//sprintf(buffer, "/matrixGIF/%s%d.gif", "big", bigMatrixNumber);
 	openGif(bigMatrixNumber);
-	Serial.println(bigMatrixNumber);
 
 }
 
@@ -93,7 +97,7 @@ void MixScreen::MatrixPopUpPicker::openGif(uint8_t gifNum){
 	delete matrixGif;
 	char bufferGif[25];
 	sprintf(bufferGif, "/matrixGIF/%s%d.gif", "big", gifNum);
-	Serial.println(bufferGif);
+	matrixManager.matrixBig.startAnimation(new Animation(new fs::File(SPIFFS.open(bufferGif))), true);
 	matrixGif = new GIFAnimatedSprite(screenLayout.getSprite(), fs::File(SPIFFS.open(bufferGif)));
 	matrixGif->setXY(screenLayout.getTotalX() + 19, screenLayout.getTotalY() + 12);
 	matrixGif->setScale(8);

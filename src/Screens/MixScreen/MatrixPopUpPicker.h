@@ -8,6 +8,8 @@
 #include <UI/LinearLayout.h>
 
 namespace MixScreen {
+	class MixScreen;
+
 	class MatrixPopUpPicker : public Modal, public LoopListener {
 	public:
 		MatrixPopUpPicker(Context& context);
@@ -32,9 +34,9 @@ namespace MixScreen {
 
 		GIFAnimatedSprite* matrixGif = nullptr;
 
-		int8_t bigMatrixNumber = 1;
+		int8_t bigMatrixNumber = 2;
 
-		Context* parent = nullptr;
+		MixScreen* parent = nullptr;
 
 		void buildUI();
 
