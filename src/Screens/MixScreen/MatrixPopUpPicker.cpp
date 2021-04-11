@@ -68,14 +68,19 @@ void MixScreen::MatrixPopUpPicker::draw(){
 	screen.draw();
 	matrixGif->push();
 
-	/*screen.getSprite()->fillTriangle(screen.getTotalX() + 83, screen.getTotalY() + 46 , screen.getTotalX() + 97,
-									 screen.getTotalY() + 39,
-									 screen.getTotalX() + 83, screen.getTotalY() + 53 , TFT_WHITE);
-	screen.getSprite()->drawTriangle(screen.getTotalX() + 83, screen.getTotalY() + 46 , screen.getTotalX() + 97,
-									 screen.getTotalY() + 39,
-									 screen.getTotalX() + 83, screen.getTotalY() + 53 , TFT_WHITE);*/
+	screen.getSprite()->fillTriangle(screen.getTotalX() + 88, screen.getTotalY() + 54, screen.getTotalX() + 97,
+									 screen.getTotalY() + 50,
+									 screen.getTotalX() + 88, screen.getTotalY() + 46, TFT_WHITE);
+	screen.getSprite()->drawTriangle(screen.getTotalX() + 88, screen.getTotalY() + 55, screen.getTotalX() + 97,
+									 screen.getTotalY() + 50,
+									 screen.getTotalX() + 88, screen.getTotalY() + 46, TFT_BLACK);
 
-
+	screen.getSprite()->fillTriangle(screen.getTotalX() + 12, screen.getTotalY() + 54, screen.getTotalX() + 3,
+									 screen.getTotalY() + 50,
+									 screen.getTotalX() + 12, screen.getTotalY() + 46, TFT_WHITE);
+	screen.getSprite()->drawTriangle(screen.getTotalX() + 12, screen.getTotalY() + 54, screen.getTotalX() + 3,
+									 screen.getTotalY() + 50,
+									 screen.getTotalX() + 12, screen.getTotalY() + 46, TFT_BLACK);
 }
 
 void MixScreen::MatrixPopUpPicker::buildUI(){
@@ -90,7 +95,7 @@ void MixScreen::MatrixPopUpPicker::openGif(uint8_t gifNum){
 	sprintf(bufferGif, "/matrixGIF/%s%d.gif", "big", gifNum);
 	Serial.println(bufferGif);
 	matrixGif = new GIFAnimatedSprite(screenLayout.getSprite(), fs::File(SPIFFS.open(bufferGif)));
-	matrixGif->setXY(screenLayout.getTotalX() + 17, screenLayout.getTotalY() + 12);
+	matrixGif->setXY(screenLayout.getTotalX() + 19, screenLayout.getTotalY() + 12);
 	matrixGif->setScale(8);
 	matrixGif->setLoopDoneCallback([](){
 		instance->matrixGif->reset();
