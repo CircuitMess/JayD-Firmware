@@ -23,7 +23,7 @@ MainMenu::MainMenu::MainMenu(Display &display) : Context(display), screenLayout(
 	jayDlogo = CompressedFile::open(SPIFFS.open("/jayD_logo.raw.hs"), 8, 7);
 
 	instance = this;
-	instance->item[0]->isSelected(true);
+	instance->item[1]->isSelected(true);
 	buildUI();
 
 	for(uint8_t j = 0; j < 4; j++){
