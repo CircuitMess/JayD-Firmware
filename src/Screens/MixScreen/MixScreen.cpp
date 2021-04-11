@@ -172,7 +172,7 @@ void MixScreen::MixScreen::stop(){
 	LoopManager::removeListener(&midVu);
 
 	if(system){
-		system->stop();
+		//system->stop();
 		delete system;
 		system = nullptr;
 	}
