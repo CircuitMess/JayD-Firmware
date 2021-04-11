@@ -500,3 +500,9 @@ void MixScreen::MixScreen::potMove(uint8_t id, uint8_t value){
 MixScreen::MixScreen::~MixScreen(){
 	instance = nullptr;
 }
+
+void MixScreen::MixScreen::startBigVu(){
+	system->setChannelInfo(2, midVu.getInfoGenerator());
+	LoopManager::addListener(&midVu);
+
+}
