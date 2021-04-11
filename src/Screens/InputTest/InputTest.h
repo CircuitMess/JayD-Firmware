@@ -30,11 +30,11 @@ namespace InputTest {
 
 		static InputTest* instance;
 
-		LinearLayout screenLayout;
-		LinearLayout leftLayout;
-		LinearLayout midLayout;
-		LinearLayout rightLayout;
-		LinearLayout bottomLayout;
+		LinearLayout* screenLayout;
+		LinearLayout* leftLayout;
+		LinearLayout* midLayout;
+		LinearLayout* rightLayout;
+		LinearLayout* bottomLayout;
 
 		std::vector<EncTestElement*> leftEncBtnTest;
 		std::vector<EncTestElement*> midEncBtnTest;
