@@ -321,21 +321,79 @@ void MixScreen::MixScreen::loop(uint micros){
 
 void MixScreen::MixScreen::buttonPress(uint8_t id){
 
-	if(mapBtn.count(id)){
-		EffectElement* effect = effectElements[mapBtn.find(id)->second];
-		effect->setSelected(!effect->isSelected());
+	if(id == 8 || id == 5 || id == 2){
+		popBtnConfig = 0x00;
+	}else{
 
-		draw();
-		screen.commit();
+		if(millis() - prevPopBtnTime > 100){
+			popBtnConfig = 0x00;
+		}
 
-		return;
+		switch(id){
+			case 3:
+				popBtnConfig |= 0x01;
+				break;
+			case 7:
+				popBtnConfig |= 0x02;
+				break;
+			case 6:
+				popBtnConfig |= 0x04;
+				break;
+			case 4:
+				popBtnConfig |= 0x08;
+				break;
+			default:
+				break;
+		}
+		prevPopBtnTime = millis();
 	}
+	if(popBtnConfig == 0x0F)return;
 
+
+
+	if(!(id == 4 || id == 7)){
+		recBtnConfig = 0x00;
+	}else{
+
+		if(millis() - prevRecBtnTime > 100){
+			recBtnConfig = 0x00;
+		}
+
+		switch(id){
+
+			case 7:
+				recBtnConfig |= 0x01;
+				break;
+
+			case 4:
+				recBtnConfig |= 0x02;
+				break;
+			default:
+				break;
+		}
+		prevRecBtnTime = millis();
+	}
+	if(recBtnConfig == 0x03)return;
 }
+
 
 void MixScreen::MixScreen::buttonRelease(uint8_t id){
 
+	if(millis() - prevMultipleBtnTime > 1000){
+		multipleBtnPressCheck = false;
+	}
+
 	if(!hold){
+
+		if(mapBtn.count(id) & !multipleBtnPressCheck){
+			EffectElement *effect = effectElements[mapBtn.find(id)->second];
+			effect->setSelected(!effect->isSelected());
+
+			draw();
+			screen.commit();
+
+			return;
+		}
 
 		if(id == BTN_MID){
 			selectedChannel = !selectedChannel;
@@ -344,62 +402,9 @@ void MixScreen::MixScreen::buttonRelease(uint8_t id){
 			return;
 		}
 
-
-		if(id == 8 || id == 5 || id == 2){
-			popBtnConfig = 0x00;
-		}else{
-
-			if(millis() - prevPopBtnTime > 100){
-				popBtnConfig = 0x00;
-			}
-
-			switch(id){
-				case 3:
-					popBtnConfig |= 0x01;
-					break;
-				case 7:
-					popBtnConfig |= 0x02;
-					break;
-				case 6:
-					popBtnConfig |= 0x04;
-					break;
-				case 4:
-					popBtnConfig |= 0x08;
-					break;
-				default:
-					break;
-			}
-			prevPopBtnTime = millis();
-		}
-		if(popBtnConfig == 0x0F)return;
-
-
-		if(!(id == 4 || id == 7)){
-			recBtnConfig = 0x00;
-		}else{
-
-			if(millis() - prevRecBtnTime > 100){
-				recBtnConfig = 0x00;
-			}
-
-			switch(id){
-
-				case 7:
-					recBtnConfig |= 0x01;
-					break;
-
-				case 4:
-					recBtnConfig |= 0x02;
-					break;
-				default:
-					break;
-			}
-			prevRecBtnTime = millis();
-		}
-		if(recBtnConfig == 0x03)return;
-
 	}
 	hold = false;
+
 }
 
 void MixScreen::MixScreen::buttonHold(uint8_t id){
