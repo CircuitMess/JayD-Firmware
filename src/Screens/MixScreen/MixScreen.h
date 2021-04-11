@@ -17,17 +17,21 @@
 #include <AudioLib/Systems/MixSystem.h>
 #include <Matrix/VuVisualizer.h>
 #include <Matrix/RoundVuVisualiser.h>
+#include "MatrixPopUpPicker.h"
+
+
 namespace MixScreen {
 	class MixScreen : public Context, public LoopListener, public JayDInputListener {
 	public:
 
-		MixScreen(Display &display);
+		MixScreen(Display& display);
 
 		void start();
 
 		void stop();
 
 		void draw();
+
 		void returned(void* data) override;
 
 		void loop(uint micros) override;
@@ -35,7 +39,7 @@ namespace MixScreen {
 		virtual ~MixScreen();
 
 	private:
-		static MixScreen *instance;
+		static MixScreen* instance;
 
 		fs::File f1;
 		fs::File f2;
@@ -51,7 +55,8 @@ namespace MixScreen {
 		SongName* leftSongName;
 		SongName* rightSongName;
 
-		EffectElement* effectElements[6] = { nullptr };
+
+		EffectElement* effectElements[6] = {nullptr};
 
 		bool isPlaying[2] = {false, false};
 
@@ -59,9 +64,13 @@ namespace MixScreen {
 
 
 		void buttonPress(uint8_t id) override;
+
 		void buttonRelease(uint8_t id) override;
+
 		void buttonHold(uint8_t id) override;
+
 		void encoderMove(uint8_t id, int8_t value) override;
+
 		void potMove(uint8_t id, uint8_t value) override;
 
 		static const std::unordered_map<uint8_t, uint8_t> mapBtn;
@@ -83,6 +92,9 @@ namespace MixScreen {
 		uint8_t recBtnConfig = 0x00;
 		uint32_t prevRecBtnTime = millis();
 
+		bool btn0Pressed = false;
+		bool btn1Pressed = false;
+		uint32_t prevTime = 0;
 	};
 }
 

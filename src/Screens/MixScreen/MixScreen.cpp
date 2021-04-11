@@ -13,27 +13,29 @@
 #include <AudioLib/Effects/Reverb.h>
 #include <AudioLib/Effects/BitCrusher.h>
 
-MixScreen::MixScreen *MixScreen::MixScreen::instance = nullptr;
+MixScreen::MixScreen* MixScreen::MixScreen::instance = nullptr;
+
 
 const std::unordered_map<uint8_t, uint8_t> MixScreen::MixScreen::mapBtn = {
-		{ 3, 0 },
-		{ 8, 1 },
-		{ 7, 2 },
-		{ 6, 3 },
-		{ 5, 4 },
-		{ 4, 5 }
+		{3, 0},
+		{8, 1},
+		{7, 2},
+		{6, 3},
+		{5, 4},
+		{4, 5}
 };
 
 const std::unordered_map<uint8_t, uint8_t> MixScreen::MixScreen::mapEnc = {
-		{ 1, 0 },
-		{ 6, 1 },
-		{ 5, 2 },
-		{ 4, 3 },
-		{ 3, 4 },
-		{ 2, 5 },
+		{1, 0},
+		{6, 1},
+		{5, 2},
+		{4, 3},
+		{3, 4},
+		{2, 5},
 };
 
-MixScreen::MixScreen::MixScreen(Display &display) : Context(display),
+
+MixScreen::MixScreen::MixScreen(Display& display) : Context(display),
 													screenLayout(new LinearLayout(&screen, HORIZONTAL)),
 													leftLayout(new LinearLayout(screenLayout, VERTICAL)),
 													rightLayout(new LinearLayout(screenLayout, VERTICAL)),
@@ -60,9 +62,9 @@ Context* selector = nullptr;
 
 void MixScreen::MixScreen::returned(void* data){
 	if(!f1){
-		f1 = SD.open(*((String*)data));
+		f1 = SD.open(*((String*) data));
 	}else if(!f2){
-		f2 = SD.open(*((String*)data));
+		f2 = SD.open(*((String*) data));
 	}
 
 	delete (String*) data;
@@ -107,11 +109,13 @@ void MixScreen::MixScreen::start(){
 		if(instance == nullptr) return;
 		instance->isPlaying[0] = !instance->isPlaying[0];
 		instance->leftSeekBar->setPlaying(instance->isPlaying[0]);
-		if(instance->isPlaying[0]) {
+		if(instance->isPlaying[0]){
 			instance->system->resumeChannel(0);
 		}else{
 			instance->system->pauseChannel(0);
 		}
+		instance->btn0Pressed = true;
+		instance->prevTime = millis();
 		instance->draw();
 		instance->screen.commit();
 	});
@@ -119,11 +123,14 @@ void MixScreen::MixScreen::start(){
 		if(instance == nullptr) return;
 		instance->isPlaying[1] = !instance->isPlaying[1];
 		instance->rightSeekBar->setPlaying(instance->isPlaying[1]);
-		if(instance->isPlaying[1]) {
+		if(instance->isPlaying[1]){
 			instance->system->resumeChannel(1);
 		}else{
 			instance->system->pauseChannel(1);
 		}
+		instance->btn1Pressed = true;
+		instance->prevTime = millis();
+
 		instance->draw();
 		instance->screen.commit();
 	});
@@ -133,7 +140,7 @@ void MixScreen::MixScreen::start(){
 
 	leftSongName->checkScrollUpdate();
 	rightSongName->checkScrollUpdate();
-	
+
 	draw();
 	screen.commit();
 
@@ -169,6 +176,7 @@ void MixScreen::MixScreen::stop(){
 		delete system;
 		system = nullptr;
 	}
+
 }
 
 void MixScreen::MixScreen::draw(){
@@ -255,12 +263,11 @@ void MixScreen::MixScreen::loop(uint micros){
 		update = true;
 	}
 
-	if(popBtnConfig == 0x0F && (millis()-prevPopBtnTime) > 100){
+	if(popBtnConfig == 0x0F && (millis() - prevPopBtnTime) > 100){
 		Serial.println("Pop");
 		popBtnConfig = 0x00;
 		pop();
-	}
-	else if(recBtnConfig == 0x03 && (millis()-prevRecBtnTime) > 100){
+	}else if(recBtnConfig == 0x03 && (millis() - prevRecBtnTime) > 100){
 		isRecording = !isRecording;
 		recBtnConfig = 0x00;
 		update = true;
@@ -277,6 +284,34 @@ void MixScreen::MixScreen::loop(uint micros){
 			lastDraw = now;
 		}
 	}
+
+	if(btn0Pressed){
+		if((millis() - prevTime > 100) && btn1Pressed){
+			stop();
+			pack();
+			MatrixPopUpPicker* popUpPicker = new MatrixPopUpPicker(*this);
+			popUpPicker->unpack();
+			popUpPicker->start();
+			btn0Pressed = false;
+			btn1Pressed = false;
+		}else if((millis() - prevTime > 100) && !btn1Pressed){
+			btn0Pressed = false;
+			btn1Pressed = false;
+		}
+	}else if(btn1Pressed){
+		if((millis() - prevTime > 100) && btn0Pressed){
+			stop();
+			pack();
+			MatrixPopUpPicker* popUpPicker = new MatrixPopUpPicker(*this);
+			popUpPicker->unpack();
+			popUpPicker->start();
+			btn0Pressed = false;
+			btn1Pressed = false;
+		}else if((millis() - prevTime > 100) && !btn0Pressed){
+			btn0Pressed = false;
+			btn1Pressed = false;
+		}
+	}
 }
 
 void MixScreen::MixScreen::buttonPress(uint8_t id){
@@ -290,6 +325,7 @@ void MixScreen::MixScreen::buttonPress(uint8_t id){
 
 		return;
 	}
+
 }
 
 void MixScreen::MixScreen::buttonRelease(uint8_t id){
@@ -331,7 +367,6 @@ void MixScreen::MixScreen::buttonRelease(uint8_t id){
 			prevPopBtnTime = millis();
 		}
 		if(popBtnConfig == 0x0F)return;
-
 
 
 		if(!(id == 4 || id == 7)){
