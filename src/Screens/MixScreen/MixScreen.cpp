@@ -266,9 +266,14 @@ void MixScreen::MixScreen::loop(uint micros){
 	if(popBtnConfig == 0x0F && (millis() - prevPopBtnTime) > 100){
 		Serial.println("Pop");
 		popBtnConfig = 0x00;
+		multipleBtnPressCheck = true;
+		prevMultipleBtnTime = millis();
 		pop();
 	}else if(recBtnConfig == 0x03 && (millis() - prevRecBtnTime) > 100){
 		isRecording = !isRecording;
+		multipleBtnPressCheck = true;
+		prevMultipleBtnTime = millis();
+		
 		recBtnConfig = 0x00;
 		update = true;
 		Serial.println("Rec");
