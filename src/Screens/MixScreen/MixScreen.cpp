@@ -94,6 +94,8 @@ void MixScreen::MixScreen::start(){
 
 	system = new MixSystem(f1, f2);
 
+	startBigVu();
+
 	system->setVolume(0, InputJayD::getInstance()->getPotValue(POT_L));
 	system->setVolume(1, InputJayD::getInstance()->getPotValue(POT_R));
 

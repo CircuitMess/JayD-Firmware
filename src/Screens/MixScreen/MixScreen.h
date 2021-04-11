@@ -22,6 +22,7 @@
 
 namespace MixScreen {
 	class MixScreen : public Context, public LoopListener, public JayDInputListener {
+		friend MatrixPopUpPicker;
 	public:
 
 		MixScreen(Display& display);
@@ -33,8 +34,6 @@ namespace MixScreen {
 		void draw();
 
 		void returned(void* data) override;
-
-		void startBigVu();
 
 		void loop(uint micros) override;
 
@@ -101,6 +100,8 @@ namespace MixScreen {
 		bool btn0Pressed = false;
 		bool btn1Pressed = false;
 		uint32_t prevTime = 0;
+
+		void startBigVu();
 	};
 }
 
