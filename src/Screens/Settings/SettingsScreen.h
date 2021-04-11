@@ -31,12 +31,12 @@ namespace SettingsScreen {
 	private:
 		static SettingsScreen *instance;
 
-		LinearLayout screenLayout;
+		LinearLayout* screenLayout;
 
-		SliderElement volumeSlider;
-		SliderElement brightnessSlider;
-		TextElement inputTest;
-		TextElement saveSettings;
+		SliderElement* volumeSlider;
+		SliderElement* brightnessSlider;
+		TextElement* inputTest;
+		TextElement* saveSettings;
 		int selectedSetting = 0;
 
 		bool disableMainSelector = false;
