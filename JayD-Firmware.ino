@@ -69,7 +69,8 @@ void setup(){
 	if(!Settings.get().inputTested){
 		InputTest::InputTest* test = new InputTest::InputTest(display);
 		test->setDoneCallback([](InputTest::InputTest* test){
-			//delete test;
+			test->stop();
+			delete test;
 
 			Settings.get().inputTested = true;
 			Settings.store();
