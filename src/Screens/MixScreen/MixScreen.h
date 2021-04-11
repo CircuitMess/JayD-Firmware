@@ -34,6 +34,8 @@ namespace MixScreen {
 
 		void returned(void* data) override;
 
+		void startBigVu();
+
 		void loop(uint micros) override;
 
 		virtual ~MixScreen();

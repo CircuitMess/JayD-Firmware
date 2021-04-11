@@ -154,8 +154,7 @@ void MixScreen::MixScreen::start(){
 	LoopManager::addListener(&leftVu);
 	system->setChannelInfo(1, rightVu.getInfoGenerator());
 	LoopManager::addListener(&rightVu);
-	system->setChannelInfo(2, midVu.getInfoGenerator());
-	LoopManager::addListener(&midVu);
+
 }
 
 
@@ -497,4 +496,10 @@ void MixScreen::MixScreen::potMove(uint8_t id, uint8_t value){
 
 MixScreen::MixScreen::~MixScreen(){
 	instance = nullptr;
+}
+
+void MixScreen::MixScreen::startBigVu(){
+	system->setChannelInfo(2, midVu.getInfoGenerator());
+	LoopManager::addListener(&midVu);
+
 }
