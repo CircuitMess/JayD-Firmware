@@ -52,8 +52,6 @@ MixScreen::MixScreen::MixScreen(Display &display) : Context(display), screenLayo
 	buildUI();
 }
 
-Context* selector = nullptr;
-
 void MixScreen::MixScreen::returned(void* data){
 	if(!f1){
 		f1 = SD.open(*((String*)data));
@@ -65,20 +63,8 @@ void MixScreen::MixScreen::returned(void* data){
 }
 
 void MixScreen::MixScreen::start(){
-	delete selector;
-	selector = nullptr;
-
-	if(!f1){
-		delete selector;
-		selector = new SongList::SongList(*getScreen().getDisplay());
-		selector->push(this);
-		return;
-	}
-
-	if(!f2){
-		delete selector;
-		selector = new SongList::SongList(*getScreen().getDisplay());
-		selector->push(this);
+	if(!f1 || !f2){
+		(new SongList::SongList(*getScreen().getDisplay()))->push(this);
 		return;
 	}
 

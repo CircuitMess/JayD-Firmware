@@ -38,7 +38,6 @@ namespace Playback {
 
 	private:
 		static Playback *instance;
-		SongList::SongList* selector = nullptr;
 
 		LinearLayout *screenLayout;
 		LinearLayout *songNameLayout;

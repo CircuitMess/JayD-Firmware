@@ -54,12 +54,8 @@ void Playback::Playback::returned(void *data){
 }
 
 void Playback::Playback::start(){
-	delete selector;
-	selector = nullptr;
-
 	if(!file){
-		selector = new SongList::SongList(*screen.getDisplay());
-		selector->push(this);
+		(new SongList::SongList(*screen.getDisplay()))->push(this);
 		return;
 	}
 
