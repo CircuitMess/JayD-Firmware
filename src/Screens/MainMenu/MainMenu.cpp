@@ -82,6 +82,7 @@ void MainMenu::MainMenu::start(){
 		}else if(selected == 1){
 			MixScreen::MixScreen* mix = new MixScreen::MixScreen(display);
 			mix->unpack();
+			mix->startBigVu();
 			mix->start();
 		}else if(selected == 2){
 			SettingsScreen::SettingsScreen* settings = new SettingsScreen::SettingsScreen(display);
