@@ -42,16 +42,16 @@ MainMenu::MainMenuItem::~MainMenuItem(){
 
 
 void MainMenu::MainMenuItem::draw(){
-	uint32_t yPos = getTotalY() + 107;
+	uint32_t yPos = getTotalY() + 112;
 
 	if(selected && gif){
-		gif->setXY(getTotalX()+7, getTotalY() + 45);
+		gif->setXY(getTotalX()+7, getTotalY() + 46);
 		gif->nextFrame();
 		gif->push();
 
 		yPos += sin((float) (micros() - startMicros) / 200000.0f) * -6;
 	}else{
-		getSprite()->drawIcon(buffer, getTotalX()+7, getTotalY() + 45, 45, 42, 1, TFT_BLACK);
+		getSprite()->drawIcon(buffer, getTotalX()+7, getTotalY() + 46, 45, 42, 1, TFT_BLACK);
 	}
 
 	FontWriter u8f = getSprite()->startU8g2Fonts();
