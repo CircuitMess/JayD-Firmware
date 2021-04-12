@@ -67,6 +67,7 @@ void setup(){
 
 	Context::setDeleteOnPop(true);
 
+	LoopManager::addListener(&Sched);
 	LoopManager::addListener(&matrixManager);
 	LoopManager::addListener(new InputJayD());
 	InputJayD::getInstance()->begin();
@@ -92,7 +93,6 @@ void setup(){
 	}
 
 	digitalWrite(blPin, LOW);
-	LoopManager::addListener(&Sched);
 }
 
 void loop(){
