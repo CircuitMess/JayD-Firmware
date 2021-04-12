@@ -35,6 +35,7 @@ InputTest::InputTest::InputTest(Display& display) : Context(display), screenLayo
 	instance = this;
 	buildUI();
 
+	pack();
 }
 
 

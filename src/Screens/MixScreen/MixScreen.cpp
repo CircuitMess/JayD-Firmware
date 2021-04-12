@@ -50,6 +50,8 @@ MixScreen::MixScreen::MixScreen(Display &display) : Context(display), screenLayo
 
 	instance = this;
 	buildUI();
+
+	pack();
 }
 
 void MixScreen::MixScreen::returned(void* data){

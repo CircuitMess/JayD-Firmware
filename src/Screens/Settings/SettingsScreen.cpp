@@ -27,6 +27,7 @@ SettingsScreen::SettingsScreen::SettingsScreen(Display &display) : Context(displ
 
 	brightnessSlider->setSliderValue(Settings.get().brightnessLevel);
 
+	pack();
 }
 
 void SettingsScreen::SettingsScreen::start(){
