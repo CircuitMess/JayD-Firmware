@@ -11,10 +11,12 @@ public:
 
 	void draw() override;
 
+	bool isPotDone() const;
+
 private:
 	int value = 0;
 	bool horizontal = false;
-	bool done = false;
+	bool potDone = false;
 	uint8_t counter = 0;
 };
 

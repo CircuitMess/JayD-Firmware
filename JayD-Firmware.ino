@@ -8,14 +8,23 @@
 #include <Loop/LoopListener.h>
 #include <Loop/LoopManager.h>
 #include "src/Screens/IntroScreen/IntroScreen.h"
+#include "src/Screens/InputTest/InputTest.h"
 #include <Input/InputJayD.h>
 #include <WiFi.h>
 #include <SD.h>
 #include <Services/SDScheduler.h>
+#include <SPIFFS.h>
+#include <Settings.h>
 
 #define blPin 25
 
 Display display(160, 128, -1, -1);
+
+void launch(){
+	Context *introScreen = new IntroScreen::IntroScreen(display);
+	introScreen->unpack();
+	introScreen->start();
+}
 
 void setup(){
 	Serial.begin(115200);
@@ -51,15 +60,33 @@ void setup(){
 		Serial.println("couldn't start matrix");
 		for(;;);
 	}
+
+	Settings.begin();
+	LEDmatrix.setBrightness(80.0f * (float) Settings.get().brightnessLevel / 255.0f);
+
+	Context::setDeleteOnPop(true);
+
 	LoopManager::addListener(&matrixManager);
 	LoopManager::addListener(new InputJayD());
 	InputJayD::getInstance()->begin();
 
-	Context::setDeleteOnPop(true);
+	if(!Settings.get().inputTested){
+		InputTest::InputTest* test = new InputTest::InputTest(display);
+		test->setDoneCallback([](InputTest::InputTest* test){
+			test->stop();
+			delete test;
 
-	Context* introScreen = new IntroScreen::IntroScreen(display);
-	introScreen->unpack();
-	introScreen->start();
+			Settings.get().inputTested = true;
+			Settings.store();
+
+			launch();
+		});
+
+		test->unpack();
+		test->start();
+	}else{
+		launch();
+	}
 
 	digitalWrite(blPin, LOW);
 	LoopManager::addListener(&Sched);
