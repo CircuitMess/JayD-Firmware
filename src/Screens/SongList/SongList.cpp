@@ -173,12 +173,21 @@ void SongList::SongList::draw(){
 
 	canvas->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1);
 
+	u8f.setCursor((160 - u8f.getUTF8Width("SD card"))/2, 15);
+	u8f.printf("SD card");
+
+	if(isOpened){
+		u8f.setCursor((160 - u8f.getUTF8Width("Loading..."))/2, 65);
+		u8f.printf("Loading...");
+		return;
+	}
+
 	if(!insertedSD){
-		u8f.setCursor(30, 65);
+		u8f.setCursor((160 - u8f.getUTF8Width("Not inserted!"))/2, 65);
 		u8f.printf("Not inserted!");
 
 	}else if(songs.empty()){
-		u8f.setCursor(54, 65);
+		u8f.setCursor((160 - u8f.getUTF8Width("Empty!"))/2, 65);
 		u8f.printf("Empty!");
 
 	}else{
