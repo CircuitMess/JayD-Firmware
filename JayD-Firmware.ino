@@ -62,7 +62,7 @@ void setup(){
 	}
 
 	Settings.begin();
-	LEDmatrix.setBrightness((Settings.get().brightnessLevel / 255) * 100);
+	LEDmatrix.setBrightness(80.0f * (float) Settings.get().brightnessLevel / 255.0f);
 
 	Context::setDeleteOnPop(true);
 
