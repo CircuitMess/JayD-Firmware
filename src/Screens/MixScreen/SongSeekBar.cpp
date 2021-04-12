@@ -30,7 +30,7 @@ void MixScreen::SongSeekBar::draw(){
 	getSprite()->setTextSize(1);
 	getSprite()->setTextFont(1);
 
-	getSprite()->drawIcon(playing ? buffer[0]:buffer[1], getTotalX() + 35, getTotalY() + 26, 5, 6, 1, TFT_BLACK);
+	getSprite()->drawIcon(buffer[playing], getTotalX() + 35, getTotalY() + 26, 5, 6, 1, TFT_BLACK);
 
 	getSprite()->setCursor(getTotalX(), getTotalY() + 25);
 	getSprite()->printf("%02d:%02d", currentDuration / 60, currentDuration - (currentDuration / 60) * 60);
@@ -78,4 +78,8 @@ MixScreen::SongSeekBar::~SongSeekBar(){
 for(int i=0;i<2;i++){
 	free(buffer[i]);
 }
+}
+
+bool MixScreen::SongSeekBar::isPlaying() const{
+	return playing;
 }

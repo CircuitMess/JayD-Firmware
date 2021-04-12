@@ -11,6 +11,7 @@ namespace MixScreen {
 		virtual ~SongSeekBar();
 
 		void setPlaying(bool playing);
+		bool isPlaying() const;
 
 		void draw();
 
