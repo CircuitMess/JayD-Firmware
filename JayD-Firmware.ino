@@ -12,6 +12,7 @@
 #include <WiFi.h>
 #include <SD.h>
 #include <Services/SDScheduler.h>
+#include <Settings.h>
 
 #define blPin 25
 
@@ -51,6 +52,8 @@ void setup(){
 		Serial.println("couldn't start matrix");
 		for(;;);
 	}
+	Settings.begin();
+	LEDmatrix.setBrightness((Settings.get().brightnessLevel / 255) * 100);
 	LoopManager::addListener(&matrixManager);
 	LoopManager::addListener(new InputJayD());
 	InputJayD::getInstance()->begin();
