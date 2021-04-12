@@ -48,6 +48,7 @@ namespace SongList {
 
 		void searchDirectories(File file);
 
+		bool isOpened = false;
 		bool insertedSD = false;
 
 		uint32_t prevSDCheck = 0;
