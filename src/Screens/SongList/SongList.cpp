@@ -21,16 +21,6 @@ SongList::SongList::SongList(Display &display) : Context(display){
 
 	buildUI();
 	pack();
-
-	SD.end();
-	insertedSD = SD.begin(22, SPI);
-
-	if(insertedSD){
-		populateList();
-		if(!songs.empty()){
-			songs[selectedElement]->setSelected(true);
-		}
-	}
 }
 
 SongList::SongList::~SongList(){
@@ -147,6 +137,15 @@ void SongList::SongList::start(){
 
 		instance->pop(new String(instance->songs[instance->selectedElement]->getName()));
 	});
+
+	SD.end();
+	insertedSD = SD.begin(22, SPI);
+	if(insertedSD){
+		populateList();
+		if(!songs.empty()){
+			songs[selectedElement]->setSelected(true);
+		}
+	}
 
 	LoopManager::addListener(this);
 
