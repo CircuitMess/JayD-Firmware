@@ -48,9 +48,6 @@ void MixScreen::MatrixPopUpPicker::start(){
 		}
 	});
 
-
-	//matrixManager.matrixBig.startAnimation(new Animation(new fs::File(SPIFFS.open(buffer))), true);
-
 }
 
 void MixScreen::MatrixPopUpPicker::stop(){
@@ -70,6 +67,13 @@ void MixScreen::MatrixPopUpPicker::unpack(){
 
 void MixScreen::MatrixPopUpPicker::draw(){
 	screen.draw();
+	screen.getSprite()->clear(C_RGB(52, 204, 235));
+	screen.getSprite()->drawRect(screen.getTotalX(),screen.getTotalY(),100,100,TFT_BLACK);
+	screen.getSprite()->setTextColor(TFT_BLACK);
+	screen.getSprite()->setTextSize(1);
+	screen.getSprite()->setTextFont(1);
+	screen.getSprite()->setCursor(screen.getTotalX()+25 , screen.getTotalY()+2);
+	screen.getSprite()->println("Choose an    animation mode");
 	matrixGif->push();
 
 	screen.getSprite()->fillTriangle(screen.getTotalX() + 88, screen.getTotalY() + 54, screen.getTotalX() + 97,
@@ -99,7 +103,7 @@ void MixScreen::MatrixPopUpPicker::openGif(uint8_t gifNum){
 	sprintf(bufferGif, "/matrixGIF/%s%d.gif", "big", gifNum);
 	matrixManager.matrixBig.startAnimation(new Animation(new fs::File(SPIFFS.open(bufferGif))), true);
 	matrixGif = new GIFAnimatedSprite(screenLayout.getSprite(), fs::File(SPIFFS.open(bufferGif)));
-	matrixGif->setXY(screenLayout.getTotalX() + 19, screenLayout.getTotalY() + 12);
+	matrixGif->setXY(screenLayout.getTotalX() + 19, screenLayout.getTotalY() + 19);
 	matrixGif->setScale(8);
 	matrixGif->setLoopDoneCallback([](){
 		instance->matrixGif->reset();
@@ -113,7 +117,6 @@ void MixScreen::MatrixPopUpPicker::loop(uint micros){
 		draw();
 		screen.commit();
 	}
-
 }
 
 
