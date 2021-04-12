@@ -238,16 +238,6 @@ void MixScreen::MixScreen::encTwoBot(){
 
 void MixScreen::MixScreen::encFour(){
 	pop();
-
-	/*system->stop();
-
-	if(selectedChannel == 0){
-		f1.close();
-	}else{
-		f2.close();
-	}
-
-	(new SongList::SongList(*screen.getDisplay()))->push(this);*/
 }
 
 void MixScreen::MixScreen::btnCombination(){
@@ -364,6 +354,7 @@ void MixScreen::MixScreen::enc(uint8_t index, int8_t value){
 
 void MixScreen::MixScreen::encBtnHold(uint8_t i){
 	if(i == 6){
+		// system->stop();
 		stop();
 
 		if(selectedChannel == 0){
