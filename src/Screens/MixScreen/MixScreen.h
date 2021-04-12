@@ -62,7 +62,7 @@ namespace MixScreen {
 
 		void buildUI();
 
-		uint8_t selectedChannel = 1;
+		uint8_t selectedChannel = 0;
 		bool isRecording = false;
 
 		uint32_t lastDraw = 0;
