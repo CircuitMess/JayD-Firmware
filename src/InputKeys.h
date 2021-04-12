@@ -18,6 +18,7 @@ private:
 	virtual void encTwoBot();
 	virtual void encFour();
 	virtual void enc(uint8_t i, int8_t value);
+	virtual void encBtnHold(uint8_t i);
 
 };
 

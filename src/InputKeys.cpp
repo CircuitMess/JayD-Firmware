@@ -29,6 +29,7 @@ void InputListener::btnCombination(){ }
 void InputListener::encTwoBot(){ }
 void InputListener::encFour(){ }
 void InputListener::enc(uint8_t i, int8_t value){ }
+void InputListener::encBtnHold(uint8_t i){}
 
 void InputKeys::buttonPress(uint8_t id){
 	auto mapped = mapBtn.find(id);
