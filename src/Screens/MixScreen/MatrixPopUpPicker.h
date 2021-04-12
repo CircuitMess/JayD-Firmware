@@ -6,11 +6,12 @@
 #include <Support/Modal.h>
 #include <Display/GIFAnimatedSprite.h>
 #include <UI/LinearLayout.h>
+#include "../../InputKeys.h"
 
 namespace MixScreen {
 	class MixScreen;
 
-	class MatrixPopUpPicker : public Modal, public LoopListener {
+	class MatrixPopUpPicker : public Modal, public LoopListener, public InputListener {
 	public:
 		MatrixPopUpPicker(Context& context);
 
@@ -41,6 +42,8 @@ namespace MixScreen {
 		void buildUI();
 
 		void openGif(uint8_t gifNum);
+		void btnEnc(uint8_t i) override;
+		void enc(uint8_t i, int8_t value) override;
 	};
 }
 #endif

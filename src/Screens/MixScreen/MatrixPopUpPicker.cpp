@@ -20,49 +20,53 @@ MixScreen::MatrixPopUpPicker::~MatrixPopUpPicker(){
 
 }
 
+void MixScreen::MatrixPopUpPicker::btnEnc(uint8_t i){
+	if(i != 6) return;
+
+	MixScreen* parent = this->parent;
+	int8_t matrixAnimationNumber = bigMatrixNumber;
+
+	stop();
+	delete this;
+
+	parent->unpack();
+	parent->start();
+
+	if(matrixAnimationNumber == 2){
+		matrixManager.matrixBig.stopAnimation();
+		parent->startBigVu();
+	}
+}
+
+void MixScreen::MatrixPopUpPicker::enc(uint8_t i, int8_t value){
+	if(i != 6) return;
+
+	bigMatrixNumber += value;
+	if(bigMatrixNumber < 1){
+		bigMatrixNumber = 20;
+	}else if(bigMatrixNumber > 20){
+		bigMatrixNumber = 1;
+	}
+
+	openGif(bigMatrixNumber);
+}
+
 void MixScreen::MatrixPopUpPicker::start(){
+	LoopManager::addListener(this);
+	Input.addListener(this);
 	draw();
 	screen.commit();
-	LoopManager::addListener(this);
-	InputJayD::getInstance()->setEncoderMovedCallback(ENC_MID, [](int8_t value){
-		if(instance == nullptr) return;
-		instance->bigMatrixNumber += value;
-		if(instance->bigMatrixNumber < 1){
-			instance->bigMatrixNumber = 20;
-		}else if(instance->bigMatrixNumber > 20){
-			instance->bigMatrixNumber = 1;
-		}
-		instance->openGif(instance->bigMatrixNumber);
-	});
-	InputJayD::getInstance()->setBtnPressCallback(BTN_MID, [](){
-		if(instance == nullptr) return;
-		MixScreen* parent = instance->parent;
-		int8_t matrixAnimationNumber = instance->bigMatrixNumber;
-		instance->stop();
-		delete instance;
-		parent->unpack();
-		parent->start();
-		if(matrixAnimationNumber == 2){
-			matrixManager.matrixBig.stopAnimation();
-			parent->startBigVu();
-		}
-	});
-
 }
 
 void MixScreen::MatrixPopUpPicker::stop(){
-	InputJayD::getInstance()->removeBtnPressCallback(BTN_MID);
-	InputJayD::getInstance()->removeEncoderMovedCallback(ENC_MID);
+	Input.removeListener(this);
 	LoopManager::removeListener(this);
-
-
 }
 
 
 void MixScreen::MatrixPopUpPicker::unpack(){
 	Context::unpack();
 	openGif(bigMatrixNumber);
-
 }
 
 void MixScreen::MatrixPopUpPicker::draw(){
@@ -118,7 +122,3 @@ void MixScreen::MatrixPopUpPicker::loop(uint micros){
 		screen.commit();
 	}
 }
-
-
-
-
