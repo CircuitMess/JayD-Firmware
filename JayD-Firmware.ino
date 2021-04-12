@@ -56,6 +56,7 @@ void setup(){
 	LoopManager::addListener(new InputJayD());
 	InputJayD::getInstance()->begin();
 	InputJayD::getInstance()->addListener(&Input);
+	LoopManager::addListener(&Input);
 
 	Context::setDeleteOnPop(true);
 
