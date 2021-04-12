@@ -8,15 +8,6 @@
 #include "MainMenuItem.h"
 #include <Display/AnimatedSprite.h>
 
-struct MatrixPartitionGIFData {
-	std::vector<uint> usedIdleAnimations;
-	std::vector<uint> unusedIdleAnimations;
-	uint8_t animationLoopCounter = 0;
-	bool animationLoopDone = 0;
-	int8_t requiredAnimationLoops = 0;
-};
-
-
 namespace MainMenu {
 	class MainMenu : public Context, public LoopListener {
 	public:
@@ -56,11 +47,6 @@ namespace MainMenu {
 		void buildUI();
 
 		uint32_t jumpTime;
-
-		MatrixPartitionGIFData gifData[4];
-		static const uint totalAnimations = 20;
-
-		void startRandomAnimation(uint8_t index);
 
 	};
 }

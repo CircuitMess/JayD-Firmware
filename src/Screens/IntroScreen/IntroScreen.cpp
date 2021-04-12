@@ -6,6 +6,7 @@
 #include <SPIFFS.h>
 #include <AudioLib/Systems/PlaybackSystem.h>
 #include <Settings.h>
+#include <JayD.hpp>
 
 
 IntroScreen::IntroScreen *IntroScreen::IntroScreen::instance = nullptr;
@@ -39,9 +40,6 @@ void IntroScreen::IntroScreen::draw(){
 }
 
 void IntroScreen::IntroScreen::start(){
-	draw();
-	screen.commit();
-
 	if(!gif) return;
 
 	gif->setLoopDoneCallback([]{
@@ -63,6 +61,10 @@ void IntroScreen::IntroScreen::start(){
 	playback->start();
 
 	LoopManager::addListener(this);
+	matrixManager.startRandom();
+
+	draw();
+	screen.commit();
 }
 
 void IntroScreen::IntroScreen::stop(){
