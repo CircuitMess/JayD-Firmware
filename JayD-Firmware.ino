@@ -46,7 +46,7 @@ void setup(){
 	}
 	display.begin();
 	SPI.setFrequency(20000000);
-
+	LEDmatrix.setBrightness(100);
 	if(!LEDmatrix.begin(I2C_SDA, I2C_SCL)){
 		Serial.println("couldn't start matrix");
 		for(;;);
