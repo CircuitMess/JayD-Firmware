@@ -70,7 +70,10 @@ void MixScreen::MixScreen::start(){
 	system->setChannelInfo(1, rightVu.getInfoGenerator());*/
 	//startBigVu();
 
-	system->setMix(InputJayD::getInstance()->getPotValue(POT_MID));
+	uint8_t potMidVal = InputJayD::getInstance()->getPotValue(POT_MID);
+	system->setMix(potMidVal);
+	matrixManager.matrixMid.vu(potMidVal);
+	matrixManager.matrixMid.push();
 
 	leftSeekBar->setTotalDuration(system->getDuration(0));
 	rightSeekBar->setTotalDuration(system->getDuration(1));
@@ -93,8 +96,6 @@ void MixScreen::MixScreen::start(){
 
 	Input.addListener(this);
 	InputJayD::getInstance()->addListener(this);
-
-	// InputJayD::getInstance()->setBtnHeldCallback(BTN_MID, 1000, nullptr); // TODO
 
 	draw();
 	screen.commit();
@@ -217,7 +218,6 @@ void MixScreen::MixScreen::loop(uint micros){
 void MixScreen::MixScreen::potMove(uint8_t id, uint8_t value){
 	if(id == POT_MID){
 		system->setMix(value);
-		matrixManager.matrixMid.clear();
 		matrixManager.matrixMid.vu(value);
 		matrixManager.matrixMid.push();
 	}else if(id == POT_L){
@@ -237,7 +237,6 @@ void MixScreen::MixScreen::encTwoBot(){
 }
 
 void MixScreen::MixScreen::encFour(){
-	Serial.println("bot");
 	pop();
 
 	/*system->stop();
