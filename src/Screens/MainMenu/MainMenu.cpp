@@ -9,8 +9,6 @@
 #include <SPIFFS.h>
 
 MainMenu::MainMenu *MainMenu::MainMenu::instance = nullptr;
-MatrixPartition *partitions[4] = {&matrixManager.matrixL, &matrixManager.matrixR, &matrixManager.matrixMid, &matrixManager.matrixBig};
-const char *partitionNames[4] = {"left", "right", "mid", "big"};
 
 MainMenu::MainMenu::MainMenu(Display &display) : Context(display), screenLayout(new LinearLayout(&screen, HORIZONTAL)){
 
@@ -26,7 +24,7 @@ MainMenu::MainMenu::MainMenu(Display &display) : Context(display), screenLayout(
 	instance->item[1]->isSelected(true);
 	buildUI();
 
-	//pack();
+	pack();
 }
 
 MainMenu::MainMenu::~MainMenu(){
