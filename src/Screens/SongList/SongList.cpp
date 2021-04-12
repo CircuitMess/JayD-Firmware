@@ -21,6 +21,8 @@ SongList::SongList::SongList(Display &display) : Context(display){
 
 	buildUI();
 	pack();
+
+	isOpened = true;
 }
 
 SongList::SongList::~SongList(){
@@ -90,10 +92,8 @@ void SongList::SongList::loop(uint t){
 					selectedElement = 0;
 					songs[selectedElement]->setSelected(true);
 				}
-				//scrollLayout->setY(18);
 				scrollLayout->scrollIntoView(selectedElement, 2);
 			}
-
 			draw();
 			screen.commit();
 		}
@@ -149,13 +149,15 @@ void SongList::SongList::start(){
 
 	LoopManager::addListener(this);
 
+	isOpened = false;
+
 	draw();
 	screen.commit();
 }
 
 void SongList::SongList::stop(){
-	InputJayD::getInstance()->removeEncoderMovedCallback(ENC_L1);
-	InputJayD::getInstance()->removeBtnPressCallback(BTN_L1);
+	InputJayD::getInstance()->removeEncoderMovedCallback(ENC_MID);
+	InputJayD::getInstance()->removeBtnPressCallback(BTN_MID);
 	LoopManager::removeListener(this);
 }
 
@@ -182,11 +184,6 @@ void SongList::SongList::draw(){
 	}else{
 		screen.draw();
 	}
-
-	//canvas->fillRect(0, 0, 160, 18, TFT_LIGHTGREY);
-
-	u8f.setCursor(50, 15);
-	u8f.printf("SD card");
 
 }
 
