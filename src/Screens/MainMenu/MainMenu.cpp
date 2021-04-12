@@ -9,12 +9,8 @@
 #include <SPIFFS.h>
 
 MainMenu::MainMenu *MainMenu::MainMenu::instance = nullptr;
-MatrixPartition *partitions[4] = {&matrixManager.matrixL, &matrixManager.matrixR, &matrixManager.matrixMid, &matrixManager.matrixBig};
-const char *partitionNames[4] = {"left", "right", "mid", "big"};
 
 MainMenu::MainMenu::MainMenu(Display &display) : Context(display), screenLayout(new LinearLayout(&screen, HORIZONTAL)){
-
-
 	for(int i = 0; i < 3; i++){
 		item.push_back(new MainMenuItem(screenLayout, static_cast<MenuItemType>(i)));
 	}
@@ -127,8 +123,8 @@ void MainMenu::MainMenu::loop(uint micros){
 void MainMenu::MainMenu::pack(){
 	Context::pack();
 	free(backgroundBuffer);
-	backgroundBuffer = nullptr;
 	free(logoBuffer);
+	backgroundBuffer = nullptr;
 	logoBuffer= nullptr;
 }
 

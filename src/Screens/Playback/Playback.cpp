@@ -20,6 +20,7 @@ Playback::Playback::Playback(Display& display) : Context(display), screenLayout(
 	instance = this;
 	buildUI();
 
+	pack();
 }
 
 Playback::Playback::~Playback(){

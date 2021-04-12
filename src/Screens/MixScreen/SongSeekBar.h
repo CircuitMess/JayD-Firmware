@@ -27,7 +27,7 @@ namespace MixScreen {
 		int currentDuration = 0;
 		float movingCursor=0;
 
-		Color *buffer[2];
+		Color *buffer[2] = { nullptr };
 	};
 
 }

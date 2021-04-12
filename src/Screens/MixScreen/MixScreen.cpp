@@ -36,22 +36,23 @@ MixScreen::MixScreen::MixScreen(Display& display) : Context(display),
 	instance = this;
 	buildUI();
 
+	pack();
+
 }
 
 MixScreen::MixScreen::~MixScreen(){
 	instance = nullptr;
 }
 
-void MixScreen::MixScreen::returned(void *data){
+void MixScreen::MixScreen::returned(void* data){
 	if(!f1){
 		f1 = SD.open(*((String*) data));
 	}else if(!f2){
 		f2 = SD.open(*((String*) data));
 	}
 
-	delete (String *) data;
+	delete (String*) data;
 }
-
 
 void MixScreen::MixScreen::start(){
 	if(!f1 || !f2){

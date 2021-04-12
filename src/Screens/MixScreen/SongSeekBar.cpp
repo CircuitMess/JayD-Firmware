@@ -21,6 +21,12 @@ MixScreen::SongSeekBar::SongSeekBar(ElementContainer *parent) : CustomElement(pa
 }
 
 
+MixScreen::SongSeekBar::~SongSeekBar(){
+	for(int i = 0; i < 2; i++){
+		free(buffer[i]);
+	}
+}
+
 void MixScreen::SongSeekBar::setPlaying(bool playing){
 	SongSeekBar::playing = playing;
 }
@@ -72,12 +78,6 @@ int MixScreen::SongSeekBar::getCurrentDuration() const{
 
 int MixScreen::SongSeekBar::getTotalDuration() const{
 	return totalDuration;
-}
-
-MixScreen::SongSeekBar::~SongSeekBar(){
-for(int i=0;i<2;i++){
-	free(buffer[i]);
-}
 }
 
 bool MixScreen::SongSeekBar::isPlaying() const{
