@@ -287,7 +287,18 @@ void MixScreen::MixScreen::btnEnc(uint8_t i){
 }
 
 void MixScreen::MixScreen::enc(uint8_t index, int8_t value){
-	if(index == 6) return;
+
+	if(index == 6){
+		SongSeekBar* bar = selectedChannel == 0 ? leftSeekBar : rightSeekBar;
+		uint16_t seekTime = bar->getCurrentDuration() + value;
+		if(seekTime >= 0 && seekTime <= bar->getTotalDuration() ) {
+			system->seekChannel(selectedChannel, seekTime);
+			bar->setCurrentDuration(seekTime);
+//			draw();
+//			screen.commit();
+		}
+		return;
+	}
 
 	EffectElement* element = effectElements[index];
 
