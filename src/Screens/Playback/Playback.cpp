@@ -8,7 +8,7 @@
 
 Playback::Playback *Playback::Playback::instance = nullptr;
 
-Playback::Playback::Playback(Display &display) : Context(display), screenLayout(new LinearLayout(&screen, VERTICAL)),
+Playback::Playback::Playback(Display& display) : Context(display), screenLayout(new LinearLayout(&screen, VERTICAL)),
 												 songNameLayout(new LinearLayout(screenLayout, HORIZONTAL)),
 												 timeElapsedLayout(new LinearLayout(screenLayout, HORIZONTAL)), buttonLayout(new LinearLayout(
 				screenLayout, HORIZONTAL)), songName(new SongName(songNameLayout)), playOrPause(new PlayPause(buttonLayout)),
@@ -29,17 +29,20 @@ Playback::Playback::~Playback(){
 }
 
 void Playback::Playback::loop(uint micros){
-	if(i2s->isRunning()){
-		i2s->loop(micros);
+	bool update = songName->checkScrollUpdate();
+
+	if(system->getElapsed() != trackCount->getCurrentDuration()){
+		update = true;
+		trackCount->setCurrentDuration(system->getElapsed());
 	}
 
-	bool songNameUpdate = songName->checkScrollUpdate();
-	if(((int) wav->getElapsed()) != trackCount->getCurrentDuration() || songNameUpdate){
-		if(((int) wav->getElapsed()) != trackCount->getCurrentDuration()){
-			trackCount->setCurrentDuration(wav->getElapsed());
-		}
+	uint32_t currentTime = millis();
+	if((update || drawQueued) && (currentTime - lastDraw) >= 100){
+		drawQueued = false;
 		draw();
 		screen.commit();
+	}else if(update){
+		drawQueued = true;
 	}
 }
 
@@ -47,35 +50,32 @@ void Playback::Playback::returned(void *data){
 	String *name = static_cast<String *>(data);
 	file = SD.open(name->c_str());
 
-	if(file){
-		wav = new SourceWAV(file);
-		trackCount->setTotalDuration(wav->getDuration());
-		Serial.printf("Duration: %d\n", wav->getDuration());
-		songName->setSongName(name->substring(1, name->length() - 4));
-	}else{
-		trackCount->setTotalDuration(0);
-		songName->setSongName("-");
-	}
-
-	trackCount->setCurrentDuration(0);
-	playOrPause->setPlaying(false);
-
 	delete name;
 }
 
 void Playback::Playback::start(){
+	if(!file){
+		(new SongList::SongList(*screen.getDisplay()))->push(this);
+		return;
+	}
+
+	String name = file.name();
+	songName->setSongName(name.substring(1, name.length() - 4));
+	trackCount->setTotalDuration(0);
+	trackCount->setCurrentDuration(0);
+	playOrPause->setPlaying(false);
 	draw();
 	screen.commit();
 
-	InputJayD::getInstance()->setBtnPressCallback(BTN_L1, [](){
+	InputJayD::getInstance()->setBtnPressCallback(BTN_MID, [](){
 		if(instance == nullptr) return;
 
 		if(instance->playing){
-			instance->i2s->stop();
+			instance->system->pause();
 			instance->playing = false;
 			LoopManager::removeListener(instance);
-		}else if(instance->wav){
-			instance->i2s->start();
+		}else{
+			instance->system->resume();
 			instance->playing = true;
 			LoopManager::addListener(instance);
 		}
@@ -86,57 +86,39 @@ void Playback::Playback::start(){
 		instance->screen.commit();
 	});
 
-	InputJayD::getInstance()->setEncoderMovedCallback(ENC_L1, [](int8_t value){
+	InputJayD::getInstance()->setEncoderMovedCallback(ENC_MID, [](int8_t value){
 		if(instance == nullptr) return;
-
-		if(instance->wav){
-			instance->wav->seek(max(0, (int) instance->wav->getElapsed() + value * 100000), SeekMode::SeekSet);
-			instance->trackCount->setCurrentDuration(instance->wav->getElapsed());
-		}
-
-		instance->draw();
-		instance->screen.commit();
 	});
 
 	InputJayD::getInstance()->setPotMovedCallback(POT_L, [](uint8_t value){
-		if(instance && instance->i2s){
-			instance->i2s->setGain((float) value / 255.0f);
+		if(instance && instance->system){
+			instance->system->setVolume(value);
 		}
 	});
 
-	const i2s_config_t i2s_config = {
-			.mode = i2s_mode_t(I2S_MODE_MASTER | I2S_MODE_TX),
-			.sample_rate = 44100,
-			.bits_per_sample = I2S_BITS_PER_SAMPLE_32BIT,
-			.channel_format = I2S_CHANNEL_FMT_ONLY_LEFT,
-			.communication_format = i2s_comm_format_t(I2S_COMM_FORMAT_I2S | I2S_COMM_FORMAT_I2S_MSB),
-			.intr_alloc_flags = 0,
-			.dma_buf_count = 2,
-			.dma_buf_len = 1024,
-			.use_apll = false
-	};
+	system = new PlaybackSystem(file);
+	system->setVolume(InputJayD::getInstance()->getPotValue(POT_L));
+	system->start();
 
-	i2s = new OutputI2S(i2s_config, i2s_pin_config, I2S_NUM_0);
-	i2s->setSource(wav);
-	i2s->setGain(0.01);
+	playOrPause->setPlaying(true);
+	trackCount->setTotalDuration(system->getDuration());
+
 	LoopManager::addListener(this);
+	lastDraw = 0;
 }
 
 void Playback::Playback::stop(){
 	InputJayD::getInstance()->removeBtnPressCallback(BTN_L1);
 	InputJayD::getInstance()->removeEncoderMovedCallback(ENC_L1);
 
-	playing = false;
 
-	if(i2s != nullptr){
-		i2s->stop();
-		delete i2s;
-		i2s = nullptr;
+	if(system){
+		system->stop();
+		delete system;
+		system = nullptr;
 	}
 
-	delete wav;
-	wav = nullptr;
-
+	playing = false;
 	file.close();
 }
 

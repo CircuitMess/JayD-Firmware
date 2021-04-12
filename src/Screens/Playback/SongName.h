@@ -14,7 +14,7 @@ namespace Playback {
 		void setSongName(const String& songName);
 
 	private:
-		String songName = "";
+		String songName = "-";
 		bool scrolling = false;
 		const int32_t scrollSpeed = 100; //in milliseconds
 		uint32_t currentTime = 0;

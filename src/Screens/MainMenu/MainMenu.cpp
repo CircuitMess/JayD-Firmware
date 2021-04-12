@@ -2,7 +2,6 @@
 #include <JayD.hpp>
 #include "MainMenu.h"
 #include "../Playback/Playback.h"
-#include "../SongList/SongList.h"
 #include "../MixScreen/MixScreen.h"
 #include "../Settings/SettingsScreen.h"
 #include <Loop/LoopManager.h>
@@ -24,7 +23,7 @@ MainMenu::MainMenu::MainMenu(Display &display) : Context(display), screenLayout(
 	jayDlogo = CompressedFile::open(SPIFFS.open("/jayD_logo.raw.hs"), 8, 7);
 
 	instance = this;
-	instance->item[0]->isSelected(true);
+	instance->item[1]->isSelected(true);
 	buildUI();
 
 	for(uint8_t j = 0; j < 4; j++){
@@ -45,16 +44,18 @@ MainMenu::MainMenu::~MainMenu(){
 }
 
 void MainMenu::MainMenu::start(){
+	InputJayD::getInstance()->setHoldTime(0);
+
 	InputJayD::getInstance()->setEncoderMovedCallback(0, [](int8_t value){
 		if(instance == nullptr) return;
 		if(value == 0) return;
-		instance->itemNum = instance->itemNum + value;
 
-		if(instance->itemNum < 0){
-			instance->itemNum = instance->item.size() - 1;
-		}else if(instance->itemNum >= instance->item.size()){
-			instance->itemNum = 0;
-		}
+		int8_t newSelected = instance->itemNum + value;
+		newSelected = max(newSelected, (int8_t) 0);
+		newSelected = min(newSelected, (int8_t) 2);
+
+		if(instance->itemNum == newSelected) return;
+		instance->itemNum = newSelected;
 
 		for(MainMenuItem *i : instance->item){
 			i->isSelected(false);
@@ -70,23 +71,16 @@ void MainMenu::MainMenu::start(){
 
 		Display &display = *instance->getScreen().getDisplay();
 		int8_t selected = instance->itemNum;
-		Serial.println(selected);
-
-		instance->stop();
-		delete instance;
 
 		if(selected == 0){
 			Playback::Playback* playback = new Playback::Playback(display);
-			SongList::SongList* list = new SongList::SongList(display);
-			list->push(playback);
+			playback->push(instance);
 		}else if(selected == 1){
 			MixScreen::MixScreen* mix = new MixScreen::MixScreen(display);
-			mix->unpack();
-			mix->start();
+			mix->push(instance);
 		}else if(selected == 2){
 			SettingsScreen::SettingsScreen* settings = new SettingsScreen::SettingsScreen(display);
-			settings->unpack();
-			settings->start();
+			settings->push(instance);
 		}
 	});
 
@@ -105,6 +99,7 @@ void MainMenu::MainMenu::stop(){
 	matrixManager.stopAnimation();
 	InputJayD::getInstance()->removeEncoderMovedCallback(0);
 	InputJayD::getInstance()->removeBtnPressCallback(BTN_MID);
+	LoopManager::removeListener(this);
 }
 
 void MainMenu::MainMenu::draw(){
@@ -145,19 +140,9 @@ void MainMenu::MainMenu::loop(uint micros){
 			gifData[i].animationLoopDone = false;
 		}
 	}
-	
 
-	bool update = false;
-	for(const auto &i : item){
-		update |= i->needsUpdate();
-	}
-
-	update |= floor(sin((float) (jumpTime - micros) / 500000.0f)) != floor(sin((float) jumpTime / 500000.0f));
-
-	if(update){
-		draw();
-		screen.commit();
-	}
+	draw();
+	screen.commit();
 }
 
 void MainMenu::MainMenu::pack(){

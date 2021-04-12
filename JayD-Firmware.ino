@@ -57,6 +57,8 @@ void setup(){
 	InputJayD::getInstance()->begin();
 	InputJayD::getInstance()->addListener(&Input);
 
+	Context::setDeleteOnPop(true);
+
 	Context* introScreen = new IntroScreen::IntroScreen(display);
 	introScreen->unpack();
 	introScreen->start();
