@@ -46,8 +46,19 @@ void InputKeys::buttonPress(uint8_t id){
 		return;
 	}
 
-	uint8_t i = mapped->second;
-	btnEncStates[i] = true;
+	uint8_t index = mapped->second;
+	btnEncStates[index] = true;
+	btnEncTime[index] = millis();
+
+	for(int i = 0; i < 7; i++){
+		if(i == index) continue;
+		if(btnEncStates[i]){
+			for(int j = 0; j < 7; j++){
+				btnEncTime[j] = 0;
+			}
+			break;
+		}
+	}
 
 	if(btnEncStates[0] && btnEncStates[2] && btnEncStates[3] && btnEncStates[5]){
 		for(auto listener : listeners){
@@ -74,6 +85,7 @@ void InputKeys::buttonRelease(uint8_t id){
 
 	uint8_t index = mapped->second;
 	btnEncStates[index] = false;
+	btnEncTime[index] = 0;
 
 	bool twoButton = id == BTN_L3 || id == BTN_R3;
 	for(int i = 0; i < 6; i++){
@@ -92,6 +104,11 @@ void InputKeys::buttonRelease(uint8_t id){
 			listener->encTwoBot();
 		}
 
+		return;
+	}
+
+	if(btnEncHeld[index]){
+		btnEncHeld[index] = false;
 		return;
 	}
 
@@ -120,4 +137,27 @@ void InputKeys::encoderMove(uint8_t id, int8_t value){
 		if(listener == nullptr) continue;
 		listener->enc(index, value);
 	}
+}
+
+void InputKeys::loop(uint micros){
+	uint8_t pressed = 0;
+	int8_t index = -1;
+	for(int i = 0; i < 7; i++){
+		pressed += btnEncStates[i];
+
+		if(btnEncTime[i] != 0){
+			index = i;
+		}
+	}
+
+	if(pressed != 1 || index == -1) return;
+	if(millis() - btnEncTime[index] < holdTime) return;
+
+	for(auto listener : listeners){
+		if(listener == nullptr) continue;
+		listener->encBtnHold(index);
+	}
+
+	btnEncTime[index] = 0;
+	btnEncHeld[index] = true;
 }

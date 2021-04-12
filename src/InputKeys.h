@@ -22,10 +22,12 @@ private:
 
 };
 
-class InputKeys : public JayDInputListener {
+class InputKeys : public JayDInputListener, public LoopListener {
 public:
 	void addListener(InputListener* listener);
 	void removeListener(InputListener* listener);
+
+	void loop(uint micros) override;
 
 private:
 	static const std::unordered_map<uint8_t, uint8_t> mapBtn;
@@ -35,8 +37,12 @@ private:
 	void buttonRelease(uint8_t id) override;
 	void encoderMove(uint8_t id, int8_t value) override;
 
-	bool btnEncStates[6] = { false };
+	bool btnEncStates[7] = { false };
 	bool btnStates[2] = { false };
+
+	static const uint32_t holdTime = 500;
+	uint32_t btnEncTime[7] = { 0 };
+	bool btnEncHeld[7] = { false };
 
 	Vector<InputListener*> listeners;
 };

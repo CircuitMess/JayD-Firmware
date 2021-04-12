@@ -189,7 +189,6 @@ void MainMenu::MainMenu::startRandomAnimation(uint8_t i){
 	char buffer[25];
 	sprintf(buffer, "/matrixGIF/%s%d.gif", partitionNames[i], animationIndex);
 	gifData[i].requiredAnimationLoops = 3;
-	Serial.println(buffer);
 	delay(5);
 	partitions[i]->startAnimation(new Animation(new File(SPIFFS.open(buffer))), true);
 	gifData[i].animationLoopCounter = 0;
