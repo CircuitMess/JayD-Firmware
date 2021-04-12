@@ -43,20 +43,9 @@ MixScreen::MixScreen::~MixScreen(){
 }
 
 void MixScreen::MixScreen::returned(void *data){
-
-	if(f1 && selectedChannel == 0){
-		f1.close();
-		selectedChannel = 1;
-
-	}else if(f2 && selectedChannel == 1 ){
-		f2.close();
-		selectedChannel = 0;
-	}
-
 	if(!f1){
 		f1 = SD.open(*((String*) data));
-	}
-	else if(!f2){
+	}else if(!f2){
 		f2 = SD.open(*((String*) data));
 	}
 
@@ -374,7 +363,14 @@ void MixScreen::MixScreen::enc(uint8_t index, int8_t value){
 
 void MixScreen::MixScreen::encBtnHold(uint8_t i){
 	if(i == 6){
-		Serial.println("start song lsit screen");
+		stop();
+
+		if(selectedChannel == 0){
+			f1.close();
+		}else{
+			f2.close();
+		}
+
 		(new SongList::SongList(*getScreen().getDisplay()))->push(this);
 		return;
 	}
