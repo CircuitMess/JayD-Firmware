@@ -143,7 +143,13 @@ void InputTest::InputTest::start(){
 	});
 	InputJayD::getInstance()->setPotMovedCallback(0, [](uint8_t value){
 		if(instance == nullptr) return;
-		if(instance->potBotTest[0]->isPotDone()) return;
+		if(instance->potBotTest[0]->isPotDone()){
+			instance->potBotTest[0]->potMove(value);
+			instance->draw();
+			instance->screen.commit();
+			instance->checkIfDone();
+			return;
+		}
 		instance->potBotTest[0]->potMove(value);
 		if(instance->potBotTest[0]->isPotDone()){
 			instance->doneCounter++;
@@ -154,7 +160,13 @@ void InputTest::InputTest::start(){
 	});
 	InputJayD::getInstance()->setPotMovedCallback(1, [](uint8_t value){
 		if(instance == nullptr) return;
-		if(instance->potMidTest[0]->isPotDone()) return;
+		if(instance->potMidTest[0]->isPotDone()){
+			instance->potMidTest[0]->potMove(value);
+			instance->draw();
+			instance->screen.commit();
+			instance->checkIfDone();
+			return;
+		}
 		instance->potMidTest[0]->potMove(value);
 		if(instance->potMidTest[0]->isPotDone()){
 			instance->doneCounter++;
@@ -165,7 +177,13 @@ void InputTest::InputTest::start(){
 	});
 	InputJayD::getInstance()->setPotMovedCallback(2, [](uint8_t value){
 		if(instance == nullptr) return;
-		if(instance->potMidTest[1]->isPotDone()) return;
+		if(instance->potMidTest[1]->isPotDone()){
+			instance->potMidTest[1]->potMove(value);
+			instance->draw();
+			instance->screen.commit();
+			instance->checkIfDone();
+			return;
+		}
 		instance->potMidTest[1]->potMove(value);
 		if(instance->potMidTest[1]->isPotDone()){
 			instance->doneCounter++;
