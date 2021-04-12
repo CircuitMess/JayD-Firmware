@@ -15,26 +15,6 @@
 
 MixScreen::MixScreen* MixScreen::MixScreen::instance = nullptr;
 
-
-const std::unordered_map<uint8_t, uint8_t> MixScreen::MixScreen::mapBtn = {
-		{3, 0},
-		{8, 1},
-		{7, 2},
-		{6, 3},
-		{5, 4},
-		{4, 5}
-};
-
-const std::unordered_map<uint8_t, uint8_t> MixScreen::MixScreen::mapEnc = {
-		{1, 0},
-		{6, 1},
-		{5, 2},
-		{4, 3},
-		{3, 4},
-		{2, 5},
-};
-
-
 MixScreen::MixScreen::MixScreen(Display& display) : Context(display),
 													screenLayout(new LinearLayout(&screen, HORIZONTAL)),
 													leftLayout(new LinearLayout(screenLayout, VERTICAL)),
@@ -58,7 +38,9 @@ MixScreen::MixScreen::MixScreen(Display& display) : Context(display),
 
 }
 
-Context* selector = nullptr;
+MixScreen::MixScreen::~MixScreen(){
+	instance = nullptr;
+}
 
 void MixScreen::MixScreen::returned(void* data){
 	if(!f1){
@@ -70,19 +52,10 @@ void MixScreen::MixScreen::returned(void* data){
 	delete (String*) data;
 }
 
+
 void MixScreen::MixScreen::start(){
-	delete selector;
-	selector = nullptr;
-
-	if(!f1){
-		selector = new SongList::SongList(*getScreen().getDisplay());
-		selector->push(this);
-		return;
-	}
-
-	if(!f2){
-		selector = new SongList::SongList(*getScreen().getDisplay());
-		selector->push(this);
+	if(!f1 || !f2){
+		(new SongList::SongList(*getScreen().getDisplay()))->push(this);
 		return;
 	}
 
@@ -94,10 +67,15 @@ void MixScreen::MixScreen::start(){
 
 	system = new MixSystem(f1, f2);
 
-	startBigVu();
-
 	system->setVolume(0, InputJayD::getInstance()->getPotValue(POT_L));
 	system->setVolume(1, InputJayD::getInstance()->getPotValue(POT_R));
+
+	system->pauseChannel(0);
+	system->pauseChannel(1);
+
+	/*system->setChannelInfo(0, leftVu.getInfoGenerator());
+	system->setChannelInfo(1, rightVu.getInfoGenerator());*/
+	//startBigVu();
 
 	system->setMix(InputJayD::getInstance()->getPotValue(POT_MID));
 
@@ -107,76 +85,39 @@ void MixScreen::MixScreen::start(){
 	leftSeekBar->setPlaying(false);
 	rightSeekBar->setPlaying(false);
 
-	InputJayD::getInstance()->setBtnPressCallback(0, [](){
-		if(instance == nullptr) return;
-		instance->isPlaying[0] = !instance->isPlaying[0];
-		instance->leftSeekBar->setPlaying(instance->isPlaying[0]);
-		if(instance->isPlaying[0]){
-			instance->system->resumeChannel(0);
-		}else{
-			instance->system->pauseChannel(0);
-		}
-		instance->btn0Pressed = true;
-		instance->prevTime = millis();
-		instance->draw();
-		instance->screen.commit();
-	});
-	InputJayD::getInstance()->setBtnPressCallback(1, [](){
-		if(instance == nullptr) return;
-		instance->isPlaying[1] = !instance->isPlaying[1];
-		instance->rightSeekBar->setPlaying(instance->isPlaying[1]);
-		if(instance->isPlaying[1]){
-			instance->system->resumeChannel(1);
-		}else{
-			instance->system->pauseChannel(1);
-		}
-		instance->btn1Pressed = true;
-		instance->prevTime = millis();
-
-		instance->draw();
-		instance->screen.commit();
-	});
-	InputJayD::getInstance()->setBtnHeldCallback(BTN_MID, 1000, nullptr);
-
-	InputJayD::getInstance()->addListener(this);
 
 	leftSongName->checkScrollUpdate();
 	rightSongName->checkScrollUpdate();
-
-	draw();
-	screen.commit();
-
-	LoopManager::addListener(this);
 
 
 	Serial.printf("System constructed. Heap: %u B, PSRAM: %u B\n", ESP.getFreeHeap(), ESP.getFreePsram());
 	system->start();
 	Serial.printf("System started. Heap: %u B, PSRAM: %u B\n", ESP.getFreeHeap(), ESP.getFreePsram());
-	system->setChannelInfo(0, leftVu.getInfoGenerator());
+
 	LoopManager::addListener(&leftVu);
-	system->setChannelInfo(1, rightVu.getInfoGenerator());
 	LoopManager::addListener(&rightVu);
+	LoopManager::addListener(this);
 
-	system->pauseChannel(0);
-	system->pauseChannel(1);
+	Input.addListener(this);
+	InputJayD::getInstance()->addListener(this);
 
+	// InputJayD::getInstance()->setBtnHeldCallback(BTN_MID, 1000, nullptr); // TODO
+
+	draw();
+	screen.commit();
 }
 
-
 void MixScreen::MixScreen::stop(){
-
-	InputJayD::getInstance()->removeListener(this);
-	InputJayD::getInstance()->removeBtnPressCallback(BTN_L);
-	InputJayD::getInstance()->removeBtnPressCallback(BTN_R);
-	InputJayD::getInstance()->removeBtnHeldCallback(BTN_MID);
-
-	LoopManager::removeListener(this);
 	LoopManager::removeListener(&leftVu);
 	LoopManager::removeListener(&rightVu);
 	LoopManager::removeListener(&midVu);
+	LoopManager::removeListener(this);
+
+	Input.removeListener(this);
+	InputJayD::getInstance()->removeListener(this);
 
 	if(system){
-		//system->stop();
+		system->stop();
 		delete system;
 		system = nullptr;
 	}
@@ -267,22 +208,6 @@ void MixScreen::MixScreen::loop(uint micros){
 		update = true;
 	}
 
-	if(popBtnConfig == 0x0F && (millis() - prevPopBtnTime) > 100){
-		Serial.println("Pop");
-		popBtnConfig = 0x00;
-		multipleBtnPressCheck = true;
-		prevMultipleBtnTime = millis();
-		pop();
-	}else if(recBtnConfig == 0x03 && (millis() - prevRecBtnTime) > 100){
-		isRecording = !isRecording;
-		multipleBtnPressCheck = true;
-		prevMultipleBtnTime = millis();
-		
-		recBtnConfig = 0x00;
-		update = true;
-		Serial.println("Rec");
-	}
-
 	bool songNameUpdateL = leftSongName->checkScrollUpdate();
 	bool songNameUpdateR = rightSongName->checkScrollUpdate();
 	if(update || songNameUpdateL || songNameUpdateR){
@@ -293,197 +218,8 @@ void MixScreen::MixScreen::loop(uint micros){
 			lastDraw = now;
 		}
 	}
-
-	if(btn0Pressed){
-		if((millis() - prevTime > 100) && btn1Pressed){
-			stop();
-			pack();
-			MatrixPopUpPicker* popUpPicker = new MatrixPopUpPicker(*this);
-			popUpPicker->unpack();
-			popUpPicker->start();
-			btn0Pressed = false;
-			btn1Pressed = false;
-		}else if((millis() - prevTime > 100) && !btn1Pressed){
-			btn0Pressed = false;
-			btn1Pressed = false;
-		}
-	}else if(btn1Pressed){
-		if((millis() - prevTime > 100) && btn0Pressed){
-			stop();
-			pack();
-			MatrixPopUpPicker* popUpPicker = new MatrixPopUpPicker(*this);
-			popUpPicker->unpack();
-			popUpPicker->start();
-			btn0Pressed = false;
-			btn1Pressed = false;
-		}else if((millis() - prevTime > 100) && !btn0Pressed){
-			btn0Pressed = false;
-			btn1Pressed = false;
-		}
-	}
 }
 
-void MixScreen::MixScreen::buttonPress(uint8_t id){
-
-	if(id == 8 || id == 5 || id == 2){
-		popBtnConfig = 0x00;
-	}else{
-
-		if(millis() - prevPopBtnTime > 100){
-			popBtnConfig = 0x00;
-		}
-
-		switch(id){
-			case 3:
-				popBtnConfig |= 0x01;
-				break;
-			case 7:
-				popBtnConfig |= 0x02;
-				break;
-			case 6:
-				popBtnConfig |= 0x04;
-				break;
-			case 4:
-				popBtnConfig |= 0x08;
-				break;
-			default:
-				break;
-		}
-		prevPopBtnTime = millis();
-	}
-	if(popBtnConfig == 0x0F)return;
-
-
-
-	if(!(id == 4 || id == 7)){
-		recBtnConfig = 0x00;
-	}else{
-
-		if(millis() - prevRecBtnTime > 100){
-			recBtnConfig = 0x00;
-		}
-
-		switch(id){
-
-			case 7:
-				recBtnConfig |= 0x01;
-				break;
-
-			case 4:
-				recBtnConfig |= 0x02;
-				break;
-			default:
-				break;
-		}
-		prevRecBtnTime = millis();
-	}
-	if(recBtnConfig == 0x03)return;
-}
-
-
-void MixScreen::MixScreen::buttonRelease(uint8_t id){
-
-	if(millis() - prevMultipleBtnTime > 1000){
-		multipleBtnPressCheck = false;
-	}
-
-	if(!hold){
-
-		if(mapBtn.count(id) & !multipleBtnPressCheck){
-			EffectElement *effect = effectElements[mapBtn.find(id)->second];
-			effect->setSelected(!effect->isSelected());
-
-			draw();
-			screen.commit();
-
-			return;
-		}
-
-		if(id == BTN_MID){
-			selectedChannel = !selectedChannel;
-			draw();
-			screen.commit();
-			return;
-		}
-
-	}
-	hold = false;
-
-}
-
-void MixScreen::MixScreen::buttonHold(uint8_t id){
-
-}
-
-void MixScreen::MixScreen::encoderMove(uint8_t id, int8_t value){
-	if(mapEnc.count(id)){
-		size_t index = mapEnc.find(id)->second;
-		EffectElement* element = effectElements[index];
-
-		if(element->isSelected()){
-			int8_t e = element->getType() + value;
-			if(e >= EffectType::COUNT){
-				e = e % EffectType::COUNT;
-			}else if(e < 0){
-				while(e < 0){
-					e += EffectType::COUNT;
-				}
-			}
-
-			// Only one speed allowed
-			if(e == EffectType::SPEED){
-				for(int i = (index < 3 ? 0 : 3); i < (index < 3 ? 3 : 6); i++){
-					if(i == index) continue;
-					if(effectElements[i]->getType() != EffectType::SPEED) continue;
-
-					if(value < 0){
-						e = e > 0 ? e - 1 : EffectType::COUNT - 1;
-					}else{
-						e = (e + 1) % EffectType::COUNT;
-					}
-
-					break;
-				}
-			}
-
-			if(element->getType() == EffectType::SPEED){
-				system->removeSpeed(index >= 3);
-			}
-
-			EffectType type = static_cast<EffectType>(e);
-			element->setType(type);
-			element->setIntensity(0);
-
-			if(type == EffectType::SPEED){
-				system->addSpeed(index >= 3);
-				element->setIntensity(255 / 2);
-				return;
-			}
-
-			system->setEffect(index >= 3, index < 3 ? index : index - 3, type);
-		}else{
-			EffectType type = element->getType();
-			if(type == EffectType::NONE) return;
-
-			int16_t intensity = element->getIntensity() + value * 5;
-			intensity = max((int16_t) 0, intensity);
-			intensity = min((int16_t) 255, intensity);
-
-			element->setIntensity(intensity);
-
-			if(type == EffectType::SPEED){
-				system->setSpeed(index >= 3, intensity);
-			}else{
-				system->setEffectIntensity(index >= 3, index < 3 ? index : index - 3, element->getIntensity());
-			}
-		}
-
-		draw();
-		screen.commit();
-
-		return;
-	}
-}
 
 void MixScreen::MixScreen::potMove(uint8_t id, uint8_t value){
 	if(id == POT_MID){
@@ -498,13 +234,129 @@ void MixScreen::MixScreen::potMove(uint8_t id, uint8_t value){
 	}
 }
 
-
-MixScreen::MixScreen::~MixScreen(){
-	instance = nullptr;
-}
-
 void MixScreen::MixScreen::startBigVu(){
 	system->setChannelInfo(2, midVu.getInfoGenerator());
 	LoopManager::addListener(&midVu);
+}
 
+void MixScreen::MixScreen::encTwoBot(){
+
+}
+
+void MixScreen::MixScreen::encFour(){
+	Serial.println("bot");
+	pop();
+
+	/*system->stop();
+
+	if(selectedChannel == 0){
+		f1.close();
+	}else{
+		f2.close();
+	}
+
+	(new SongList::SongList(*screen.getDisplay()))->push(this);*/
+}
+
+void MixScreen::MixScreen::btnCombination(){
+	stop();
+
+	MatrixPopUpPicker* popUpPicker = new MatrixPopUpPicker(*this);
+	popUpPicker->unpack();
+	popUpPicker->start();
+}
+
+void MixScreen::MixScreen::btn(uint8_t i){
+	SongSeekBar* bar = i == 0 ? leftSeekBar : rightSeekBar;
+	if(bar->isPlaying()){
+		system->pauseChannel(i);
+	}else{
+		system->resumeChannel(i);
+	}
+
+	bar->setPlaying(!bar->isPlaying());
+
+	draw();
+	screen.commit();
+}
+
+void MixScreen::MixScreen::btnEnc(uint8_t i){
+	if(i > 6) return;
+
+	if(i == 6){
+		selectedChannel = !selectedChannel;
+	}else{
+		EffectElement *effect = effectElements[i];
+		effect->setSelected(!effect->isSelected());
+	}
+
+	draw();
+	screen.commit();
+}
+
+void MixScreen::MixScreen::enc(uint8_t index, int8_t value){
+	if(index == 6) return;
+
+	EffectElement* element = effectElements[index];
+
+	if(element->isSelected()){
+		int8_t e = element->getType() + value;
+		if(e >= EffectType::COUNT){
+			e = e % EffectType::COUNT;
+		}else if(e < 0){
+			while(e < 0){
+				e += EffectType::COUNT;
+			}
+		}
+
+		// Only one speed allowed
+		if(e == EffectType::SPEED){
+			for(int i = (index < 3 ? 0 : 3); i < (index < 3 ? 3 : 6); i++){
+				if(i == index) continue;
+				if(effectElements[i]->getType() != EffectType::SPEED) continue;
+
+				if(value < 0){
+					e = e > 0 ? e - 1 : EffectType::COUNT - 1;
+				}else{
+					e = (e + 1) % EffectType::COUNT;
+				}
+
+				break;
+			}
+		}
+
+		if(element->getType() == EffectType::SPEED){
+			system->removeSpeed(index >= 3);
+		}
+
+		EffectType type = static_cast<EffectType>(e);
+		element->setType(type);
+		element->setIntensity(0);
+
+		if(type == EffectType::SPEED){
+			system->addSpeed(index >= 3);
+			element->setIntensity(255 / 2);
+			return;
+		}
+
+		system->setEffect(index >= 3, index < 3 ? index : index - 3, type);
+	}else{
+		EffectType type = element->getType();
+		if(type == EffectType::NONE) return;
+
+		int16_t intensity = element->getIntensity() + value * 5;
+		intensity = max((int16_t) 0, intensity);
+		intensity = min((int16_t) 255, intensity);
+
+		element->setIntensity(intensity);
+
+		if(type == EffectType::SPEED){
+			system->setSpeed(index >= 3, intensity);
+		}else{
+			system->setEffectIntensity(index >= 3, index < 3 ? index : index - 3, element->getIntensity());
+		}
+	}
+
+	draw();
+	screen.commit();
 }

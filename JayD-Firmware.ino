@@ -8,6 +8,7 @@
 #include <Loop/LoopListener.h>
 #include <Loop/LoopManager.h>
 #include "src/Screens/IntroScreen/IntroScreen.h"
+#include "src/InputKeys.h"
 #include <Input/InputJayD.h>
 #include <WiFi.h>
 #include <SD.h>
@@ -54,6 +55,7 @@ void setup(){
 	LoopManager::addListener(&matrixManager);
 	LoopManager::addListener(new InputJayD());
 	InputJayD::getInstance()->begin();
+	InputJayD::getInstance()->addListener(&Input);
 
 	Context* introScreen = new IntroScreen::IntroScreen(display);
 	introScreen->unpack();

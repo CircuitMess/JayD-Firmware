@@ -18,10 +18,12 @@
 #include <Matrix/VuVisualizer.h>
 #include <Matrix/RoundVuVisualiser.h>
 #include "MatrixPopUpPicker.h"
+#include "../../InputKeys.h"
+
 
 
 namespace MixScreen {
-	class MixScreen : public Context, public LoopListener, public JayDInputListener {
+	class MixScreen : public Context, public LoopListener, public JayDInputListener, public InputListener {
 		friend MatrixPopUpPicker;
 	public:
 
@@ -56,26 +58,12 @@ namespace MixScreen {
 		SongName* leftSongName;
 		SongName* rightSongName;
 
-
 		EffectElement* effectElements[6] = {nullptr};
-
-		bool isPlaying[2] = {false, false};
 
 		void buildUI();
 
-
-		void buttonPress(uint8_t id) override;
-
-		void buttonRelease(uint8_t id) override;
-
-		void buttonHold(uint8_t id) override;
-
-		void encoderMove(uint8_t id, int8_t value) override;
-
-		void potMove(uint8_t id, uint8_t value) override;
-
-		static const std::unordered_map<uint8_t, uint8_t> mapBtn;
-		static const std::unordered_map<uint8_t, uint8_t> mapEnc;
+		uint8_t selectedChannel = 0;
+		bool isRecording = false;
 
 		uint32_t lastDraw = 0;
 
@@ -83,25 +71,16 @@ namespace MixScreen {
 		VuVisualizer rightVu;
 		RoundVuVisualiser midVu;
 
-		uint8_t selectedChannel = 0;
-		bool hold = false;
-
-		uint8_t popBtnConfig = 0x00;
-		uint32_t prevPopBtnTime = millis();
-
-		bool isRecording = false;
-		uint8_t recBtnConfig = 0x00;
-		uint32_t prevRecBtnTime = millis();
-
-
-		bool multipleBtnPressCheck = false;
-		uint32_t prevMultipleBtnTime = millis();
-
-		bool btn0Pressed = false;
-		bool btn1Pressed = false;
-		uint32_t prevTime = 0;
-
 		void startBigVu();
+
+		void potMove(uint8_t id, uint8_t value) override;
+
+		void encTwoBot() override;
+		void encFour() override;
+		void btnCombination() override;
+		void btn(uint8_t i) override;
+		void btnEnc(uint8_t i) override;
+		void enc(uint8_t id, int8_t value) override;
 	};
 }
 
