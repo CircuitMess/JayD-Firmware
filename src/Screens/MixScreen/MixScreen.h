@@ -81,6 +81,8 @@ namespace MixScreen {
 		void btn(uint8_t i) override;
 		void btnEnc(uint8_t i) override;
 		void enc(uint8_t id, int8_t value) override;
+		void encBtnHold(uint8_t i) override;
+
 	};
 }
 
