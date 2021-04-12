@@ -31,7 +31,8 @@ MainMenu::MainMenu::MainMenu(Display &display) : Context(display), screenLayout(
 			gifData[j].unusedIdleAnimations.push_back(i);
 		}
 	}
-	//pack();
+
+	pack();
 }
 
 MainMenu::MainMenu::~MainMenu(){
