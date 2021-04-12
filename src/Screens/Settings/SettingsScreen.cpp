@@ -6,9 +6,9 @@
 #include <JayD.hpp>
 #include <AudioLib/Systems/PlaybackSystem.h>
 
-SettingsScreen::SettingsScreen *SettingsScreen::SettingsScreen::instance = nullptr;
+SettingsScreen::SettingsScreen* SettingsScreen::SettingsScreen::instance = nullptr;
 
-SettingsScreen::SettingsScreen::SettingsScreen(Display &display) : Context(display), screenLayout(&screen, VERTICAL),
+SettingsScreen::SettingsScreen::SettingsScreen(Display& display) : Context(display), screenLayout(&screen, VERTICAL),
 																   volumeSlider(&screenLayout, "Volume"), brightnessSlider(&screenLayout, "Brightness"){
 
 	instance = this;
@@ -42,7 +42,7 @@ void SettingsScreen::SettingsScreen::start(){
 		if(instance->disableMainSelector && instance->selectedSetting == 1){
 			instance->brightnessSlider.moveSliderValue(value);
 			Settings.get().brightnessLevel = instance->brightnessSlider.getSliderValue();
-			LEDmatrix.setBrightness(instance->brightnessSlider.getSliderValue());
+			LEDmatrix.setBrightness((instance->brightnessSlider.getSliderValue() / 255) * 100);
 			matrixManager.clear(true);
 			matrixManager.push();
 			instance->draw();
@@ -81,7 +81,7 @@ void SettingsScreen::SettingsScreen::start(){
 			instance->disableMainSelector = !instance->disableMainSelector;
 			instance->draw();
 			instance->screen.commit();
-			if(instance->disableMainSelector) {
+			if(instance->disableMainSelector){
 				instance->playback->setVolume(instance->volumeSlider.getSliderValue());
 				instance->playback->resume();
 			}else{
@@ -90,8 +90,8 @@ void SettingsScreen::SettingsScreen::start(){
 		}else if(instance->selectedSetting == 1){
 			instance->brightnessSlider.toggle();
 			instance->disableMainSelector = !instance->disableMainSelector;
-			if(instance->disableMainSelector) {
-				LEDmatrix.setBrightness(instance->brightnessSlider.getSliderValue());
+			if(instance->disableMainSelector){
+				LEDmatrix.setBrightness((instance->brightnessSlider.getSliderValue() / 255) * 100);
 				matrixManager.clear(true);
 				matrixManager.push();
 			}else{
@@ -126,12 +126,12 @@ void SettingsScreen::SettingsScreen::draw(){
 	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1);
 
 	for(int i = 0; i < 2; i++){
-		if(!reinterpret_cast<SettingsElement *>(screenLayout.getChild(i))->isSelected()){
+		if(!reinterpret_cast<SettingsElement*>(screenLayout.getChild(i))->isSelected()){
 			screenLayout.getChild(i)->draw();
 		}
 	}
 	for(int i = 0; i < 2; i++){
-		if(reinterpret_cast<SettingsElement *>(screenLayout.getChild(i))->isSelected()){
+		if(reinterpret_cast<SettingsElement*>(screenLayout.getChild(i))->isSelected()){
 			screenLayout.getChild(i)->draw();
 		}
 	}
@@ -147,13 +147,13 @@ void SettingsScreen::SettingsScreen::pack(){
 
 void SettingsScreen::SettingsScreen::unpack(){
 	Context::unpack();
-	backgroundBuffer = static_cast<Color *>(ps_malloc(160 * 128 * 2));
+	backgroundBuffer = static_cast<Color*>(ps_malloc(160 * 128 * 2));
 	if(backgroundBuffer == nullptr){
 		Serial.println("SettingsScreen background unpack error");
 		return;
 	}
 	background.seek(0);
-	background.read(reinterpret_cast<uint8_t *>(backgroundBuffer), 160 * 128 * 2);
+	background.read(reinterpret_cast<uint8_t*>(backgroundBuffer), 160 * 128 * 2);
 
 }
 
