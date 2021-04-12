@@ -2,16 +2,8 @@
 #include <SD.h>
 #include <Loop/LoopManager.h>
 #include <JayD.hpp>
-#include <PerfMon.h>
 #include "MixScreen.h"
 #include "../SongList/SongList.h"
-#include <AudioLib/Effect.h>
-#include <AudioLib/VuInfoGenerator.h>
-
-#include <AudioLib/Effects/LowPass.h>
-#include <AudioLib/Effects/HighPass.h>
-#include <AudioLib/Effects/Reverb.h>
-#include <AudioLib/Effects/BitCrusher.h>
 
 MixScreen::MixScreen* MixScreen::MixScreen::instance = nullptr;
 

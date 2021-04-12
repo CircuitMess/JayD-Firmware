@@ -6,21 +6,12 @@
 #include "SongSeekBar.h"
 #include "SongName.h"
 #include "EffectElement.h"
-#include <AudioLib/SourceWAV.h>
-#include <AudioLib/EffectProcessor.h>
-#include <AudioLib/Mixer.h>
-#include <AudioLib/OutputI2S.h>
-#include <AudioLib/SpeedModifier.h>
-#include <unordered_map>
-#include <Input/InputJayD.h>
-#include <Util/Task.h>
+#include "MatrixPopUpPicker.h"
 #include <AudioLib/Systems/MixSystem.h>
 #include <Matrix/VuVisualizer.h>
 #include <Matrix/RoundVuVisualiser.h>
-#include "MatrixPopUpPicker.h"
+#include <Input/InputJayD.h>
 #include "../../InputKeys.h"
-
-
 
 namespace MixScreen {
 	class MixScreen : public Context, public LoopListener, public JayDInputListener, public InputListener {
