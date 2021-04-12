@@ -45,7 +45,7 @@ namespace MainMenu {
 
 		std::vector<MainMenuItem *> item;
 
-		int8_t itemNum = 0;
+		int8_t itemNum = 1;
 
 		fs::File backgroundPicture;
 		fs::File jayDlogo;

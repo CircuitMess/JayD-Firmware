@@ -60,11 +60,15 @@ void setup(){
 		Serial.println("couldn't start matrix");
 		for(;;);
 	}
+
+	Settings.begin();
+	LEDmatrix.setBrightness((Settings.get().brightnessLevel / 255) * 100);
+
+	Context::setDeleteOnPop(true);
+
 	LoopManager::addListener(&matrixManager);
 	LoopManager::addListener(new InputJayD());
 	InputJayD::getInstance()->begin();
-
-	Settings.begin();
 
 	if(!Settings.get().inputTested){
 		InputTest::InputTest* test = new InputTest::InputTest(display);

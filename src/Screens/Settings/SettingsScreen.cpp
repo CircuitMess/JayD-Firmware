@@ -7,8 +7,7 @@
 #include <JayD.hpp>
 #include <AudioLib/Systems/PlaybackSystem.h>
 
-
-SettingsScreen::SettingsScreen *SettingsScreen::SettingsScreen::instance = nullptr;
+SettingsScreen::SettingsScreen* SettingsScreen::SettingsScreen::instance = nullptr;
 
 SettingsScreen::SettingsScreen::SettingsScreen(Display &display) : Context(display), screenLayout(new LinearLayout(&screen, VERTICAL)),
 																   volumeSlider(new SliderElement(screenLayout, "Volume")), brightnessSlider(new SliderElement(screenLayout, "Brightness")),
@@ -46,7 +45,7 @@ void SettingsScreen::SettingsScreen::start(){
 		if(instance->disableMainSelector && instance->selectedSetting == 1){
 			instance->brightnessSlider->moveSliderValue(value);
 			Settings.get().brightnessLevel = instance->brightnessSlider->getSliderValue();
-			LEDmatrix.setBrightness(instance->brightnessSlider->getSliderValue());
+			LEDmatrix.setBrightness((instance->brightnessSlider->getSliderValue() / 255) * 100);
 			matrixManager.clear(true);
 			matrixManager.push();
 			instance->draw();
@@ -143,12 +142,13 @@ void SettingsScreen::SettingsScreen::stop(){
 }
 
 void SettingsScreen::SettingsScreen::draw(){
-	screenLayout->getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1);
-	screenLayout->getSprite()->setTextColor(TFT_WHITE);
-	screenLayout->getSprite()->setTextSize(1);
-	screenLayout->getSprite()->setTextFont(1);
-	screenLayout->getSprite()->setCursor(screenLayout->getTotalX() + 42, screenLayout->getTotalY() + 115);
-	screenLayout->getSprite()->println("Version 1.0");
+	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1);
+	screen.getSprite()->setTextColor(TFT_WHITE);
+	screen.getSprite()->setTextSize(1);
+	screen.getSprite()->setTextFont(1);
+	screen.getSprite()->setCursor(screenLayout->getTotalX() + 42, screenLayout->getTotalY() + 115);
+	screen.getSprite()->println("Version 1.0");
+
 	for(int i = 0; i < 4; i++){
 		if(!reinterpret_cast<SettingsElement *>(screenLayout->getChild(i))->isSelected()){
 			screenLayout->getChild(i)->draw();
@@ -171,13 +171,13 @@ void SettingsScreen::SettingsScreen::pack(){
 
 void SettingsScreen::SettingsScreen::unpack(){
 	Context::unpack();
-	backgroundBuffer = static_cast<Color *>(ps_malloc(160 * 128 * 2));
+	backgroundBuffer = static_cast<Color*>(ps_malloc(160 * 128 * 2));
 	if(backgroundBuffer == nullptr){
 		Serial.println("SettingsScreen background unpack error");
 		return;
 	}
 	background.seek(0);
-	background.read(reinterpret_cast<uint8_t *>(backgroundBuffer), 160 * 128 * 2);
+	background.read(reinterpret_cast<uint8_t*>(backgroundBuffer), 160 * 128 * 2);
 
 }
 
