@@ -72,7 +72,9 @@ void Playback::Playback::start(){
 	playOrPause->setPlaying(false);
 	draw();
 	screen.commit();
-
+	uint8_t potMidVal = InputJayD::getInstance()->getPotValue(POT_MID);
+	matrixManager.matrixMid.vu(potMidVal);
+	matrixManager.matrixMid.push();
 	InputJayD::getInstance()->setBtnPressCallback(BTN_MID, [](){
 		if(instance == nullptr) return;
 		if(instance->playing){
@@ -97,18 +99,21 @@ void Playback::Playback::start(){
 		}
 	});
 
-	InputJayD::getInstance()->setPotMovedCallback(POT_L, [](uint8_t value){
+	InputJayD::getInstance()->setPotMovedCallback(POT_MID, [](uint8_t value){
 		if(instance && instance->system){
 			instance->system->setVolume(value);
+			matrixManager.matrixMid.vu(value);
+			matrixManager.matrixMid.push();
 		}
 	});
 
 	system = new PlaybackSystem(file);
-	system->setVolume(InputJayD::getInstance()->getPotValue(POT_L));
+	system->setVolume(InputJayD::getInstance()->getPotValue(POT_MID));
 	system->start();
 	system->pause();
 
 	playOrPause->setPlaying(false);
+	trackCount->setTotalDuration(system->getDuration());
 
 	LoopManager::addListener(this);
 	lastDraw = 0;
@@ -117,6 +122,8 @@ void Playback::Playback::start(){
 void Playback::Playback::stop(){
 	InputJayD::getInstance()->removeBtnPressCallback(BTN_L1);
 	InputJayD::getInstance()->removeEncoderMovedCallback(ENC_L1);
+	InputJayD::getInstance()->removePotMovedCallback(POT_MID);
+
 	LoopManager::removeListener(this);
 
 	if(system){
