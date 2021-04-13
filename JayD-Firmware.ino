@@ -9,6 +9,7 @@
 #include <Loop/LoopManager.h>
 #include "src/Screens/IntroScreen/IntroScreen.h"
 #include "src/Screens/InputTest/InputTest.h"
+#include "src/InputKeys.h"
 #include <Input/InputJayD.h>
 #include <WiFi.h>
 #include <SD.h>
@@ -66,9 +67,12 @@ void setup(){
 
 	Context::setDeleteOnPop(true);
 
+	LoopManager::addListener(&Sched);
 	LoopManager::addListener(&matrixManager);
 	LoopManager::addListener(new InputJayD());
 	InputJayD::getInstance()->begin();
+	InputJayD::getInstance()->addListener(&Input);
+	LoopManager::addListener(&Input);
 
 	if(Settings.get().inputTested){
 		InputTest::InputTest* test = new InputTest::InputTest(display);
@@ -89,7 +93,6 @@ void setup(){
 	}
 
 	digitalWrite(blPin, LOW);
-	LoopManager::addListener(&Sched);
 }
 
 void loop(){

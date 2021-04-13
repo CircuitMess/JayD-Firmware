@@ -15,16 +15,13 @@ Playback::Playback::Playback(Display& display) : Context(display), screenLayout(
 												 trackCount(new TrackCounter(timeElapsedLayout)){
 
 
-	background = CompressedFile::open(SPIFFS.open("/playbackBackground.raw.hs"), 10, 9);
-
 	instance = this;
 	buildUI();
 
-	pack();
+	Playback::pack();
 }
 
 Playback::Playback::~Playback(){
-	background.close();
 	instance = nullptr;
 	free(backgroundBuffer);
 }
@@ -70,22 +67,26 @@ void Playback::Playback::start(){
 	trackCount->setTotalDuration(0);
 	trackCount->setCurrentDuration(0);
 	playOrPause->setPlaying(false);
+
 	draw();
 	screen.commit();
+
 	uint8_t potMidVal = InputJayD::getInstance()->getPotValue(POT_MID);
 	matrixManager.matrixMid.vu(potMidVal);
 	matrixManager.matrixMid.push();
+
 	InputJayD::getInstance()->setBtnPressCallback(BTN_MID, [](){
 		if(instance == nullptr) return;
 		if(instance->playing){
-			instance->system->pause();
+			instance->system->stop();
 			instance->playing = false;
 		}else{
-			instance->system->resume();
+			instance->system->start();
 			instance->playing = true;
 		}
 
 		instance->playOrPause->setPlaying(instance->playing);
+
 
 		instance->draw();
 		instance->screen.commit();
@@ -109,11 +110,6 @@ void Playback::Playback::start(){
 
 	system = new PlaybackSystem(file);
 	system->setVolume(InputJayD::getInstance()->getPotValue(POT_MID));
-	system->start();
-	system->pause();
-
-	playOrPause->setPlaying(false);
-	trackCount->setTotalDuration(system->getDuration());
 
 	LoopManager::addListener(this);
 	lastDraw = 0;
@@ -183,12 +179,15 @@ void Playback::Playback::pack(){
 
 void Playback::Playback::unpack(){
 	Context::unpack();
+
 	backgroundBuffer = static_cast<Color *>(ps_malloc(160 * 128 * 2));
 	if(backgroundBuffer == nullptr){
 		Serial.println("Playback background unpack error");
 		return;
 	}
-	background.seek(0);
-	background.read(reinterpret_cast<uint8_t *>(backgroundBuffer), 160 * 128 * 2);
+
+	fs::File bgFile = CompressedFile::open(SPIFFS.open("/playbackBackground.raw.hs"), 10, 9);
+	bgFile.read(reinterpret_cast<uint8_t *>(backgroundBuffer), 160 * 128 * 2);
+	bgFile.close();
 }
 

@@ -6,39 +6,40 @@
 #include "SongSeekBar.h"
 #include "SongName.h"
 #include "EffectElement.h"
-#include <AudioLib/SourceWAV.h>
-#include <AudioLib/EffectProcessor.h>
-#include <AudioLib/Mixer.h>
-#include <AudioLib/OutputI2S.h>
-#include <AudioLib/SpeedModifier.h>
-#include <unordered_map>
-#include <Input/InputJayD.h>
-#include <Util/Task.h>
+#include "MatrixPopUpPicker.h"
 #include <AudioLib/Systems/MixSystem.h>
 #include <Matrix/VuVisualizer.h>
 #include <Matrix/RoundVuVisualiser.h>
+#include <Input/InputJayD.h>
+#include "../../InputKeys.h"
+
 namespace MixScreen {
-	class MixScreen : public Context, public LoopListener, public JayDInputListener {
+	class MixScreen : public Context, public LoopListener, public JayDInputListener, public InputListener {
+		friend MatrixPopUpPicker;
 	public:
 
-		MixScreen(Display &display);
+		MixScreen(Display& display);
 
 		void start();
 
 		void stop();
 
 		void draw();
+
 		void returned(void* data) override;
 
 		void loop(uint micros) override;
 
 		virtual ~MixScreen();
+		void pack() override;
+		void unpack() override;
 
 	private:
-		static MixScreen *instance;
+		static MixScreen* instance;
 
 		fs::File f1;
 		fs::File f2;
+		Color *selectedBackgroundBuffer = nullptr;
 		MixSystem* system = nullptr;
 
 		LinearLayout* screenLayout;
@@ -51,27 +52,31 @@ namespace MixScreen {
 		SongName* leftSongName;
 		SongName* rightSongName;
 
-		EffectElement* effectElements[6] = { nullptr };
-
-		bool isPlaying = false;
+		EffectElement* effectElements[6] = {nullptr};
 
 		void buildUI();
 
-
-		void buttonPress(uint8_t id) override;
-		void buttonRelease(uint8_t id) override;
-		void buttonHold(uint8_t id) override;
-		void encoderMove(uint8_t id, int8_t value) override;
-		void potMove(uint8_t id, uint8_t value) override;
-
-		static const std::unordered_map<uint8_t, uint8_t> mapBtn;
-		static const std::unordered_map<uint8_t, uint8_t> mapEnc;
+		uint8_t selectedChannel = 0;
+		bool isRecording = false;
 
 		uint32_t lastDraw = 0;
 
 		VuVisualizer leftVu;
 		VuVisualizer rightVu;
 		RoundVuVisualiser midVu;
+
+		void startBigVu();
+
+		void potMove(uint8_t id, uint8_t value) override;
+
+		void encTwoBot() override;
+		void encFour() override;
+		void btnCombination() override;
+		void btn(uint8_t i) override;
+		void btnEnc(uint8_t i) override;
+		void enc(uint8_t id, int8_t value) override;
+		void encBtnHold(uint8_t i) override;
+
 	};
 }
 

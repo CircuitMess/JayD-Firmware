@@ -39,11 +39,11 @@ namespace MixScreen {
 
 		void setupGif();
 
-		static const String iconsNotMirrored[EffectType::COUNT];
-		static const String iconsMirrored[EffectType::COUNT];
-		static const String gifIcons[EffectType::COUNT];
+		static const char* const iconsNotMirrored[EffectType::COUNT];
+		static const char* const iconsMirrored[EffectType::COUNT];
+		static const char* const gifIcons[EffectType::COUNT];
 
-		Color *bufferIcons= nullptr;
+		Color *icon= nullptr;
 	};
 
 }

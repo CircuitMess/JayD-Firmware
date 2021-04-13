@@ -36,11 +36,9 @@ namespace SongList {
 
 		int selectedElement = 0;
 
-		fs::File background;
 		Color *backgroundBuffer = nullptr;
 
 		std::vector<ListItem *> songs;
-		std::vector<Element*> listTemp;
 
 		void buildUI();
 
@@ -48,6 +46,7 @@ namespace SongList {
 
 		void searchDirectories(File file);
 
+		bool isOpened = false;
 		bool insertedSD = false;
 
 		uint32_t prevSDCheck = 0;

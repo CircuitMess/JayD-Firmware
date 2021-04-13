@@ -9,33 +9,17 @@
 SongList::SongList *SongList::SongList::instance = nullptr;
 
 SongList::SongList::SongList(Display &display) : Context(display){
-
 	instance = this;
 
 	scrollLayout = new ScrollLayout(&getScreen());
 	list = new LinearLayout(scrollLayout, VERTICAL);
 
-	fs::File file = SPIFFS.open("/SongListBackground.raw.hs");
-
-	background = CompressedFile::open(file, 10, 9);
-
 	buildUI();
-	pack();
-
-	SD.end();
-	insertedSD = SD.begin(22, SPI);
-
-	if(insertedSD){
-		populateList();
-		if(!songs.empty()){
-			songs[selectedElement]->setSelected(true);
-		}
-	}
+	SongList::pack();
 }
 
 SongList::SongList::~SongList(){
 	instance = nullptr;
-	background.close();
 	free(backgroundBuffer);
 }
 
@@ -100,10 +84,8 @@ void SongList::SongList::loop(uint t){
 					selectedElement = 0;
 					songs[selectedElement]->setSelected(true);
 				}
-				//scrollLayout->setY(18);
 				scrollLayout->scrollIntoView(selectedElement, 2);
 			}
-
 			draw();
 			screen.commit();
 		}
@@ -148,15 +130,26 @@ void SongList::SongList::start(){
 		instance->pop(new String(instance->songs[instance->selectedElement]->getName()));
 	});
 
+	SD.end();
+	insertedSD = SD.begin(22, SPI);
+	if(insertedSD){
+		populateList();
+		if(!songs.empty()){
+			songs[selectedElement]->setSelected(true);
+		}
+	}
+
 	LoopManager::addListener(this);
+
+	isOpened = false;
 
 	draw();
 	screen.commit();
 }
 
 void SongList::SongList::stop(){
-	InputJayD::getInstance()->removeEncoderMovedCallback(ENC_L1);
-	InputJayD::getInstance()->removeBtnPressCallback(BTN_L1);
+	InputJayD::getInstance()->removeEncoderMovedCallback(ENC_MID);
+	InputJayD::getInstance()->removeBtnPressCallback(BTN_MID);
 	LoopManager::removeListener(this);
 }
 
@@ -172,22 +165,26 @@ void SongList::SongList::draw(){
 
 	canvas->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1);
 
+	u8f.setCursor((160 - u8f.getUTF8Width("SD card"))/2, 15);
+	u8f.printf("SD card");
+
+	if(isOpened){
+		u8f.setCursor((160 - u8f.getUTF8Width("Loading..."))/2, 65);
+		u8f.printf("Loading...");
+		return;
+	}
+
 	if(!insertedSD){
-		u8f.setCursor(30, 65);
+		u8f.setCursor((160 - u8f.getUTF8Width("Not inserted!"))/2, 65);
 		u8f.printf("Not inserted!");
 
 	}else if(songs.empty()){
-		u8f.setCursor(54, 65);
+		u8f.setCursor((160 - u8f.getUTF8Width("Empty!"))/2, 65);
 		u8f.printf("Empty!");
 
 	}else{
 		screen.draw();
 	}
-
-	//canvas->fillRect(0, 0, 160, 18, TFT_LIGHTGREY);
-
-	u8f.setCursor(50, 15);
-	u8f.printf("SD card");
 
 }
 
@@ -223,10 +220,14 @@ void SongList::SongList::pack(){
 void SongList::SongList::unpack(){
 	Context::unpack();
 
+	isOpened = true;
+
 	backgroundBuffer = static_cast<Color *>(ps_malloc(160 * 128 * 2));
 	if(backgroundBuffer == nullptr){
-		Serial.println("Error");
+		Serial.println("SongList bg buffer error");
 	}
-	background.seek(0);
-	background.read(reinterpret_cast<uint8_t *>(backgroundBuffer), 160 * 128 * 2);
+
+	fs::File bgFile = CompressedFile::open(SPIFFS.open("/SongListBackground.raw.hs"), 10, 9);
+	bgFile.read(reinterpret_cast<uint8_t *>(backgroundBuffer), 160 * 128 * 2);
+	bgFile.close();
 }

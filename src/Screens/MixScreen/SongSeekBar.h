@@ -11,6 +11,7 @@ namespace MixScreen {
 		virtual ~SongSeekBar();
 
 		void setPlaying(bool playing);
+		bool isPlaying() const;
 
 		void draw();
 
@@ -26,7 +27,7 @@ namespace MixScreen {
 		int currentDuration = 0;
 		float movingCursor=0;
 
-		Color *buffer[2] = { nullptr };
+		Color *playPause[2] = { nullptr };
 	};
 
 }
