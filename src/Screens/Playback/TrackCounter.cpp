@@ -44,5 +44,9 @@ int Playback::TrackCounter::getCurrentDuration() const{
 	return currentDuration;
 }
 
+int Playback::TrackCounter::getTotalDuration() const {
+	return totalDuration;
+}
+
 
 
