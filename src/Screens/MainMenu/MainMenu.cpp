@@ -69,12 +69,15 @@ void MainMenu::MainMenu::start(){
 	});
 
 	matrixManager.startRandom();
+	LoopManager::addListener(this);
+
+	itemNum = 1;
+	items[1]->isSelected(true);
 
 	jumpTime = 0;
+
 	draw();
 	screen.commit();
-
-	LoopManager::addListener(this);
 }
 
 void MainMenu::MainMenu::stop(){
@@ -155,5 +158,4 @@ void MainMenu::MainMenu::unpack(){
 	}
 	screenLayout->reflow();
 	screenLayout->repos();
-	items[1]->isSelected(true);
 }
