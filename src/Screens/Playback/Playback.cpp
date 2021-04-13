@@ -37,6 +37,11 @@ void Playback::Playback::loop(uint micros){
 		trackCount->setCurrentDuration(system->getElapsed());
 	}
 
+	if(system->getDuration() != trackCount->getTotalDuration()){
+		update = true;
+		trackCount->setTotalDuration(system->getDuration());
+	}
+
 	uint32_t currentTime = millis();
 	if((update || drawQueued) && (currentTime - lastDraw) >= 100){
 		drawQueued = false;
@@ -70,15 +75,12 @@ void Playback::Playback::start(){
 
 	InputJayD::getInstance()->setBtnPressCallback(BTN_MID, [](){
 		if(instance == nullptr) return;
-
 		if(instance->playing){
 			instance->system->pause();
 			instance->playing = false;
-			LoopManager::removeListener(instance);
 		}else{
 			instance->system->resume();
 			instance->playing = true;
-			LoopManager::addListener(instance);
 		}
 
 		instance->playOrPause->setPlaying(instance->playing);
@@ -89,6 +91,10 @@ void Playback::Playback::start(){
 
 	InputJayD::getInstance()->setEncoderMovedCallback(ENC_MID, [](int8_t value){
 		if(instance == nullptr) return;
+		uint16_t seekTime = max(0, instance->trackCount->getCurrentDuration() + value);
+		if(seekTime >= 0 && seekTime <= instance->trackCount->getTotalDuration() ) {
+			instance->system->seek(seekTime);
+		}
 	});
 
 	InputJayD::getInstance()->setPotMovedCallback(POT_L, [](uint8_t value){
@@ -100,9 +106,9 @@ void Playback::Playback::start(){
 	system = new PlaybackSystem(file);
 	system->setVolume(InputJayD::getInstance()->getPotValue(POT_L));
 	system->start();
+	system->pause();
 
-	playOrPause->setPlaying(true);
-	trackCount->setTotalDuration(system->getDuration());
+	playOrPause->setPlaying(false);
 
 	LoopManager::addListener(this);
 	lastDraw = 0;
@@ -111,7 +117,7 @@ void Playback::Playback::start(){
 void Playback::Playback::stop(){
 	InputJayD::getInstance()->removeBtnPressCallback(BTN_L1);
 	InputJayD::getInstance()->removeEncoderMovedCallback(ENC_L1);
-
+	LoopManager::removeListener(this);
 
 	if(system){
 		system->stop();
