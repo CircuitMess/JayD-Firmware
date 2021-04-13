@@ -67,22 +67,26 @@ void Playback::Playback::start(){
 	trackCount->setTotalDuration(0);
 	trackCount->setCurrentDuration(0);
 	playOrPause->setPlaying(false);
+
 	draw();
 	screen.commit();
+
 	uint8_t potMidVal = InputJayD::getInstance()->getPotValue(POT_MID);
 	matrixManager.matrixMid.vu(potMidVal);
 	matrixManager.matrixMid.push();
+
 	InputJayD::getInstance()->setBtnPressCallback(BTN_MID, [](){
 		if(instance == nullptr) return;
 		if(instance->playing){
-			instance->system->pause();
+			instance->system->stop();
 			instance->playing = false;
 		}else{
-			instance->system->resume();
+			instance->system->start();
 			instance->playing = true;
 		}
 
 		instance->playOrPause->setPlaying(instance->playing);
+
 
 		instance->draw();
 		instance->screen.commit();
@@ -106,11 +110,6 @@ void Playback::Playback::start(){
 
 	system = new PlaybackSystem(file);
 	system->setVolume(InputJayD::getInstance()->getPotValue(POT_MID));
-	system->start();
-	system->pause();
-
-	playOrPause->setPlaying(false);
-	trackCount->setTotalDuration(system->getDuration());
 
 	LoopManager::addListener(this);
 	lastDraw = 0;
