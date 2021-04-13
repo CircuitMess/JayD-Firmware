@@ -215,16 +215,16 @@ bool HardwareTest::SPIFFSTest(){
 
 	uint16_t idx = 0;
 
-	while(files->name == "end"){
+	while(files[idx].sum != 0){
 
 		if(!SPIFFS.exists(files[idx].name)){
-			test->log("File name error",files[idx].name);
+			test->log("File name error",files[idx].name.substring(1));
 			return false;
 		}
 		file = SPIFFS.open(files[idx].name);
 
 		if(!file){
-			test->log("File open error",files[idx].name);
+			test->log("File open error",files[idx].name.substring(1));
 			return false;
 		}
 
@@ -236,17 +236,17 @@ bool HardwareTest::SPIFFSTest(){
 			fileBytesSum+=buff;
 		}
 
-		if(fileBytesSum == files[idx].sum){
+		if(fileBytesSum != files[idx].sum){
 			test->log("File size error",files[idx].sum);
 			return false;
 		}
 
 		idx++;
+		file.close();
 	}
 
 	SPIFFS.end();
 
-	test->log("End","Test successful");
 	return true;
 }
 
