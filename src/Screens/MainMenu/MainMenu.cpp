@@ -8,9 +8,9 @@
 #include <FS/CompressedFile.h>
 #include <SPIFFS.h>
 
-MainMenu::MainMenu *MainMenu::MainMenu::instance = nullptr;
+MainMenu::MainMenu* MainMenu::MainMenu::instance = nullptr;
 
-MainMenu::MainMenu::MainMenu(Display &display) : Context(display), screenLayout(new LinearLayout(&screen, HORIZONTAL)){
+MainMenu::MainMenu::MainMenu(Display& display) : Context(display), screenLayout(new LinearLayout(&screen, HORIZONTAL)){
 	for(int i = 0; i < 3; i++){
 		item.push_back(new MainMenuItem(screenLayout, static_cast<MenuItemType>(i)));
 	}
@@ -48,7 +48,7 @@ void MainMenu::MainMenu::start(){
 		if(instance->itemNum == newSelected) return;
 		instance->itemNum = newSelected;
 
-		for(MainMenuItem *i : instance->item){
+		for(MainMenuItem* i : instance->item){
 			i->isSelected(false);
 		}
 		instance->item[instance->itemNum]->isSelected(true);
@@ -60,15 +60,19 @@ void MainMenu::MainMenu::start(){
 	InputJayD::getInstance()->setBtnPressCallback(BTN_MID, [](){
 		if(instance == nullptr) return;
 
-		Display &display = *instance->getScreen().getDisplay();
+		Display& display = *instance->getScreen().getDisplay();
 		int8_t selected = instance->itemNum;
 
 		if(selected == 0){
 			Playback::Playback* playback = new Playback::Playback(display);
-			playback->push(instance);
+			SongList::SongList* songList = new SongList::SongList(display);
+			songList->push(instance);
+			songList->setParent(playback);
 		}else if(selected == 1){
 			MixScreen::MixScreen* mix = new MixScreen::MixScreen(display);
-			mix->push(instance);
+			SongList::SongList* songList = new SongList::SongList(display);
+			songList->push(instance);
+			songList->setParent(mix);
 		}else if(selected == 2){
 			SettingsScreen::SettingsScreen* settings = new SettingsScreen::SettingsScreen(display);
 			settings->push(instance);
@@ -93,7 +97,7 @@ void MainMenu::MainMenu::stop(){
 
 void MainMenu::MainMenu::draw(){
 	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1);
-	screen.getSprite()->drawIcon(logoBuffer,screen.getTotalX()+48 + sin((float) jumpTime / 500000.0f) * 20,screen.getTotalY()+8,64,24,1);
+	screen.getSprite()->drawIcon(logoBuffer, screen.getTotalX() + 48 + sin((float) jumpTime / 500000.0f) * 20, screen.getTotalY() + 8, 64, 24, 1);
 	screen.draw();
 
 }
@@ -125,26 +129,26 @@ void MainMenu::MainMenu::pack(){
 	free(backgroundBuffer);
 	free(logoBuffer);
 	backgroundBuffer = nullptr;
-	logoBuffer= nullptr;
+	logoBuffer = nullptr;
 }
 
 void MainMenu::MainMenu::unpack(){
 	Context::unpack();
-	backgroundBuffer = static_cast<Color *>(ps_malloc(160 * 128 * 2));
+	backgroundBuffer = static_cast<Color*>(ps_malloc(160 * 128 * 2));
 	if(backgroundBuffer == nullptr){
 		Serial.println("MainMenu background picture unpack error");
 		return;
 	}
 
 	backgroundPicture.seek(0);
-	backgroundPicture.read(reinterpret_cast<uint8_t *>(backgroundBuffer), (160 * 128 * 2));
+	backgroundPicture.read(reinterpret_cast<uint8_t*>(backgroundBuffer), (160 * 128 * 2));
 
-	logoBuffer = static_cast<Color *>(ps_malloc(45 * 42 * 2));
+	logoBuffer = static_cast<Color*>(ps_malloc(45 * 42 * 2));
 	if(logoBuffer == nullptr){
 		Serial.println("MainMenu background picture unpack error");
 		return;
 	}
 
 	jayDlogo.seek(0);
-	jayDlogo.read(reinterpret_cast<uint8_t *>(logoBuffer), (45 * 42 * 2));
+	jayDlogo.read(reinterpret_cast<uint8_t*>(logoBuffer), (45 * 42 * 2));
 }
