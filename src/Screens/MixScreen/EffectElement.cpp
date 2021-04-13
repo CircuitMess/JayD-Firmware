@@ -8,7 +8,7 @@ const String MixScreen::EffectElement::iconsNotMirrored[] = {"/noEffectRed.raw",
 const String MixScreen::EffectElement::iconsMirrored[] = {"/noEffectBlue.raw", "/speedBlue.raw", "/lowpassBlue.raw", "/highpassBlue.raw", "/reverbBlue.raw", "/bitcrusherBlue.raw"};
 const String MixScreen::EffectElement::gifIcons[] = {"/noEffect.g565", "/speed.g565", "/lowpass.g565", "/highpass.g565", "/reverb.g565", "/bitcrusher.g565"};
 
-MixScreen::EffectElement::EffectElement(ElementContainer *parent, bool mirrored) : CustomElement(parent, 10, 10), mirrored(mirrored){
+MixScreen::EffectElement::EffectElement(ElementContainer* parent, bool mirrored) : CustomElement(parent, 10, 10), mirrored(mirrored){
 
 	setType(NONE);
 
@@ -25,7 +25,7 @@ void MixScreen::EffectElement::setupGif(){
 	gif->setMaskingColor(TFT_BLACK);
 	gif->setLoop(true);
 	gif->nextFrame();
-	gif->setXY(getTotalX() + 61 * mirrored, getTotalY() + 25);
+	gif->setXY(!mirrored ? getTotalX() + 2 : getTotalX() + 58, getTotalY() + 22);
 }
 
 void MixScreen::EffectElement::draw(){
@@ -36,18 +36,18 @@ void MixScreen::EffectElement::draw(){
 		gif->push();
 
 	}else{
-		getSprite()->drawIcon(bufferIcons, getTotalX() + 61 * mirrored, getTotalY() + 25, 16, 16, 1, TFT_BLACK);
+		getSprite()->drawIcon(bufferIcons, !mirrored ? getTotalX() + 2 : getTotalX() + 58, getTotalY() + 22, 16, 16, 1, TFT_BLACK);
 	}
 
 
-	getSprite()->fillRoundRect(getTotalX() + 6 + 19 * !mirrored, getTotalY() + 30, (((float) intensity) / 255.0f) * 45.0f, 8, 3, TFT_GREENYELLOW);
-	getSprite()->drawRoundRect(getTotalX() + 6 + 19 * !mirrored, getTotalY() + 30, 45, 8, 3, TFT_WHITE);
+	getSprite()->fillRoundRect(getTotalX() + 6 + 19 * !mirrored, getTotalY() + 27, (((float) intensity) / 255.0f) * 45.0f, 8, 3, TFT_GREENYELLOW);
+	getSprite()->drawRoundRect(getTotalX() + 6 + 19 * !mirrored, getTotalY() + 27, 45, 8, 3, TFT_WHITE);
 }
 
 void MixScreen::EffectElement::repos(){
 	CustomElement::repos();
 	if(gif != nullptr){
-		gif->setXY(getTotalX() + 61 * mirrored, getTotalY() + 25);
+		gif->setXY(!mirrored ? getTotalX() + 2 : getTotalX() + 58, getTotalY() + 22);
 	}
 }
 
@@ -56,13 +56,13 @@ void MixScreen::EffectElement::setType(EffectType effect){
 
 	fs::File iconsFile = SPIFFS.open(mirrored ? iconsMirrored[effect] : iconsNotMirrored[effect]);
 
-	bufferIcons = static_cast<Color *>(ps_malloc(16 * 16 * 2));
+	bufferIcons = static_cast<Color*>(ps_malloc(16 * 16 * 2));
 	if(bufferIcons == nullptr){
 		Serial.println("EffectIcon pictures unpack error");
 		return;
 	}
 	iconsFile.seek(0);
-	iconsFile.read(reinterpret_cast<uint8_t *>(bufferIcons), 16 * 16 * 2);
+	iconsFile.read(reinterpret_cast<uint8_t*>(bufferIcons), 16 * 16 * 2);
 
 	delete gif;
 	gif = new AnimatedSprite(getSprite(), SPIFFS.open(gifIcons[effect]));

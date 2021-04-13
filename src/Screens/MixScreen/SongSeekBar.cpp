@@ -36,24 +36,24 @@ void MixScreen::SongSeekBar::draw(){
 	getSprite()->setTextSize(1);
 	getSprite()->setTextFont(1);
 
-	getSprite()->drawIcon(buffer[playing], getTotalX() + 35, getTotalY() + 26, 5, 6, 1, TFT_BLACK);
+	getSprite()->drawIcon(buffer[playing], getTotalX() + 37, getTotalY() + 26, 5, 6, 1, TFT_BLACK);
 
-	getSprite()->setCursor(getTotalX(), getTotalY() + 25);
+	getSprite()->setCursor(getTotalX()+2, getTotalY() + 25);
 	getSprite()->printf("%02d:%02d", currentDuration / 60, currentDuration - (currentDuration / 60) * 60);
-	getSprite()->setCursor(getTotalX() + 45, getTotalY() + 25);
+	getSprite()->setCursor(getTotalX() + 47, getTotalY() + 25);
 	getSprite()->printf("%02d:%02d", totalDuration / 60, totalDuration - (totalDuration / 60) * 60);
 
-	getSprite()->fillRoundRect(getTotalX() + 2, getTotalY() + 40, 72, 10, 2, TFT_BLACK);
-	getSprite()->fillRect(getTotalX() + 2, getTotalY() + 44, 72, 2, C_RGB(4, 211, 35));
-	getSprite()->drawRoundRect(getTotalX() + 2, getTotalY() + 40, 72, 10, 2, TFT_WHITE);
+	getSprite()->fillRoundRect(getTotalX() + 3, getTotalY() + 40, 72, 10, 2, TFT_BLACK);
+	getSprite()->fillRect(getTotalX() + 3, getTotalY() + 44, 72, 2, C_RGB(4, 211, 35));
+	getSprite()->drawRoundRect(getTotalX() + 3, getTotalY() + 40, 72, 10, 2, TFT_WHITE);
 	if(currentDuration==0){
 		movingCursor=0;
 	}else{
 		movingCursor=((float) currentDuration / (float) totalDuration) * 66.0f;
 	}
-	getSprite()->fillRect(getTotalX()+3 + movingCursor, getTotalY() + 41, 4,
+	getSprite()->fillRect(getTotalX()+4 + movingCursor, getTotalY() + 41, 4,
 						  8, TFT_WHITE);
-	getSprite()->drawRect(getTotalX()+3 + movingCursor, getTotalY() + 41, 4,
+	getSprite()->drawRect(getTotalX()+4 + movingCursor, getTotalY() + 41, 4,
 						  8, TFT_BLACK);
 
 }
