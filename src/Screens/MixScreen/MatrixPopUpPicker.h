@@ -26,6 +26,7 @@ namespace MixScreen {
 		void unpack() override;
 
 		void loop(uint micros) override;
+		void pack() override;
 
 
 	private:
@@ -33,7 +34,7 @@ namespace MixScreen {
 
 		LinearLayout screenLayout;
 
-		GIFAnimatedSprite* matrixGif = nullptr;
+		GIFAnimatedSprite* gif = nullptr;
 
 		int8_t bigMatrixNumber = 2;
 

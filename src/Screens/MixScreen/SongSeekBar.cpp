@@ -3,27 +3,28 @@
 #include <SPIFFS.h>
 
 MixScreen::SongSeekBar::SongSeekBar(ElementContainer *parent) : CustomElement(parent, 10, 10){
-
-	fs::File picture[2]={
-			SPIFFS.open("/pause_dj.raw"),
-			SPIFFS.open("/play_dj.raw")
+	const char* const playPausePaths[] = {
+			"/pause_dj.raw",
+			"/play_dj.raw"
 	};
-	for(int i=0;i<2;i++){
 
-		buffer[i] = static_cast<Color *>(ps_malloc(5*6*2));
-		if(buffer[i] == nullptr){
+	for(int i = 0; i < 2; i++){
+		playPause[i] = static_cast<Color*>(ps_malloc(5 * 6 * 2));
+		if(playPause[i] == nullptr){
 			Serial.println("SongSeekBar picture unpack error");
 			return;
 		}
-		picture[i].seek(0);
-		picture[i].read(reinterpret_cast<uint8_t *>(buffer[i]), (5*6*2));
+
+		fs::File iconFile = SPIFFS.open(playPausePaths[i]);
+		iconFile.read(reinterpret_cast<uint8_t*>(playPause[i]), (5 * 6 * 2));
+		iconFile.close();
 	}
 }
 
 
 MixScreen::SongSeekBar::~SongSeekBar(){
 	for(int i = 0; i < 2; i++){
-		free(buffer[i]);
+		free(playPause[i]);
 	}
 }
 
@@ -36,7 +37,7 @@ void MixScreen::SongSeekBar::draw(){
 	getSprite()->setTextSize(1);
 	getSprite()->setTextFont(1);
 
-	getSprite()->drawIcon(buffer[playing], getTotalX() + 37, getTotalY() + 26, 5, 6, 1, TFT_BLACK);
+	getSprite()->drawIcon(playPause[playing], getTotalX() + 37, getTotalY() + 26, 5, 6, 1, TFT_BLACK);
 
 	getSprite()->setCursor(getTotalX()+2, getTotalY() + 25);
 	getSprite()->printf("%02d:%02d", currentDuration / 60, currentDuration - (currentDuration / 60) * 60);

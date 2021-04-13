@@ -35,6 +35,10 @@ namespace MainMenu {
 
 		uint32_t startMicros = 0;
 
+		static const char* const gifIcons[3];
+		static const char* const icons[3];
+		static const char* const texts[3];
+
 	};
 }
 #endif //JAYD_FIRMWARE_MAINMENUITEM_H

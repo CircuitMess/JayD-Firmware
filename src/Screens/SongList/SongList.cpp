@@ -9,25 +9,17 @@
 SongList::SongList *SongList::SongList::instance = nullptr;
 
 SongList::SongList::SongList(Display &display) : Context(display){
-
 	instance = this;
 
 	scrollLayout = new ScrollLayout(&getScreen());
 	list = new LinearLayout(scrollLayout, VERTICAL);
 
-	fs::File file = SPIFFS.open("/SongListBackground.raw.hs");
-
-	background = CompressedFile::open(file, 10, 9);
-
 	buildUI();
-	pack();
-
-	isOpened = true;
+	SongList::pack();
 }
 
 SongList::SongList::~SongList(){
 	instance = nullptr;
-	background.close();
 	free(backgroundBuffer);
 }
 
@@ -228,10 +220,14 @@ void SongList::SongList::pack(){
 void SongList::SongList::unpack(){
 	Context::unpack();
 
+	isOpened = true;
+
 	backgroundBuffer = static_cast<Color *>(ps_malloc(160 * 128 * 2));
 	if(backgroundBuffer == nullptr){
-		Serial.println("Error");
+		Serial.println("SongList bg buffer error");
 	}
-	background.seek(0);
-	background.read(reinterpret_cast<uint8_t *>(backgroundBuffer), 160 * 128 * 2);
+
+	fs::File bgFile = CompressedFile::open(SPIFFS.open("/SongListBackground.raw.hs"), 10, 9);
+	bgFile.read(reinterpret_cast<uint8_t *>(backgroundBuffer), 160 * 128 * 2);
+	bgFile.close();
 }

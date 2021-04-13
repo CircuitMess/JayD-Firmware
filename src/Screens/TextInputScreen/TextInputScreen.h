@@ -36,8 +36,6 @@ namespace TextInputScreen {
 
 		int selectedIndex = 0;
 
-		fs::File background;
-
 		Color* backgroundBuffer= nullptr;
 	};
 }

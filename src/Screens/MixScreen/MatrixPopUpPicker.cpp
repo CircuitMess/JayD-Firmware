@@ -17,7 +17,8 @@ MixScreen::MatrixPopUpPicker::MatrixPopUpPicker(Context& context) : Modal(contex
 }
 
 MixScreen::MatrixPopUpPicker::~MatrixPopUpPicker(){
-
+	delete gif;
+	instance = nullptr;
 }
 
 void MixScreen::MatrixPopUpPicker::btnEnc(uint8_t i){
@@ -63,6 +64,10 @@ void MixScreen::MatrixPopUpPicker::stop(){
 	LoopManager::removeListener(this);
 }
 
+void MixScreen::MatrixPopUpPicker::pack(){
+	Context::pack();
+	delete gif;
+}
 
 void MixScreen::MatrixPopUpPicker::unpack(){
 	Context::unpack();
@@ -78,7 +83,7 @@ void MixScreen::MatrixPopUpPicker::draw(){
 	screen.getSprite()->setTextFont(1);
 	screen.getSprite()->setCursor(screen.getTotalX()+25 , screen.getTotalY()+2);
 	screen.getSprite()->println("Choose an    animation mode");
-	matrixGif->push();
+	gif->push();
 
 	screen.getSprite()->fillTriangle(screen.getTotalX() + 88, screen.getTotalY() + 54, screen.getTotalX() + 97,
 									 screen.getTotalY() + 50,
@@ -102,22 +107,26 @@ void MixScreen::MatrixPopUpPicker::buildUI(){
 }
 
 void MixScreen::MatrixPopUpPicker::openGif(uint8_t gifNum){
-	delete matrixGif;
-	char bufferGif[25];
-	sprintf(bufferGif, "/matrixGIF/%s%d.gif", "big", gifNum);
-	matrixManager.matrixBig.startAnimation(new Animation(new fs::File(SPIFFS.open(bufferGif))), true);
-	matrixGif = new GIFAnimatedSprite(screenLayout.getSprite(), fs::File(SPIFFS.open(bufferGif)));
-	matrixGif->setXY(screenLayout.getTotalX() + 19, screenLayout.getTotalY() + 19);
-	matrixGif->setScale(8);
-	matrixGif->setLoopDoneCallback([](){
-		instance->matrixGif->reset();
+	delete gif;
+
+	char filename[25];
+	sprintf(filename, "/matrixGIF/big%d.gif", gifNum);
+
+	matrixManager.matrixBig.startAnimation(new Animation(new fs::File(SPIFFS.open(filename))), true);
+
+	gif = new GIFAnimatedSprite(screenLayout.getSprite(), SPIFFS.open(filename));
+	gif->setXY(screenLayout.getTotalX() + 19, screenLayout.getTotalY() + 19);
+	gif->setScale(8);
+	gif->setLoopDoneCallback([](){
+		if(instance == nullptr) return;
+		instance->gif->reset();
 	});
 
 }
 
 
 void MixScreen::MatrixPopUpPicker::loop(uint micros){
-	if(matrixGif->newFrameReady()){
+	if(gif->newFrameReady()){
 		draw();
 		screen.commit();
 	}

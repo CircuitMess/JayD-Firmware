@@ -53,7 +53,6 @@ namespace Playback {
 		PlaybackSystem* system = nullptr;
 		bool playing = false;
 
-		fs::File background;
 		Color *backgroundBuffer = nullptr;
 
 		uint32_t lastDraw = 0;

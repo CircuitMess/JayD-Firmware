@@ -34,12 +34,9 @@ namespace MainMenu {
 
 		LinearLayout *screenLayout;
 
-		std::vector<MainMenuItem *> item;
+		std::vector<MainMenuItem *> items;
 
 		int8_t itemNum = 1;
-
-		fs::File backgroundPicture;
-		fs::File jayDlogo;
 
 		Color *backgroundBuffer = nullptr;
 		Color *logoBuffer = nullptr;

@@ -36,11 +36,9 @@ namespace SongList {
 
 		int selectedElement = 0;
 
-		fs::File background;
 		Color *backgroundBuffer = nullptr;
 
 		std::vector<ListItem *> songs;
-		std::vector<Element*> listTemp;
 
 		void buildUI();
 

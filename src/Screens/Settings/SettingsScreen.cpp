@@ -19,15 +19,11 @@ SettingsScreen::SettingsScreen::SettingsScreen(Display &display) : Context(displ
 	volumeSlider->setIsSelected(true);
 	selectedSetting = 0;
 
-	fs::File file = SPIFFS.open("/settingsBackground.raw.hs");
-
-	background = CompressedFile::open(file, 14, 13);
-
 	volumeSlider->setSliderValue(Settings.get().volumeLevel);
 
 	brightnessSlider->setSliderValue(Settings.get().brightnessLevel);
 
-	pack();
+	SettingsScreen::pack();
 }
 
 void SettingsScreen::SettingsScreen::start(){
@@ -170,14 +166,16 @@ void SettingsScreen::SettingsScreen::pack(){
 
 void SettingsScreen::SettingsScreen::unpack(){
 	Context::unpack();
+
 	backgroundBuffer = static_cast<Color*>(ps_malloc(160 * 128 * 2));
 	if(backgroundBuffer == nullptr){
 		Serial.println("SettingsScreen background unpack error");
 		return;
 	}
-	background.seek(0);
-	background.read(reinterpret_cast<uint8_t*>(backgroundBuffer), 160 * 128 * 2);
 
+	fs::File bgFile = CompressedFile::open(SPIFFS.open("/settingsBackground.raw.hs"), 14, 13);
+	bgFile.read(reinterpret_cast<uint8_t*>(backgroundBuffer), 160 * 128 * 2);
+	bgFile.close();
 }
 
 
@@ -196,7 +194,5 @@ void SettingsScreen::SettingsScreen::buildUI(){
 
 SettingsScreen::SettingsScreen::~SettingsScreen(){
 	instance = nullptr;
-	background.close();
 	free(backgroundBuffer);
-
 }

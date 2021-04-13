@@ -31,13 +31,14 @@ namespace MixScreen {
 		void loop(uint micros) override;
 
 		virtual ~MixScreen();
+		void pack() override;
+		void unpack() override;
 
 	private:
 		static MixScreen* instance;
 
 		fs::File f1;
 		fs::File f2;
-		fs::File selectedBckground;
 		Color *selectedBackgroundBuffer = nullptr;
 		MixSystem* system = nullptr;
 

@@ -7,16 +7,13 @@ TextInputScreen::TextInputScreen *TextInputScreen::TextInputScreen::instance = n
 
 TextInputScreen::TextInputScreen::TextInputScreen(Display &display) : Context(display){
 
-	fs::File file = SPIFFS.open("/backgroundBlack.raw.hs");
-
-	background = CompressedFile::open(file, 10, 9);
 	instance = this;
 
-	pack();
+	TextInputScreen::pack();
 }
 
 TextInputScreen::TextInputScreen::~TextInputScreen(){
-	background.close();
+	free(backgroundBuffer);
 	instance = nullptr;
 }
 
@@ -122,13 +119,16 @@ void TextInputScreen::TextInputScreen::pack(){
 
 void TextInputScreen::TextInputScreen::unpack(){
 	Context::unpack();
+
 	backgroundBuffer = static_cast<Color *>(ps_malloc(160 * 128 * 2));
 	if(backgroundBuffer == nullptr){
 		Serial.println("Text input background unpack error");
 		return;
 	}
-	background.seek(0);
-	background.read(reinterpret_cast<uint8_t *>(backgroundBuffer), 160 * 128 * 2);
+
+	fs::File bgFile = CompressedFile::open(SPIFFS.open("/backgroundBlack.raw.hs"), 10, 9);
+	bgFile.read(reinterpret_cast<uint8_t *>(backgroundBuffer), 160 * 128 * 2);
+	bgFile.close();
 }
 
 

@@ -15,16 +15,13 @@ Playback::Playback::Playback(Display& display) : Context(display), screenLayout(
 												 trackCount(new TrackCounter(timeElapsedLayout)){
 
 
-	background = CompressedFile::open(SPIFFS.open("/playbackBackground.raw.hs"), 10, 9);
-
 	instance = this;
 	buildUI();
 
-	pack();
+	Playback::pack();
 }
 
 Playback::Playback::~Playback(){
-	background.close();
 	instance = nullptr;
 	free(backgroundBuffer);
 }
@@ -183,12 +180,15 @@ void Playback::Playback::pack(){
 
 void Playback::Playback::unpack(){
 	Context::unpack();
+
 	backgroundBuffer = static_cast<Color *>(ps_malloc(160 * 128 * 2));
 	if(backgroundBuffer == nullptr){
 		Serial.println("Playback background unpack error");
 		return;
 	}
-	background.seek(0);
-	background.read(reinterpret_cast<uint8_t *>(backgroundBuffer), 160 * 128 * 2);
+
+	fs::File bgFile = CompressedFile::open(SPIFFS.open("/playbackBackground.raw.hs"), 10, 9);
+	bgFile.read(reinterpret_cast<uint8_t *>(backgroundBuffer), 160 * 128 * 2);
+	bgFile.close();
 }
 

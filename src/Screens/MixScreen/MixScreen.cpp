@@ -18,14 +18,6 @@ MixScreen::MixScreen::MixScreen(Display& display) : Context(display),
 													rightSongName(new SongName(rightLayout)), leftVu(&matrixManager.matrixL), rightVu(&matrixManager.matrixR),
 													midVu(&matrixManager.matrixBig){
 
-	selectedBckground = CompressedFile::open(SPIFFS.open("/mixSelectedBg.raw.hs"), 13, 12);
-	selectedBackgroundBuffer = static_cast<Color*>(ps_malloc(79 * 128 * 2));
-	if(selectedBackgroundBuffer == nullptr){
-		Serial.println("Selected background open error");
-		return;
-	}
-	selectedBckground.seek(0);
-	selectedBckground.read(reinterpret_cast<uint8_t*>(selectedBackgroundBuffer), 79 * 128 * 2);
 	for(int i = 0; i < 3; i++){
 		effectElements[i] = new EffectElement(leftLayout, false);
 	}
@@ -36,14 +28,32 @@ MixScreen::MixScreen::MixScreen(Display& display) : Context(display),
 	instance = this;
 	buildUI();
 
-	pack();
-
+	MixScreen::pack();
 }
 
 MixScreen::MixScreen::~MixScreen(){
 	instance = nullptr;
+	free(selectedBackgroundBuffer);
+}
+
+void MixScreen::MixScreen::pack(){
+	Context::pack();
+	free(selectedBackgroundBuffer);
 	selectedBackgroundBuffer = nullptr;
-	selectedBckground.close();
+}
+
+void MixScreen::MixScreen::unpack(){
+	Context::unpack();
+
+	selectedBackgroundBuffer = static_cast<Color*>(ps_malloc(79 * 128 * 2));
+	if(selectedBackgroundBuffer == nullptr){
+		Serial.println("Selected background malloc error");
+		return;
+	}
+
+	fs::File bgFile = CompressedFile::open(SPIFFS.open("/mixSelectedBg.raw.hs"), 13, 12);
+	bgFile.read(reinterpret_cast<uint8_t*>(selectedBackgroundBuffer), 79 * 128 * 2);
+	bgFile.close();
 }
 
 void MixScreen::MixScreen::returned(void* data){
@@ -95,9 +105,14 @@ void MixScreen::MixScreen::start(){
 	leftSongName->checkScrollUpdate();
 	rightSongName->checkScrollUpdate();
 
+	for(int i = 0; i < 6; i++){
+		effectElements[i]->setType(NONE);
+	}
+
 
 	Serial.printf("System constructed. Heap: %u B, PSRAM: %u B\n", ESP.getFreeHeap(), ESP.getFreePsram());
 	system->start();
+	delay(1);
 	Serial.printf("System started. Heap: %u B, PSRAM: %u B\n", ESP.getFreeHeap(), ESP.getFreePsram());
 
 	LoopManager::addListener(&leftVu);
@@ -125,7 +140,6 @@ void MixScreen::MixScreen::stop(){
 		delete system;
 		system = nullptr;
 	}
-	Serial.printf("ramSTOP : %d", ESP.getFreePsram());
 
 }
 
