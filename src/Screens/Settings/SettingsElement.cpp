@@ -1,7 +1,7 @@
 #include "SettingsElement.h"
 
 SettingsScreen::SettingsElement::SettingsElement(ElementContainer *partent, String name)
-		: CustomElement(partent, 160, 40), name(name){
+		: CustomElement(partent, 160, 20), name(name){
 
 
 }
@@ -14,10 +14,10 @@ void SettingsScreen::SettingsElement::draw(){
 	getSprite()->setTextColor(TFT_WHITE);
 	getSprite()->setTextSize(1);
 	getSprite()->setTextFont(1);
-	getSprite()->setCursor(getTotalX() + 5, getTotalY() + 28);
+	getSprite()->setCursor(getTotalX() + 5, getTotalY() + 10);
 	getSprite()->println(name);
 	if(selected){
-		getSprite()->drawRect(getTotalX() + 3, getTotalY() + 24, 70, 15, TFT_WHITE);
+		getSprite()->drawRect(getTotalX() + 3, getTotalY() + 6, 70, 15, TFT_WHITE);
 	}
 	drawControl();
 

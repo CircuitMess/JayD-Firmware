@@ -5,8 +5,10 @@
 #include <UI/LinearLayout.h>
 #include "SettingsElement.h"
 #include "SliderElement.h"
+#include "TextElement.h"
 #include <FS.h>
 
+class PlaybackSystem;
 
 namespace SettingsScreen {
 	class SettingsScreen : public Context {
@@ -29,11 +31,12 @@ namespace SettingsScreen {
 	private:
 		static SettingsScreen *instance;
 
-		LinearLayout screenLayout;
+		LinearLayout* screenLayout;
 
-		SliderElement volumeSlider;
-		SliderElement brightnessSlider;
-
+		SliderElement* volumeSlider;
+		SliderElement* brightnessSlider;
+		TextElement* inputTest;
+		TextElement* saveSettings;
 		int selectedSetting = 0;
 
 		bool disableMainSelector = false;
@@ -45,6 +48,8 @@ namespace SettingsScreen {
 
 		Color* backgroundBuffer= nullptr;
 
+		PlaybackSystem* playback = nullptr;
+		fs::File introSong;
 	};
 }
 

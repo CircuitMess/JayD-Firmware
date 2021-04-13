@@ -12,6 +12,7 @@ TextInputScreen::TextInputScreen::TextInputScreen(Display &display) : Context(di
 	background = CompressedFile::open(file, 10, 9);
 	instance = this;
 
+	pack();
 }
 
 TextInputScreen::TextInputScreen::~TextInputScreen(){
@@ -116,6 +117,7 @@ void TextInputScreen::TextInputScreen::draw(){
 void TextInputScreen::TextInputScreen::pack(){
 	Context::pack();
 	free(backgroundBuffer);
+	backgroundBuffer = nullptr;
 }
 
 void TextInputScreen::TextInputScreen::unpack(){

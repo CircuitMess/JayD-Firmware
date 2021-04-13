@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 project(JayD-Firmware)
 set(PORT /dev/ttyUSB0)
-set(DEVICE cm:esp32:spencer) # Arduino device FQBN
+set(DEVICE cm:esp32:jayd) # Arduino device FQBN
 set(CMAKE_CXX_STANDARD 11)
 
 set(ROOT ${CMAKE_SOURCE_DIR})
@@ -48,17 +48,8 @@ include_directories(${ArduinoLibs}/U8g2_for_TFT_eSPI/src)
 
 
 # Source directories
-AUX_SOURCE_DIRECTORY(src SOURCES)
-AUX_SOURCE_DIRECTORY(src/Matrix SOURCES)
-AUX_SOURCE_DIRECTORY(src/Screens SOURCES)
-AUX_SOURCE_DIRECTORY(src/Screens/Playback SOURCES)
-AUX_SOURCE_DIRECTORY(src/Screens/Playback/Bitmaps SOURCES)
-AUX_SOURCE_DIRECTORY(src/Screens/SongList SOURCES)
-AUX_SOURCE_DIRECTORY(src/Screens/MixScreen SOURCES)
-AUX_SOURCE_DIRECTORY(src/Screens/MixScreen/Bitmaps SOURCES)
-AUX_SOURCE_DIRECTORY(src/Screens/MainMenu SOURCES)
-AUX_SOURCE_DIRECTORY(src/Screens/IntroScreen SOURCES)
-AUX_SOURCE_DIRECTORY(src/Screens/Settings SOURCES)
+file(GLOB_RECURSE SOURCES "src/**.cpp" "src/**.c" "src/**.hpp" "src/**.h")
+
 
 # Defines
 add_definitions(-DDEBUG)

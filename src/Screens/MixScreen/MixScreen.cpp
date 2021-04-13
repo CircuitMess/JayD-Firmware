@@ -6,6 +6,7 @@
 #include "MixScreen.h"
 #include "../SongList/SongList.h"
 #include <AudioLib/Effect.h>
+#include <AudioLib/VuInfoGenerator.h>
 
 #include <AudioLib/Effects/LowPass.h>
 #include <AudioLib/Effects/HighPass.h>
@@ -36,7 +37,8 @@ MixScreen::MixScreen::MixScreen(Display &display) : Context(display), screenLayo
 													leftLayout(new LinearLayout(screenLayout, VERTICAL)),
 													rightLayout(new LinearLayout(screenLayout, VERTICAL)), leftSeekBar(new SongSeekBar(leftLayout)),
 													rightSeekBar(new SongSeekBar(rightLayout)), leftSongName(new SongName(leftLayout)),
-													rightSongName(new SongName(rightLayout)){
+													rightSongName(new SongName(rightLayout)), leftVu(&matrixManager.matrixL), rightVu(&matrixManager.matrixR),
+													midVu(&matrixManager.matrixBig){
 
 
 	for(int i = 0; i < 3; i++){
@@ -48,9 +50,9 @@ MixScreen::MixScreen::MixScreen(Display &display) : Context(display), screenLayo
 
 	instance = this;
 	buildUI();
-}
 
-Context* selector = nullptr;
+	pack();
+}
 
 void MixScreen::MixScreen::returned(void* data){
 	if(!f1){
@@ -63,20 +65,8 @@ void MixScreen::MixScreen::returned(void* data){
 }
 
 void MixScreen::MixScreen::start(){
-	delete selector;
-	selector = nullptr;
-
-	if(!f1){
-		delete selector;
-		selector = new SongList::SongList(*getScreen().getDisplay());
-		selector->push(this);
-		return;
-	}
-
-	if(!f2){
-		delete selector;
-		selector = new SongList::SongList(*getScreen().getDisplay());
-		selector->push(this);
+	if(!f1 || !f2){
+		(new SongList::SongList(*getScreen().getDisplay()))->push(this);
 		return;
 	}
 
@@ -136,16 +126,28 @@ void MixScreen::MixScreen::start(){
 	Serial.printf("System constructed. Heap: %u B, PSRAM: %u B\n", ESP.getFreeHeap(), ESP.getFreePsram());
 	system->start();
 	Serial.printf("System started. Heap: %u B, PSRAM: %u B\n", ESP.getFreeHeap(), ESP.getFreePsram());
+	system->setChannelInfo(0, leftVu.getInfoGenerator());
+	LoopManager::addListener(&leftVu);
+	system->setChannelInfo(1, rightVu.getInfoGenerator());
+	LoopManager::addListener(&rightVu);
+	system->setChannelInfo(2, midVu.getInfoGenerator());
+	LoopManager::addListener(&midVu);
 }
 
 
 void MixScreen::MixScreen::stop(){
 	InputJayD::getInstance()->removeListener(this);
 	LoopManager::removeListener(this);
+	LoopManager::removeListener(&leftVu);
+	LoopManager::removeListener(&rightVu);
+	LoopManager::removeListener(&midVu);
 
-	system->stop();
-	delete system;
-	system = nullptr;
+
+	if(system){
+		system->stop();
+		delete system;
+		system = nullptr;
+	}
 }
 
 void MixScreen::MixScreen::draw(){

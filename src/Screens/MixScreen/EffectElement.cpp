@@ -14,6 +14,11 @@ MixScreen::EffectElement::EffectElement(ElementContainer *parent, bool mirrored)
 
 }
 
+MixScreen::EffectElement::~EffectElement(){
+	free(bufferIcons);
+	delete gif;
+}
+
 void MixScreen::EffectElement::setupGif(){
 	if(gif == nullptr) return;
 
@@ -46,7 +51,6 @@ void MixScreen::EffectElement::repos(){
 	}
 }
 
-
 void MixScreen::EffectElement::setType(EffectType effect){
 	EffectElement::effect = effect;
 
@@ -61,7 +65,6 @@ void MixScreen::EffectElement::setType(EffectType effect){
 	iconsFile.read(reinterpret_cast<uint8_t *>(bufferIcons), 16 * 16 * 2);
 
 	delete gif;
-	gif = nullptr;
 	gif = new AnimatedSprite(getSprite(), SPIFFS.open(gifIcons[effect]));
 	setupGif();
 
@@ -93,9 +96,4 @@ uint8_t MixScreen::EffectElement::getIntensity() const{
 
 EffectType MixScreen::EffectElement::getType() const{
 	return effect;
-}
-
-MixScreen::EffectElement::~EffectElement(){
-	free(bufferIcons);
-
 }

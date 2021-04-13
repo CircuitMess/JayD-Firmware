@@ -4,6 +4,9 @@
 #include <FS/CompressedFile.h>
 #include "../MainMenu/MainMenu.h"
 #include <SPIFFS.h>
+#include <AudioLib/Systems/PlaybackSystem.h>
+#include <Settings.h>
+#include <JayD.hpp>
 
 
 IntroScreen::IntroScreen *IntroScreen::IntroScreen::instance = nullptr;
@@ -19,7 +22,7 @@ IntroScreen::IntroScreen::IntroScreen(Display &display) : Context(display){
 		return;
 	}
 
-	gif = new AnimatedSprite(screen.getSprite(), CompressedFile::open(f, 9, 8, 34537));
+	gif = new AnimatedSprite(screen.getSprite(), CompressedFile::open(f, 9, 8, 33734));
 	gif->setSwapBytes(true);
 	gif->setXY(0, 0);
 
@@ -37,9 +40,6 @@ void IntroScreen::IntroScreen::draw(){
 }
 
 void IntroScreen::IntroScreen::start(){
-	draw();
-	screen.commit();
-
 	if(!gif) return;
 
 	gif->setLoopDoneCallback([]{
@@ -55,11 +55,23 @@ void IntroScreen::IntroScreen::start(){
 		main->start();
 	});
 
+	introSong = SPIFFS.open("/intro.aac");
+	playback = new PlaybackSystem(introSong);
+	playback->setVolume(Settings.get().volumeLevel);
+	playback->start();
+
 	LoopManager::addListener(this);
+	matrixManager.startRandom();
+
+	draw();
+	screen.commit();
 }
 
 void IntroScreen::IntroScreen::stop(){
 	LoopManager::removeListener(this);
+	introSong.close();
+	playback->stop();
+	delete playback;
 }
 
 void IntroScreen::IntroScreen::loop(uint micros){

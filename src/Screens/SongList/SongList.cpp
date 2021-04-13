@@ -86,7 +86,6 @@ void SongList::SongList::searchDirectories(File file){
 }
 
 void SongList::SongList::loop(uint t){
-
 	if(millis() - prevSDCheck > sdCardInterval){
 
 		SD.end();
@@ -104,12 +103,13 @@ void SongList::SongList::loop(uint t){
 				//scrollLayout->setY(18);
 				scrollLayout->scrollIntoView(selectedElement, 2);
 			}
+
+			draw();
+			screen.commit();
 		}
+
 		prevSDCheck = millis();
 	}
-
-	draw();
-	screen.commit();
 }
 
 void SongList::SongList::start(){
