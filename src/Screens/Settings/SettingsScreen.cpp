@@ -92,9 +92,9 @@ void SettingsScreen::SettingsScreen::start(){
 			instance->screen.commit();
 			if(instance->disableMainSelector) {
 				instance->playback->setVolume(instance->volumeSlider->getSliderValue());
-				instance->playback->resume();
+				instance->playback->start();
 			}else{
-				instance->playback->pause();
+				instance->playback->stop();
 			}
 		}else if(instance->selectedSetting == 1){
 			instance->brightnessSlider->toggle();
@@ -122,8 +122,6 @@ void SettingsScreen::SettingsScreen::start(){
 	playback = new PlaybackSystem(introSong);
 	playback->setVolume(Settings.get().volumeLevel);
 	playback->setRepeat(true);
-	playback->start();
-	playback->pause();
 }
 
 void SettingsScreen::SettingsScreen::stop(){
