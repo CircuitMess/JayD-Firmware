@@ -37,6 +37,8 @@ namespace MixScreen {
 
 		fs::File f1;
 		fs::File f2;
+		fs::File selectedBckground;
+		Color *selectedBackgroundBuffer = nullptr;
 		MixSystem* system = nullptr;
 
 		LinearLayout* screenLayout;

@@ -2,6 +2,7 @@
 #include <SD.h>
 #include <Loop/LoopManager.h>
 #include <JayD.hpp>
+#include <FS/CompressedFile.h>
 #include "MixScreen.h"
 #include "../SongList/SongList.h"
 
@@ -17,7 +18,14 @@ MixScreen::MixScreen::MixScreen(Display& display) : Context(display),
 													rightSongName(new SongName(rightLayout)), leftVu(&matrixManager.matrixL), rightVu(&matrixManager.matrixR),
 													midVu(&matrixManager.matrixBig){
 
-
+	selectedBckground = CompressedFile::open(SPIFFS.open("/mixSelectedBg.raw.hs"), 13, 12);
+	selectedBackgroundBuffer = static_cast<Color*>(ps_malloc(79 * 128 * 2));
+	if(selectedBackgroundBuffer == nullptr){
+		Serial.println("Selected background open error");
+		return;
+	}
+	selectedBckground.seek(0);
+	selectedBckground.read(reinterpret_cast<uint8_t*>(selectedBackgroundBuffer), 79 * 128 * 2);
 	for(int i = 0; i < 3; i++){
 		effectElements[i] = new EffectElement(leftLayout, false);
 	}
@@ -34,6 +42,8 @@ MixScreen::MixScreen::MixScreen(Display& display) : Context(display),
 
 MixScreen::MixScreen::~MixScreen(){
 	instance = nullptr;
+	selectedBackgroundBuffer = nullptr;
+	selectedBckground.close();
 }
 
 void MixScreen::MixScreen::returned(void* data){
@@ -115,6 +125,7 @@ void MixScreen::MixScreen::stop(){
 		delete system;
 		system = nullptr;
 	}
+	Serial.printf("ramSTOP : %d", ESP.getFreePsram());
 
 }
 
@@ -123,9 +134,9 @@ void MixScreen::MixScreen::draw(){
 	screen.getSprite()->fillRect(leftLayout->getTotalX(), leftLayout->getTotalY(), 79, 128, C_RGB(249, 93, 2));
 	screen.getSprite()->fillRect(rightLayout->getTotalX(), rightLayout->getTotalY(), 79, 128, C_RGB(3, 52, 135));
 	if(!selectedChannel){
-		screen.getSprite()->fillCircle(2, 2, 2, TFT_WHITE);
+		screen.getSprite()->drawIcon(selectedBackgroundBuffer, screen.getTotalX(), screen.getTotalY(), 79, 128, 1, TFT_TRANSPARENT);
 	}else{
-		screen.getSprite()->fillCircle(157, 2, 2, TFT_WHITE);
+		screen.getSprite()->drawIcon(selectedBackgroundBuffer, screen.getTotalX() + 81, screen.getTotalY(), 79, 128, 1, TFT_TRANSPARENT);
 	}
 
 	if(isRecording){
@@ -268,7 +279,7 @@ void MixScreen::MixScreen::btnEnc(uint8_t i){
 	if(i == 6){
 		selectedChannel = !selectedChannel;
 	}else{
-		EffectElement *effect = effectElements[i];
+		EffectElement* effect = effectElements[i];
 		effect->setSelected(!effect->isSelected());
 	}
 
@@ -282,7 +293,7 @@ void MixScreen::MixScreen::enc(uint8_t index, int8_t value){
 		SongSeekBar* bar = selectedChannel == 0 ? leftSeekBar : rightSeekBar;
 		uint16_t seekTime = max(0, bar->getCurrentDuration() + value);
 
-		if(seekTime >= 0 && seekTime <= bar->getTotalDuration() ) {
+		if(seekTime >= 0 && seekTime <= bar->getTotalDuration()){
 			system->seekChannel(selectedChannel, seekTime);
 		}
 		return;
