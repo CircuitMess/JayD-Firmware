@@ -4,7 +4,7 @@
 #include "Wire.h"
 #include "JayD.hpp"
 #include "SPIFFS.h"
-#include "SPIFFSFiles.hpp"
+#include "SPIFFSChecksums.hpp"
 #include "Devices/LEDmatrix/LEDmatrix.h"
 
 HardwareTest *HardwareTest::test = nullptr;
@@ -138,16 +138,19 @@ bool HardwareTest::sdTest(){
 	/* File opening test */
 	fs::File file = SD.open("/SDCardTest.txt", "w");
 	if(!file){
-		test->log("File Write", "Error Opening File.");
+		test->log("File Opening Error", file.name());
 		return false;
 	}
 
 	const char *writeBuff = "SD Card write test";
 	size_t writeBuffLen = strlen(writeBuff);
+	size_t testBuffLen = file.printf("%s", writeBuff);
 
 	/* File write test */
-	if(file.printf("%s", writeBuff) != writeBuffLen){
-		test->log("File Write","Failed writing to file.");
+	if( testBuffLen != writeBuffLen){
+		char logBuffer[100];
+		sprintf(logBuffer, "Expected %zu, got %zu",writeBuffLen,testBuffLen);
+		test->log("File Write failed",logBuffer);
 		return false;
 	}
 
@@ -156,7 +159,7 @@ bool HardwareTest::sdTest(){
 	/* File opening test */
 	file = SD.open("/SDCardTest.txt", "r");
 	if(!file){
-		test->log("File Read", "Error Opening File.");
+		test->log("File Opening Error", file.name());
 		return false;
 	}
 
@@ -166,14 +169,16 @@ bool HardwareTest::sdTest(){
 	if(file.available()){
 		file.readBytes(readBuff, writeBuffLen);
 	}else{
-		test->log("File Read","File Not Available.");
+		test->log("Read Error","File Not Available.");
 		free(readBuff);
 		return false;
 	}
 
 	/* Compare read-write */
 	if(!strcmp(writeBuff, readBuff)){
-		test->log("Compare Files", "Write buffer not equal to read buffer.");
+		char logBuffer[100];
+		sprintf(logBuffer, "Expected %s, got %s",writeBuff,readBuff);
+		test->log("Compare Error", logBuffer);
 		free(readBuff);
 		return false;
 	}
@@ -213,18 +218,12 @@ bool HardwareTest::SPIFFSTest(){
 		return false;
 	}
 
-	uint16_t idx = 0;
+	for(const auto & SPIFFSChecksum : SPIFFSChecksums){
 
-	while(files[idx].sum != 0){
-
-		if(!SPIFFS.exists(files[idx].name)){
-			test->log("File name error",files[idx].name.substring(1));
-			return false;
-		}
-		file = SPIFFS.open(files[idx].name);
+		file = SPIFFS.open(SPIFFSChecksum.name);
 
 		if(!file){
-			test->log("File open error",files[idx].name.substring(1));
+			test->log("File open error",SPIFFSChecksum.name);
 			return false;
 		}
 
@@ -236,12 +235,13 @@ bool HardwareTest::SPIFFSTest(){
 			fileBytesSum+=buff;
 		}
 
-		if(fileBytesSum != files[idx].sum){
-			test->log("File size error",files[idx].sum);
+		if(fileBytesSum != SPIFFSChecksum.sum){
+			char logBuffer[100];
+			sprintf(logBuffer, "Expected %d, got %d",SPIFFSChecksum.sum,fileBytesSum);
+			test->log("File size error",SPIFFSChecksum.sum);
 			return false;
 		}
 
-		idx++;
 		file.close();
 	}
 

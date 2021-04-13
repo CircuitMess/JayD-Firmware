@@ -1,7 +1,7 @@
 static const struct {
 	String name;
 	uint32_t sum;
-} files[] = {
+} SPIFFSChecksums[] = {
 		{ "/backgroundBlack.raw.hs", 73213 },
 		{ "/bitcrusher.g565",  1631},
 		{ "/bitcrusherBlue.raw",  42528},
@@ -40,6 +40,7 @@ static const struct {
 		{ "/speed.g565",  1606},
 		{ "/speedBlue.raw",  30768},
 		{ "/speedRed.raw",  21003},
+		{ "/mixSelectedBg.raw.hs", 12642},
 
 		{ "/matrixGIF/big1.gif",  49711},
 		{ "/matrixGIF/big2.gif",  14434},
@@ -123,6 +124,5 @@ static const struct {
 		{ "/matrixGIF/right17.gif",  64588},
 		{ "/matrixGIF/right18.gif",  48463},
 		{ "/matrixGIF/right19.gif",  63620},
-		{ "/matrixGIF/right20.gif",  51875},
-		{"end",0}
+		{ "/matrixGIF/right20.gif",  51875}
 };
