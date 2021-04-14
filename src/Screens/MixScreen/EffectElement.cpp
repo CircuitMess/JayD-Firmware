@@ -63,7 +63,6 @@ void MixScreen::EffectElement::setType(EffectType effect){
 	iconFile.close();
 
 	delete gif;
-	Serial.printf("Effect %d, file %s\n", effect, gifIcons[effect]);
 	gif = new AnimatedSprite(getSprite(), SPIFFS.open(gifIcons[effect]));
 
 	setupGif();

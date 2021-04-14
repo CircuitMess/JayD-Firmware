@@ -305,7 +305,7 @@ void InputTest::InputTest::draw(){
 		u8f.setFont(u8g2_font_profont12_tf);
 		u8f.setForegroundColor(TFT_WHITE);
 		u8f.setFontMode(1);
-		u8f.setCursor(screenLayout->getTotalX() + 20, screenLayout->getTotalY() + 80);
+		u8f.setCursor(screenLayout->getTotalX() + 17, screenLayout->getTotalY() + 80);
 		u8f.println("Press any key to exit");
 
 	}

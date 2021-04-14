@@ -34,7 +34,7 @@ void SettingsScreen::SettingsScreen::start(){
 		if(instance->disableMainSelector && instance->selectedSetting == 0){
 			instance->volumeSlider->moveSliderValue(value);
 			Settings.get().volumeLevel = instance->volumeSlider->getSliderValue();
-			instance->playback->setVolume(instance->volumeSlider->getSliderValue());
+			instance->playback->updateGain();
 			instance->draw();
 			instance->screen.commit();
 			return;
@@ -91,7 +91,8 @@ void SettingsScreen::SettingsScreen::start(){
 			instance->draw();
 			instance->screen.commit();
 			if(instance->disableMainSelector) {
-				instance->playback->setVolume(instance->volumeSlider->getSliderValue());
+				Settings.get().volumeLevel = instance->volumeSlider->getSliderValue();
+				instance->playback->updateGain();
 				instance->playback->start();
 			}else{
 				instance->playback->stop();
@@ -120,7 +121,8 @@ void SettingsScreen::SettingsScreen::start(){
 	instance->screen.commit();
 	introSong = SPIFFS.open("/intro.aac");
 	playback = new PlaybackSystem(introSong);
-	playback->setVolume(Settings.get().volumeLevel);
+	Settings.get().volumeLevel = instance->volumeSlider->getSliderValue();
+	instance->playback->updateGain();
 	playback->setRepeat(true);
 }
 

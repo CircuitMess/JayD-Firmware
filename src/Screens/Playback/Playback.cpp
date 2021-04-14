@@ -63,7 +63,7 @@ void Playback::Playback::start(){
 	}
 
 	String name = file.name();
-	songName->setSongName(name.substring(1, name.length() - 4));
+	songName->setSongName(name.substring(name.lastIndexOf('/') + 1, name.length() - 4));
 	trackCount->setTotalDuration(0);
 	trackCount->setCurrentDuration(0);
 	playOrPause->setPlaying(false);
@@ -72,53 +72,27 @@ void Playback::Playback::start(){
 	screen.commit();
 
 	uint8_t potMidVal = InputJayD::getInstance()->getPotValue(POT_MID);
-	matrixManager.matrixMid.vu(potMidVal);
+	matrixManager.matrixMid.clear();
+	uint8_t total = ((float) potMidVal / 255.0f) * (float) (12);
+	for (int i = 0; i <= total + 1; i++) {
+		for (int j = 0; j < 2; j++) {
+			matrixManager.matrixMid.drawPixel(i, j, 255);
+		}
+	}
 	matrixManager.matrixMid.push();
-
-	InputJayD::getInstance()->setBtnPressCallback(BTN_MID, [](){
-		if(instance == nullptr) return;
-		if(instance->playing){
-			instance->system->stop();
-			instance->playing = false;
-		}else{
-			instance->system->start();
-			instance->playing = true;
-		}
-
-		instance->playOrPause->setPlaying(instance->playing);
-
-
-		instance->draw();
-		instance->screen.commit();
-	});
-
-	InputJayD::getInstance()->setEncoderMovedCallback(ENC_MID, [](int8_t value){
-		if(instance == nullptr) return;
-		uint16_t seekTime = max(0, instance->trackCount->getCurrentDuration() + value);
-		if(seekTime >= 0 && seekTime <= instance->trackCount->getTotalDuration() ) {
-			instance->system->seek(seekTime);
-		}
-	});
-
-	InputJayD::getInstance()->setPotMovedCallback(POT_MID, [](uint8_t value){
-		if(instance && instance->system){
-			instance->system->setVolume(value);
-			matrixManager.matrixMid.vu(value);
-			matrixManager.matrixMid.push();
-		}
-	});
 
 	system = new PlaybackSystem(file);
 	system->setVolume(InputJayD::getInstance()->getPotValue(POT_MID));
 
+	Input.addListener(this);
+	InputJayD::getInstance()->addListener(this);
 	LoopManager::addListener(this);
 	lastDraw = 0;
 }
 
 void Playback::Playback::stop(){
-	InputJayD::getInstance()->removeBtnPressCallback(BTN_L1);
-	InputJayD::getInstance()->removeEncoderMovedCallback(ENC_L1);
-	InputJayD::getInstance()->removePotMovedCallback(POT_MID);
+	Input.removeListener(this);
+	InputJayD::getInstance()->removeListener(this);
 
 	LoopManager::removeListener(this);
 
@@ -191,3 +165,45 @@ void Playback::Playback::unpack(){
 	bgFile.close();
 }
 
+void Playback::Playback::potMove(uint8_t id, uint8_t value) {
+	if(id == POT_MID) {
+		if (system) {
+			system->setVolume(value);
+			matrixManager.matrixMid.clear();
+			uint8_t total = ((float) value / 255.0f) * (float) (12);
+			for (int i = 0; i <= total + 1; i++) {
+				for (int j = 0; j < 2; j++) {
+					matrixManager.matrixMid.drawPixel(i, j, 255);
+				}
+			}
+			matrixManager.matrixMid.push();
+		}
+	}
+}
+
+void Playback::Playback::btnEnc(uint8_t i) {
+	if(i == 6) {
+		if (playing) {
+			system->stop();
+			playing = false;
+		} else {
+			system->start();
+			playing = true;
+		}
+		playOrPause->setPlaying(playing);
+		drawQueued = true;
+	}
+}
+
+void Playback::Playback::enc(uint8_t id, int8_t value) {
+	if(id == 6) {
+		uint16_t seekTime = max(0, trackCount->getCurrentDuration() + value);
+		if (seekTime >= 0 && seekTime <= trackCount->getTotalDuration()) {
+			system->seek(seekTime);
+		}
+	}
+}
+
+void Playback::Playback::encFour() {
+	pop();
+}

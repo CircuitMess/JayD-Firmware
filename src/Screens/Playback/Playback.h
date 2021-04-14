@@ -13,9 +13,10 @@
 #include <AudioLib/OutputI2S.h>
 #include <AudioLib/SourceWAV.h>
 #include <AudioLib/Systems/PlaybackSystem.h>
+#include "../../InputKeys.h"
 
 namespace Playback {
-	class Playback : public Context, public LoopListener {
+	class Playback : public Context, public LoopListener, public InputListener, public JayDInputListener {
 	public:
 
 		Playback(Display &display);
@@ -57,6 +58,11 @@ namespace Playback {
 
 		uint32_t lastDraw = 0;
 		bool drawQueued = false;
+
+		void potMove(uint8_t id, uint8_t value) override;
+		void encFour() override;
+		void btnEnc(uint8_t i) override;
+		void enc(uint8_t id, int8_t value) override;
 	};
 }
 
