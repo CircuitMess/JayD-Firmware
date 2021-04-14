@@ -42,16 +42,17 @@ namespace SongList {
 
 		void buildUI();
 
-		void populateList();
+		void checkSD();
 
-		void searchDirectories(File file);
+		void searchDirectories(File dir);
 
-		bool isOpened = false;
-		bool insertedSD = false;
+		bool waiting = false;
+		bool insertedSD = true;
+		bool empty = true;
 
 		uint32_t prevSDCheck = 0;
 
-		static const uint16_t sdCardInterval = 500;
+		static const uint16_t checkInterval = 500;
 	};
 }
 #endif //JAYD_FIRMWARE_SONGLIST_H
