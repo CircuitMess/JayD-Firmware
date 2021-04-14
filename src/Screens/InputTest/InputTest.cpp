@@ -295,7 +295,7 @@ void InputTest::InputTest::draw(){
 	screenLayout->getSprite()->setTextColor(TFT_GREEN);
 	FontWriter u8f = screen.getSprite()->startU8g2Fonts();
 
-	if(doneCounter >= 18){
+	if(doneCounter >= 19){
 		screenLayout->getSprite()->fillRect(screenLayout->getTotalX(), screenLayout->getTotalY(), 160, 128, TFT_BLACK);
 		u8f.setFont(u8g2_font_DigitalDisco_tf);
 		u8f.setForegroundColor(TFT_GREEN);
@@ -380,7 +380,7 @@ InputTest::InputTest::~InputTest(){
 }
 
 void InputTest::InputTest::checkIfDone(){
-	if(doneCounter >= 18){
+	if(doneCounter >= 19){
 		checkDone = true;
 	}
 }
