@@ -30,13 +30,12 @@ void MixScreen::MatrixPopUpPicker::btnEnc(uint8_t i){
 	stop();
 	delete this;
 
-	parent->unpack();
-	parent->start();
-
 	if(matrixAnimationNumber == 2){
 		matrixManager.matrixBig.stopAnimation();
-		parent->startBigVu();
+		parent->setBigVuStarted(true);
 	}
+	parent->unpack();
+	parent->start();
 }
 
 void MixScreen::MatrixPopUpPicker::enc(uint8_t i, int8_t value){
@@ -55,6 +54,7 @@ void MixScreen::MatrixPopUpPicker::enc(uint8_t i, int8_t value){
 void MixScreen::MatrixPopUpPicker::start(){
 	LoopManager::addListener(this);
 	Input.addListener(this);
+	parent->setBigVuStarted(false);
 	draw();
 	screen.commit();
 }
@@ -77,11 +77,11 @@ void MixScreen::MatrixPopUpPicker::unpack(){
 void MixScreen::MatrixPopUpPicker::draw(){
 	screen.draw();
 	screen.getSprite()->clear(C_RGB(52, 204, 235));
-	screen.getSprite()->drawRect(screen.getTotalX(),screen.getTotalY(),100,100,TFT_BLACK);
+	screen.getSprite()->drawRect(screen.getTotalX(), screen.getTotalY(), 100, 100, TFT_BLACK);
 	screen.getSprite()->setTextColor(TFT_BLACK);
 	screen.getSprite()->setTextSize(1);
 	screen.getSprite()->setTextFont(1);
-	screen.getSprite()->setCursor(screen.getTotalX()+25 , screen.getTotalY()+2);
+	screen.getSprite()->setCursor(screen.getTotalX() + 25, screen.getTotalY() + 2);
 	screen.getSprite()->println("Choose an    animation mode");
 	gif->push();
 
