@@ -74,8 +74,8 @@ void Playback::Playback::start(){
 	uint8_t potMidVal = InputJayD::getInstance()->getPotValue(POT_MID);
 	matrixManager.matrixMid.clear();
 	uint8_t total = ((float) potMidVal / 255.0f) * (float) (12);
-	for (int i = 0; i <= total + 1; i++) {
-		for (int j = 0; j < 2; j++) {
+	for(int i = 0; i <= total + 1; i++){
+		for(int j = 0; j < 2; j++){
 			matrixManager.matrixMid.drawPixel(i, j, 255);
 		}
 	}
@@ -83,6 +83,9 @@ void Playback::Playback::start(){
 
 	system = new PlaybackSystem(file);
 	system->setVolume(InputJayD::getInstance()->getPotValue(POT_MID));
+	system->start();
+
+	playOrPause->setPlaying(true);
 
 	Input.addListener(this);
 	InputJayD::getInstance()->addListener(this);
