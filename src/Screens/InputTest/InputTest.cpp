@@ -4,14 +4,15 @@
 #include <Settings.h>
 #include <U8g2_for_TFT_eSPI.h>
 
-InputTest::InputTest* InputTest::InputTest::instance = nullptr;
 
+InputTest::InputTest* InputTest::InputTest::instance = nullptr;
 
 InputTest::InputTest::InputTest(Display& display) : Context(display), screenLayout(new LinearLayout(&screen, HORIZONTAL)),
 													leftLayout(new LinearLayout(screenLayout, VERTICAL)),
 													midLayout(new LinearLayout(screenLayout, HORIZONTAL)),
 													rightLayout(new LinearLayout(screenLayout, VERTICAL)),
 													bottomLayout(new LinearLayout(screenLayout, HORIZONTAL)){
+
 
 	for(int i = 0; i < 3; i++){
 		leftEncBtnTest.push_back(new EncTestElement(leftLayout, false));
@@ -294,19 +295,17 @@ void InputTest::InputTest::draw(){
 	screenLayout->getSprite()->setTextColor(TFT_GREEN);
 	FontWriter u8f = screen.getSprite()->startU8g2Fonts();
 
-
-
 	if(doneCounter >= 18){
 		screenLayout->getSprite()->fillRect(screenLayout->getTotalX(), screenLayout->getTotalY(), 160, 128, TFT_BLACK);
 		u8f.setFont(u8g2_font_DigitalDisco_tf);
-		u8f.setForegroundColor(TFT_WHITE);
+		u8f.setForegroundColor(TFT_GREEN);
 		u8f.setFontMode(1);
-		u8f.setCursor(screenLayout->getTotalX() + 50, screenLayout->getTotalY() + 20);
+		u8f.setCursor(screenLayout->getTotalX() + 50, screenLayout->getTotalY() + 40);
 		u8f.println("ALL OK!");
 		u8f.setFont(u8g2_font_profont12_tf);
 		u8f.setForegroundColor(TFT_WHITE);
 		u8f.setFontMode(1);
-		u8f.setCursor(screenLayout->getTotalX() + 25, screenLayout->getTotalY() + 40);
+		u8f.setCursor(screenLayout->getTotalX() + 20, screenLayout->getTotalY() + 80);
 		u8f.println("Press any key to exit");
 
 	}
