@@ -85,9 +85,6 @@ void MixScreen::MixScreen::start(){
 	system->setVolume(0, InputJayD::getInstance()->getPotValue(POT_L));
 	system->setVolume(1, InputJayD::getInstance()->getPotValue(POT_R));
 
-	system->pauseChannel(0);
-	system->pauseChannel(1);
-
 	system->setChannelInfo(0, leftVu.getInfoGenerator());
 	system->setChannelInfo(1, rightVu.getInfoGenerator());
 	startBigVu();
@@ -100,8 +97,8 @@ void MixScreen::MixScreen::start(){
 	leftSeekBar->setTotalDuration(system->getDuration(0));
 	rightSeekBar->setTotalDuration(system->getDuration(1));
 
-	leftSeekBar->setPlaying(false);
-	rightSeekBar->setPlaying(false);
+	leftSeekBar->setPlaying(true);
+	rightSeekBar->setPlaying(true);
 
 
 	leftSongName->checkScrollUpdate();
