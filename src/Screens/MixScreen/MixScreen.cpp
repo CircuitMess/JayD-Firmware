@@ -88,9 +88,9 @@ void MixScreen::MixScreen::start(){
 	system->pauseChannel(0);
 	system->pauseChannel(1);
 
-	/*system->setChannelInfo(0, leftVu.getInfoGenerator());
-	system->setChannelInfo(1, rightVu.getInfoGenerator());*/
-	//startBigVu();
+	system->setChannelInfo(0, leftVu.getInfoGenerator());
+	system->setChannelInfo(1, rightVu.getInfoGenerator());
+	startBigVu();
 
 	uint8_t potMidVal = InputJayD::getInstance()->getPotValue(POT_MID);
 	system->setMix(potMidVal);
