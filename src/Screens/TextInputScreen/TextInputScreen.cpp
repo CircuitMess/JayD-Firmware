@@ -35,6 +35,7 @@ void TextInputScreen::TextInputScreen::start(){
 			instance->text = instance->text.substring(0, instance->text.length() - 1);
 		}else if(instance->selectedIndex == 30){
 			instance->pop(new String(instance->text));
+			return;
 		}else if(instance->selectedIndex == 28){
 			instance->shiftLetters = !instance->shiftLetters;
 		}else if(instance->selectedIndex == 29){
