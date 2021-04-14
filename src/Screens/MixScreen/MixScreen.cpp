@@ -75,8 +75,10 @@ void MixScreen::MixScreen::start(){
 	Serial.printf("F1: %s\n", f1.name());
 	Serial.printf("F2: %s\n", f2.name());
 
-	leftSongName->setSongName(String(f1.name()).substring(1));
-	rightSongName->setSongName(String(f2.name()).substring(1));
+	String name = f1.name();
+	leftSongName->setSongName(name.substring(name.lastIndexOf('/') + 1, name.length() - 4));
+	name = f2.name();
+	rightSongName->setSongName(name.substring(name.lastIndexOf('/') + 1, name.length() - 4));
 
 	system = new MixSystem(f1, f2);
 

@@ -13,7 +13,10 @@ void SongList::ListItem::draw(){
 	u8f.setFontMode(1);
 
 	u8f.setCursor(getTotalX()+2, getTotalY()+9);
-	u8f.println(songName.substring(1));
+
+	String name = songName;
+	name = name.substring(name.lastIndexOf('/') + 1);
+	u8f.println(name);
 
 	if(selected){
 		getSprite()->drawRect(getTotalX()-2,getTotalY()-4,getWidth()+4,getHeight()+6,TFT_LIGHTGREY);//treba ubaciti ikonicu za scrolanje

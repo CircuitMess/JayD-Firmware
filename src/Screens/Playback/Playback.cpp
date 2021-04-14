@@ -63,7 +63,7 @@ void Playback::Playback::start(){
 	}
 
 	String name = file.name();
-	songName->setSongName(name.substring(1, name.length() - 4));
+	songName->setSongName(name.substring(name.lastIndexOf('/') + 1, name.length() - 4));
 	trackCount->setTotalDuration(0);
 	trackCount->setCurrentDuration(0);
 	playOrPause->setPlaying(false);
