@@ -54,11 +54,15 @@ void MainMenu::MainMenu::start(){
 
 		if(selected == 0){
 			Playback::Playback* playback = new Playback::Playback(display);
+			playback->setParent(instance);
+
 			SongList::SongList* songList = new SongList::SongList(display);
 			songList->push(instance);
 			songList->setParent(playback);
 		}else if(selected == 1){
 			MixScreen::MixScreen* mix = new MixScreen::MixScreen(display);
+			mix->setParent(instance);
+
 			SongList::SongList* songList = new SongList::SongList(display);
 			songList->push(instance);
 			songList->setParent(mix);
