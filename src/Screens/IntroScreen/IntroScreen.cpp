@@ -56,7 +56,6 @@ void IntroScreen::IntroScreen::start(){
 
 	introSong = SPIFFS.open("/intro.aac");
 	playback = new PlaybackSystem(introSong);
-	playback->setVolume(Settings.get().volumeLevel);
 	playback->start();
 
 	LoopManager::addListener(this);
