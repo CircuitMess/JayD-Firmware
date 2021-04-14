@@ -22,7 +22,7 @@
 Display display(160, 128, -1, -1);
 
 void launch(){
-	Context *introScreen = new IntroScreen::IntroScreen(display);
+	Context* introScreen = new IntroScreen::IntroScreen(display);
 	introScreen->unpack();
 	introScreen->start();
 }
@@ -74,16 +74,13 @@ void setup(){
 	InputJayD::getInstance()->addListener(&Input);
 	LoopManager::addListener(&Input);
 
-	if(Settings.get().inputTested){
+	if(!Settings.get().inputTested){
 		InputTest::InputTest* test = new InputTest::InputTest(display);
 		test->setDoneCallback([](InputTest::InputTest* test){
-			test->stop();
-			delete test;
-
 			Settings.get().inputTested = true;
 			Settings.store();
 
-			launch();
+			ESP.restart();
 		});
 
 		test->unpack();
