@@ -252,13 +252,16 @@ void MixScreen::MixScreen::loop(uint micros){
 
 	bool songNameUpdateL = leftSongName->checkScrollUpdate();
 	bool songNameUpdateR = rightSongName->checkScrollUpdate();
-	if(update || songNameUpdateL || songNameUpdateR){
-		uint32_t now = millis();
-		if(lastDraw == 0 || now - lastDraw >= 50){
-			draw();
-			screen.commit();
-			lastDraw = now;
-		}
+	update |= songNameUpdateL | songNameUpdateR;
+
+	uint32_t currentTime = millis();
+	if((update || drawQueued) && (currentTime - lastDraw) >= 50){
+		drawQueued = false;
+		draw();
+		screen.commit();
+		lastDraw = currentTime;
+	}else if(update){
+		drawQueued = true;
 	}
 }
 
@@ -316,8 +319,7 @@ void MixScreen::MixScreen::btn(uint8_t i){
 
 	bar->setPlaying(!bar->isPlaying());
 
-	draw();
-	screen.commit();
+	drawQueued = true;
 }
 
 void MixScreen::MixScreen::btnEnc(uint8_t i){
@@ -330,8 +332,7 @@ void MixScreen::MixScreen::btnEnc(uint8_t i){
 		effect->setSelected(!effect->isSelected());
 	}
 
-	draw();
-	screen.commit();
+	drawQueued = true;
 }
 
 void MixScreen::MixScreen::enc(uint8_t index, int8_t value){
@@ -406,8 +407,7 @@ void MixScreen::MixScreen::enc(uint8_t index, int8_t value){
 		}
 	}
 
-	draw();
-	screen.commit();
+	drawQueued = true;
 }
 
 void MixScreen::MixScreen::encBtnHold(uint8_t i){

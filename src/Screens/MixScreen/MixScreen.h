@@ -62,6 +62,7 @@ namespace MixScreen {
 		bool doneRecording = false;
 
 		uint32_t lastDraw = 0;
+		bool drawQueued = false;
 
 		VuVisualizer leftVu;
 		VuVisualizer rightVu;
