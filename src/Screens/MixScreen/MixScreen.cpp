@@ -5,6 +5,7 @@
 #include <FS/CompressedFile.h>
 #include "MixScreen.h"
 #include "../SongList/SongList.h"
+#include "../TextInputScreen/TextInputScreen.h"
 
 MixScreen::MixScreen* MixScreen::MixScreen::instance = nullptr;
 
@@ -57,13 +58,22 @@ void MixScreen::MixScreen::unpack(){
 }
 
 void MixScreen::MixScreen::returned(void* data){
+	String* filename = (String*) data;
+
+	if(doneRecording){
+		doneRecording = false;
+		SD.rename(MixSystem::recordPath, String("/") + *filename + ".aac");
+		delete filename;
+		return;
+	}
+
 	if(!f1){
 		f1 = SD.open(*((String*) data));
 	}else if(!f2){
 		f2 = SD.open(*((String*) data));
 	}
 
-	delete (String*) data;
+	delete filename;
 }
 
 void MixScreen::MixScreen::start(){
@@ -229,6 +239,11 @@ void MixScreen::MixScreen::loop(uint micros){
 		update = true;
 	}
 
+	if(system && system->isRecording() != isRecording){
+		isRecording = system->isRecording();
+		update = true;
+	}
+
 	bool songNameUpdateL = leftSongName->checkScrollUpdate();
 	bool songNameUpdateR = rightSongName->checkScrollUpdate();
 	if(update || songNameUpdateL || songNameUpdateR){
@@ -260,7 +275,14 @@ void MixScreen::MixScreen::startBigVu(){
 }
 
 void MixScreen::MixScreen::encTwoBot(){
+	if(system->isRecording()){
+		system->stopRecording();
+		doneRecording = true;
 
+		(new TextInputScreen::TextInputScreen(*screen.getDisplay()))->push(this);
+	}else{
+		system->startRecording();
+	}
 }
 
 void MixScreen::MixScreen::encFour(){

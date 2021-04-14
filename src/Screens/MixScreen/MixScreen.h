@@ -58,6 +58,7 @@ namespace MixScreen {
 
 		uint8_t selectedChannel = 0;
 		bool isRecording = false;
+		bool doneRecording = false;
 
 		uint32_t lastDraw = 0;
 
