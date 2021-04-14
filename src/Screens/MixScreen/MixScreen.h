@@ -33,6 +33,7 @@ namespace MixScreen {
 		virtual ~MixScreen();
 		void pack() override;
 		void unpack() override;
+		void setBigVuStarted(bool bigVuStarted);
 
 	private:
 		static MixScreen* instance;
@@ -66,7 +67,10 @@ namespace MixScreen {
 		VuVisualizer rightVu;
 		RoundVuVisualiser midVu;
 
+		bool bigVuStarted = true;
+
 		void startBigVu();
+		void stopBigVu();
 
 		void potMove(uint8_t id, uint8_t value) override;
 

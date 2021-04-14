@@ -28,7 +28,6 @@ MixScreen::MixScreen::MixScreen(Display& display) : Context(display),
 
 	instance = this;
 	buildUI();
-
 	MixScreen::pack();
 }
 
@@ -76,6 +75,11 @@ void MixScreen::MixScreen::returned(void* data){
 	delete filename;
 }
 
+
+void MixScreen::MixScreen::setBigVuStarted(bool bigVuStarted){
+	MixScreen::bigVuStarted = bigVuStarted;
+}
+
 void MixScreen::MixScreen::start(){
 	if(!f1 || !f2){
 		(new SongList::SongList(*getScreen().getDisplay()))->push(this);
@@ -97,7 +101,10 @@ void MixScreen::MixScreen::start(){
 
 	system->setChannelInfo(0, leftVu.getInfoGenerator());
 	system->setChannelInfo(1, rightVu.getInfoGenerator());
-	startBigVu();
+	system->setChannelInfo(2, midVu.getInfoGenerator());
+	if(bigVuStarted){
+		startBigVu();
+	}
 
 	uint8_t potMidVal = InputJayD::getInstance()->getPotValue(POT_MID);
 	system->setMix(potMidVal);
@@ -143,6 +150,8 @@ void MixScreen::MixScreen::stop(){
 
 	Input.removeListener(this);
 	InputJayD::getInstance()->removeListener(this);
+
+	stopBigVu();
 
 	if(system){
 		system->stop();
@@ -267,8 +276,11 @@ void MixScreen::MixScreen::potMove(uint8_t id, uint8_t value){
 }
 
 void MixScreen::MixScreen::startBigVu(){
-	system->setChannelInfo(2, midVu.getInfoGenerator());
 	LoopManager::addListener(&midVu);
+}
+
+void MixScreen::MixScreen::stopBigVu(){
+	LoopManager::removeListener(&midVu);
 }
 
 void MixScreen::MixScreen::encTwoBot(){
