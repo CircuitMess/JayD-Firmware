@@ -217,9 +217,9 @@ void InputTest::InputTest::start(){
 	});
 	InputJayD::getInstance()->setEncoderMovedCallback(2, [](int8_t value){
 		if(instance == nullptr) return;
-		if(instance->leftEncBtnTest[2]->isEncValueDone()) return;
+		if(instance->rightEncBtnTest[2]->isEncValueDone()) return;
 		instance->rightEncBtnTest[2]->encoderMove(value);
-		if(instance->leftEncBtnTest[2]->isEncValueDone()){
+		if(instance->rightEncBtnTest[2]->isEncValueDone()){
 			instance->doneCounter++;
 		}
 		instance->draw();
