@@ -74,7 +74,7 @@ void setup(){
 	InputJayD::getInstance()->addListener(&Input);
 	LoopManager::addListener(&Input);
 
-	if(!Settings.get().inputTested){
+	if(Settings.get().inputTested){
 		InputTest::InputTest* test = new InputTest::InputTest(display);
 		test->setDoneCallback([](InputTest::InputTest* test){
 			test->stop();
