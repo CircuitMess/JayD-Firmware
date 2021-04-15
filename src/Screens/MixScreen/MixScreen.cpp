@@ -62,13 +62,15 @@ void MixScreen::MixScreen::saveRecording(){
 		return;
 	}
 
-	if(SD.exists(saveFilename)){
-		SD.remove(saveFilename);
-	}
-
 	Task saveTask("MixSave", [](Task* task){
+		String saveFilename = * (String*) task->arg;
+
+		if(SD.exists(saveFilename)){
+			SD.remove(saveFilename);
+		}
+
 		File inFile = SD.open(MixSystem::recordPath);
-		File outFile = SD.open(* (String*) task->arg, "w");
+		File outFile = SD.open(saveFilename, "w");
 
 		SourceWAV input(inFile);
 		OutputAAC output(outFile);
@@ -90,6 +92,12 @@ void MixScreen::MixScreen::saveRecording(){
 	saveTask.start(1, 0);
 
 	while(!saveTask.isStopped()){
+		if(millis() - lastDraw >= 30){
+			lastDraw = millis();
+			drawSaveStatus();
+			screen.commit();
+		}
+
 		Sched.loop(0);
 	}
 
@@ -122,6 +130,7 @@ void MixScreen::MixScreen::setBigVuStarted(bool bigVuStarted){
 
 void MixScreen::MixScreen::start(){
 	if(doneRecording){
+		lastDraw = 0;
 		draw();
 		screen.commit();
 		saveRecording();
@@ -225,18 +234,24 @@ void MixScreen::MixScreen::draw(){
 	screen.draw();
 
 	if(doneRecording){
-		Sprite* canvas = screen.getSprite();
-
-		canvas->fillRoundRect((screen.getWidth() - 80) / 2, (screen.getHeight() - 40) / 2, 80, 40, 2, C_RGB(52, 204, 235));
-		canvas->drawRoundRect((screen.getWidth() - 80) / 2, (screen.getHeight() - 40) / 2, 80, 40, 2, TFT_BLACK);
-
-		auto font = canvas->startU8g2Fonts();
-		font.setForegroundColor(TFT_WHITE);
-		font.setFont(u8g2_font_DigitalDisco_tf);
-		font.setFontMode(1);
-		font.setCursor((screen.getWidth() - font.getUTF8Width("Saving...")) / 2, (screen.getHeight() - 40) / 2 + 25);
-		font.print("Saving...");
+		drawSaveStatus();
 	}
+}
+
+void MixScreen::MixScreen::drawSaveStatus(){
+	Sprite* canvas = screen.getSprite();
+
+	canvas->fillRoundRect((screen.getWidth() - 80) / 2, (screen.getHeight() - 40) / 2, 80, 40, 2, C_RGB(52, 204, 235));
+	canvas->drawRoundRect((screen.getWidth() - 80) / 2, (screen.getHeight() - 40) / 2, 80, 40, 2, TFT_BLACK);
+
+	auto font = canvas->startU8g2Fonts();
+	font.setForegroundColor(TFT_WHITE);
+	font.setFont(u8g2_font_DigitalDisco_tf);
+	font.setFontMode(1);
+	font.setCursor((screen.getWidth() - font.getUTF8Width("Saving...")) / 2, (screen.getHeight() - 40) / 2 + 23);
+	font.print("Saving...");
+
+	canvas->fillRoundRect((screen.getWidth() - 80) / 2 + 10 + (cos((float) millis() / 200.0f)+1) / 2.0f * 45.0f, (screen.getHeight() - 40) / 2 + 30, 15, 5, 2, TFT_WHITE);
 }
 
 void MixScreen::MixScreen::buildUI(){

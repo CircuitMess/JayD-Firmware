@@ -62,6 +62,7 @@ namespace MixScreen {
 		bool doneRecording = false;
 		String saveFilename;
 		void saveRecording();
+		void drawSaveStatus();
 
 
 		uint32_t lastDraw = 0;
