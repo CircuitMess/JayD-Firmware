@@ -146,6 +146,7 @@ void Playback::Playback::buildUI(){
 	screen.addChild(screenLayout);
 	screen.repos();
 
+	trackCount->setY(trackCount->getY() + 3);
 }
 
 void Playback::Playback::pack(){
