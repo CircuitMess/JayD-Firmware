@@ -84,7 +84,9 @@ void SongList::SongList::searchDirectories(File dir){
 			continue;
 		}
 
-		if(!String(f.name()).endsWith(".aac")){
+		String name = f.name();
+		name.toLowerCase();
+		if(!name.endsWith(".aac") || name[name.lastIndexOf('/') + 1] == '.'){
 			f.close();
 			continue;
 		}
