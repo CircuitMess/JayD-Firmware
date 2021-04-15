@@ -144,6 +144,9 @@ void MixScreen::MixScreen::start(){
 	Serial.printf("F1: %s\n", f1.name());
 	Serial.printf("F2: %s\n", f2.name());
 
+	f1.seek(0);
+	f2.seek(0);
+
 	String name = f1.name();
 	leftSongName->setSongName(name.substring(name.lastIndexOf('/') + 1, name.length() - 4));
 	name = f2.name();
@@ -178,6 +181,7 @@ void MixScreen::MixScreen::start(){
 
 	for(int i = 0; i < 6; i++){
 		effectElements[i]->setType(NONE);
+		effectElements[i]->setIntensity(0);
 	}
 
 
