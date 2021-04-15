@@ -13,12 +13,14 @@ namespace SongList {
 		void setSelected(bool selected);
 
 		const String& getName() const;
+		const String& getPath() const;
 
 		bool checkScrollUpdate();
 
 	private:
 		bool selected = false;
 		String songName;
+		String path;
 
 		bool scrolling = false;
 		const int32_t scrollSpeed = 100; //in milliseconds

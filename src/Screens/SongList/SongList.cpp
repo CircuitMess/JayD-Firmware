@@ -136,7 +136,7 @@ void SongList::SongList::start(){
 
 		if(instance->empty || !instance->insertedSD || instance->songs.size() <= instance->selectedElement) return;
 
-		String path = instance->songs[instance->selectedElement]->getName();
+		String path = instance->songs[instance->selectedElement]->getPath();
 		fs::File file = SD.open(path);
 		if(!file){
 			file.close();

@@ -1,6 +1,6 @@
 #include "ListItem.h"
 
-SongList::ListItem::ListItem(ElementContainer *parent, String songName) : CustomElement(parent, 150, 15), songName(songName){
+SongList::ListItem::ListItem(ElementContainer *parent, String songName) : CustomElement(parent, 150, 15), songName(songName), path(songName){
 
 	this->songName = songName.substring(songName.lastIndexOf('/') + 1, songName.lastIndexOf('.'));
 
@@ -80,4 +80,8 @@ bool SongList::ListItem::checkScrollUpdate(){
 		}
 		return true;
 	}
+}
+
+const String& SongList::ListItem::getPath() const{
+	return path;
 }
