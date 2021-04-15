@@ -1,14 +1,15 @@
 #include <SD.h>
 #include "SongList.h"
+#include "../MainMenu/MainMenu.h"
 #include <JayD.hpp>
 #include <Loop/LoopManager.h>
 #include <SPIFFS.h>
 #include <FS/CompressedFile.h>
 #include <U8g2_for_TFT_eSPI.h>
 
-SongList::SongList *SongList::SongList::instance = nullptr;
+SongList::SongList* SongList::SongList::instance = nullptr;
 
-SongList::SongList::SongList(Display &display) : Context(display){
+SongList::SongList::SongList(Display& display) : Context(display){
 	instance = this;
 
 	scrollLayout = new ScrollLayout(&getScreen());
@@ -152,8 +153,7 @@ void SongList::SongList::start(){
 		instance->pop(new String(path));
 	});
 
-	// LoopManager::addListener(this);
-
+	Input.addListener(this);
 	waiting = false;
 	checkSD();
 
@@ -164,12 +164,12 @@ void SongList::SongList::start(){
 void SongList::SongList::stop(){
 	InputJayD::getInstance()->removeEncoderMovedCallback(ENC_MID);
 	InputJayD::getInstance()->removeBtnPressCallback(BTN_MID);
-	LoopManager::removeListener(this);
+	Input.removeListener(this);
 }
 
 void SongList::SongList::draw(){
 
-	Sprite *canvas = screen.getSprite();
+	Sprite* canvas = screen.getSprite();
 
 	FontWriter u8f = canvas->startU8g2Fonts();
 
@@ -183,24 +183,23 @@ void SongList::SongList::draw(){
 
 	canvas->drawIcon(backgroundBuffer, 0, 0, 160, 19, 1);
 
-	u8f.setCursor((160 - u8f.getUTF8Width("SD card"))/2, 15);
+	u8f.setCursor((160 - u8f.getUTF8Width("SD card")) / 2, 15);
 	u8f.printf("SD card");
 
 	if(waiting){
-		u8f.setCursor((160 - u8f.getUTF8Width("Loading..."))/2, 65);
+		u8f.setCursor((160 - u8f.getUTF8Width("Loading...")) / 2, 65);
 		u8f.printf("Loading...");
 		return;
 	}
 
 	if(!insertedSD){
-		u8f.setCursor((160 - u8f.getUTF8Width("Not inserted!"))/2, 65);
+		u8f.setCursor((160 - u8f.getUTF8Width("Not inserted!")) / 2, 65);
 		u8f.printf("Not inserted!");
 	}else if(empty){
-		u8f.setCursor((160 - u8f.getUTF8Width("Empty!"))/2, 65);
+		u8f.setCursor((160 - u8f.getUTF8Width("Empty!")) / 2, 65);
 		u8f.printf("Empty!");
 
 	}
-
 
 
 }
@@ -233,12 +232,20 @@ void SongList::SongList::unpack(){
 
 	waiting = true;
 
-	backgroundBuffer = static_cast<Color *>(ps_malloc(160 * 128 * 2));
+	backgroundBuffer = static_cast<Color*>(ps_malloc(160 * 128 * 2));
 	if(backgroundBuffer == nullptr){
 		Serial.println("SongList bg buffer error");
 	}
 
 	fs::File bgFile = CompressedFile::open(SPIFFS.open("/SongListBackground.raw.hs"), 10, 9);
-	bgFile.read(reinterpret_cast<uint8_t *>(backgroundBuffer), 160 * 128 * 2);
+	bgFile.read(reinterpret_cast<uint8_t*>(backgroundBuffer), 160 * 128 * 2);
 	bgFile.close();
+}
+
+void SongList::SongList::encFour(){
+	delete parent;
+	stop();
+	delete this;
+	MainMenu::MainMenu::getInstance()->unpack();
+	MainMenu::MainMenu::getInstance()->start();
 }

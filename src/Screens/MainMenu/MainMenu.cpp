@@ -51,7 +51,6 @@ void MainMenu::MainMenu::start(){
 
 		Display& display = *instance->getScreen().getDisplay();
 		int8_t selected = instance->itemNum;
-
 		if(selected == 0){
 			Playback::Playback* playback = new Playback::Playback(display);
 			playback->setParent(instance);
@@ -64,6 +63,7 @@ void MainMenu::MainMenu::start(){
 			mix->setParent(instance);
 
 			SongList::SongList* songList = new SongList::SongList(display);
+			mix->setParent(instance);
 			songList->push(instance);
 			songList->setParent(mix);
 		}else if(selected == 2){
@@ -71,13 +71,10 @@ void MainMenu::MainMenu::start(){
 			settings->push(instance);
 		}
 	});
-
 	matrixManager.startRandom();
 	LoopManager::addListener(this);
-
 	jumpTime = 0;
 	items[itemNum]->isSelected(true);
-
 	draw();
 	screen.commit();
 }
@@ -163,4 +160,8 @@ void MainMenu::MainMenu::unpack(){
 
 	jumpTime = 0;
 	items[itemNum]->isSelected(true);
+}
+
+MainMenu::MainMenu* MainMenu::MainMenu::getInstance(){
+	return instance;
 }

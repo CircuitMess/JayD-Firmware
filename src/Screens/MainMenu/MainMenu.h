@@ -28,6 +28,7 @@ namespace MainMenu {
 
 		void unpack() override;
 
+		static MainMenu* getInstance();
 	private:
 
 		static MainMenu *instance;
