@@ -20,7 +20,7 @@ void Playback::SongName::draw(){
 		while(correctedCursor + u8f.getUTF8Width(temp.c_str()) >= (int)(getWidth())){
 			temp.remove(temp.length() - 1);
 		}
-		u8f.setCursor(getTotalX() + correctedCursor, getTotalY() + 20);
+		u8f.setCursor(getTotalX() + correctedCursor, getTotalY() + 23);
 		u8f.print(temp);
 
 		temp = songName;
@@ -32,10 +32,10 @@ void Playback::SongName::draw(){
 		while(correctedCursor + u8f.getUTF8Width(temp.c_str()) >= (int)(getWidth()) && temp.length() > 0){
 			temp.remove(temp.length() - 1);
 		}
-		u8f.setCursor(getTotalX() + correctedCursor, getTotalY() + 20);
+		u8f.setCursor(getTotalX() + correctedCursor, getTotalY() + 23);
 		u8f.print(temp);
 	}else{
-		u8f.setCursor(getTotalX() + scrollCursor, getTotalY() + 20);
+		u8f.setCursor(getTotalX() + scrollCursor, getTotalY() + 23);
 		u8f.print(songName);
 	}
 }

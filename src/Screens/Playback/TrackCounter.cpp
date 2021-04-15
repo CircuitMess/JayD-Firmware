@@ -13,15 +13,15 @@ void Playback::TrackCounter::draw(){
 	else {
 		fillSeekBar=(((float) currentDuration) / (float)totalDuration ) * 140.0f;
 	}
-	getSprite()->fillRoundRect(getTotalX()+10, getTotalY() + 10, fillSeekBar, 8, 5, TFT_GREENYELLOW);
-	getSprite()->drawRoundRect(getTotalX()+10, getTotalY() + 10, 140, 8, 5, TFT_WHITE);
+	getSprite()->fillRoundRect(getTotalX()+10, getTotalY() + 10, fillSeekBar, 8, 3, TFT_GREENYELLOW);
+	getSprite()->drawRoundRect(getTotalX()+10, getTotalY() + 10, 140, 8, 3, TFT_WHITE);
 	FontWriter u8f = getSprite()->startU8g2Fonts();
-	u8f.setCursor(getTotalX()+10, getTotalY());
+	u8f.setCursor(getTotalX()+10, getTotalY() + 5);
 	u8f.setFont(u8g2_font_HelvetiPixel_tr);
 	u8f.setFontMode(1);
 	u8f.setForegroundColor(TFT_WHITE);
 	u8f.printf("%02d:%02d", currentDuration / 60, currentDuration - (currentDuration / 60) * 60);
-	u8f.setCursor(getTotalX() + 117, getTotalY());
+	u8f.setCursor(getTotalX() + 117, getTotalY() + 5);
 	u8f.printf("%02d:%02d", totalDuration / 60, totalDuration - (totalDuration / 60) * 60);
 
 }

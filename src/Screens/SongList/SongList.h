@@ -8,9 +8,10 @@
 #include <UI/ScrollLayout.h>
 #include "ListItem.h"
 #include <Input/InputJayD.h>
+#include "../../InputKeys.h"
 
 namespace SongList {
-	class SongList : public Context, public LoopListener {
+	class SongList : public Context, public LoopListener, public InputListener {
 	public:
 
 		explicit SongList(Display &display);
@@ -46,6 +47,7 @@ namespace SongList {
 
 		void searchDirectories(File dir);
 
+		void encTwoTop() override;
 		bool waiting = false;
 		bool insertedSD = true;
 		bool empty = true;

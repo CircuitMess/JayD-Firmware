@@ -60,8 +60,17 @@ namespace MixScreen {
 		uint8_t selectedChannel = 0;
 		bool isRecording = false;
 		bool doneRecording = false;
+		String saveFilename;
+		void saveRecording();
+		void drawSaveStatus();
+
 
 		uint32_t lastDraw = 0;
+		bool drawQueued = false;
+
+		uint32_t seekTime = 0;
+		bool wasRunning = false;
+		int8_t seekChannel = -1;
 
 		VuVisualizer leftVu;
 		VuVisualizer rightVu;
@@ -75,7 +84,7 @@ namespace MixScreen {
 		void potMove(uint8_t id, uint8_t value) override;
 
 		void encTwoBot() override;
-		void encFour() override;
+		void encTwoTop() override;
 		void btnCombination() override;
 		void btn(uint8_t i) override;
 		void btnEnc(uint8_t i) override;

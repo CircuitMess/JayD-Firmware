@@ -26,8 +26,8 @@ const std::unordered_map<uint8_t, uint8_t> InputKeys::mapEnc = {
 void InputListener::btnEnc(uint8_t i){ }
 void InputListener::btn(uint8_t i){ }
 void InputListener::btnCombination(){ }
+void InputListener::encTwoTop(){ }
 void InputListener::encTwoBot(){ }
-void InputListener::encFour(){ }
 void InputListener::enc(uint8_t i, int8_t value){ }
 void InputListener::encBtnHold(uint8_t i){}
 
@@ -60,10 +60,23 @@ void InputKeys::buttonPress(uint8_t id){
 		}
 	}
 
-	if(btnEncStates[0] && btnEncStates[2] && btnEncStates[3] && btnEncStates[5]){
+	if(btnEncStates[0] && btnEncStates[3]){
+		twoTop = true;
+
 		for(auto listener : listeners){
 			if(listener == nullptr) continue;
-			listener->encFour();
+			listener->encTwoTop();
+			return;
+		}
+	}
+
+	if(btnEncStates[2] && btnEncStates[5]){
+		twoBot = true;
+
+		for(auto listener : listeners){
+			if(listener == nullptr) continue;
+			listener->encTwoBot();
+			return;
 		}
 	}
 }
@@ -87,28 +100,18 @@ void InputKeys::buttonRelease(uint8_t id){
 	btnEncStates[index] = false;
 	btnEncTime[index] = 0;
 
-	bool twoButton = id == BTN_L3 || id == BTN_R3;
-	for(int i = 0; i < 6; i++){
-		if(i == index){
-			continue;
-		}else if(i == 2 || i == 5){
-			twoButton &= btnEncStates[i];
-		}else{
-			twoButton &= !btnEncStates[i];
-		}
-	}
-
-	if(twoButton){
-		for(auto listener : listeners){
-			if(listener == nullptr) continue;
-			listener->encTwoBot();
-		}
-
+	if(btnEncHeld[index]){
+		btnEncHeld[index] = false;
 		return;
 	}
 
-	if(btnEncHeld[index]){
-		btnEncHeld[index] = false;
+	if(twoTop && (index == 0 || index == 3)){
+		twoTop = btnEncStates[0] || btnEncStates[3];
+		return;
+	}
+
+	if(twoBot && (index == 2 || index == 5)){
+		twoBot = btnEncStates[2] || btnEncStates[5];
 		return;
 	}
 
