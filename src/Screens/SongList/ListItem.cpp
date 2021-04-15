@@ -15,7 +15,7 @@ void SongList::ListItem::draw(){
 	u8f.setCursor(getTotalX()+2, getTotalY()+9);
 
 	String name = songName;
-	name = name.substring(name.lastIndexOf('/') + 1);
+	name = name.substring(name.lastIndexOf('/') + 1, name.lastIndexOf('.'));
 	u8f.println(name);
 
 	if(selected){
