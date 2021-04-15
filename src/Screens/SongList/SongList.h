@@ -47,7 +47,7 @@ namespace SongList {
 
 		void searchDirectories(File dir);
 
-		void encFour() override;
+		void encTwoTop() override;
 		bool waiting = false;
 		bool insertedSD = true;
 		bool empty = true;

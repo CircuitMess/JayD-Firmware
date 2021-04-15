@@ -63,7 +63,7 @@ namespace Playback {
 		bool wasRunning = false;
 
 		void potMove(uint8_t id, uint8_t value) override;
-		void encFour() override;
+		void encTwoTop() override;
 		void btnEnc(uint8_t i) override;
 		void enc(uint8_t id, int8_t value) override;
 	};

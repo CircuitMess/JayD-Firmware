@@ -15,8 +15,8 @@ private:
 	virtual void btnEnc(uint8_t i);
 	virtual void btn(uint8_t i);
 	virtual void btnCombination();
+	virtual void encTwoTop();
 	virtual void encTwoBot();
-	virtual void encFour();
 	virtual void enc(uint8_t i, int8_t value);
 	virtual void encBtnHold(uint8_t i);
 
@@ -43,6 +43,9 @@ private:
 	static const uint32_t holdTime = 500;
 	uint32_t btnEncTime[7] = { 0 };
 	bool btnEncHeld[7] = { false };
+
+	bool twoBot = false;
+	bool twoTop = false;
 
 	Vector<InputListener*> listeners;
 };

@@ -84,7 +84,7 @@ namespace MixScreen {
 		void potMove(uint8_t id, uint8_t value) override;
 
 		void encTwoBot() override;
-		void encFour() override;
+		void encTwoTop() override;
 		void btnCombination() override;
 		void btn(uint8_t i) override;
 		void btnEnc(uint8_t i) override;

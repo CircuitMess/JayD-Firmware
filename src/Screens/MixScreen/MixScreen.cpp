@@ -399,7 +399,7 @@ void MixScreen::MixScreen::encTwoBot(){
 	}
 }
 
-void MixScreen::MixScreen::encFour(){
+void MixScreen::MixScreen::encTwoTop(){
 	pop();
 }
 

@@ -235,7 +235,7 @@ void SongList::SongList::unpack(){
 	bgFile.close();
 }
 
-void SongList::SongList::encFour(){
+void SongList::SongList::encTwoTop(){
 	delete parent;
 	stop();
 	delete this;

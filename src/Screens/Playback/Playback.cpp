@@ -224,6 +224,6 @@ void Playback::Playback::enc(uint8_t id, int8_t value) {
 	}
 }
 
-void Playback::Playback::encFour() {
+void Playback::Playback::encTwoTop() {
 	(new SongList::SongList(*getScreen().getDisplay()))->push(this);
 }
