@@ -33,41 +33,37 @@ void SongList::SongList::checkSD(){
 	selectedElement = 0;
 	empty = true;
 
-	songs.push_back(new ListItem(list, "Refresh"));
-	list->addChild(songs.back());
-	songs.back()->setSelected(true);
-	list->reflow();
-	list->repos();
-	scrollLayout->scrollIntoView(0, 2);
-
 	if(!insertedSD){
 		insertedSD = SD.begin(22, SPI);
 	}
 
-	SD.begin(22, SPI);
-
-	if(insertedSD){
-		// TODO
-		// Empty card inserted, taken out, press refresh
-		// SD started, opened root returns true
-		File root = SD.open("/");
-		insertedSD = root;
-
-		if(!insertedSD){
-			root.close();
-			draw();
-			screen.commit();
-			return;
-		}
-
-		searchDirectories(root);
-		root.close();
-		empty = songs.size() == 1;
+	if(!insertedSD){
+		draw();
+		screen.commit();
+		return;
 	}
+
+	// TODO
+	// Empty card inserted, taken out, press refresh
+	// SD started, opened root returns true
+	File root = SD.open("/");
+	insertedSD = root;
+	if(!insertedSD){
+		root.close();
+		draw();
+		screen.commit();
+		return;
+	}
+
+	searchDirectories(root);
+	root.close();
+	empty = songs.empty();
 
 	if(!empty){
 		list->reflow();
 		list->repos();
+		scrollLayout->scrollIntoView(0, 5);
+		songs.front()->setSelected(true);
 	}
 
 	draw();
@@ -132,7 +128,7 @@ void SongList::SongList::start(){
 	InputJayD::getInstance()->setBtnPressCallback(BTN_MID, [](){
 		if(instance == nullptr) return;
 
-		if(instance->selectedElement == 0){
+		if(!instance->insertedSD){
 			instance->checkSD();
 			return;
 		}
@@ -198,10 +194,7 @@ void SongList::SongList::draw(){
 	}else if(empty){
 		u8f.setCursor((160 - u8f.getUTF8Width("Empty!")) / 2, 65);
 		u8f.printf("Empty!");
-
 	}
-
-
 }
 
 void SongList::SongList::buildUI(){
