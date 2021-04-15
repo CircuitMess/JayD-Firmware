@@ -123,7 +123,6 @@ void MixScreen::MixScreen::returned(void* data){
 	delete filename;
 }
 
-
 void MixScreen::MixScreen::setBigVuStarted(bool bigVuStarted){
 	MixScreen::bigVuStarted = bigVuStarted;
 }
@@ -296,6 +295,19 @@ void MixScreen::MixScreen::buildUI(){
 }
 
 void MixScreen::MixScreen::loop(uint micros){
+	if(seekTime != 0 && millis() - seekTime >= 100){
+		SongSeekBar* bar = seekChannel ? rightSeekBar : leftSeekBar;
+
+		system->seekChannel(seekChannel, bar->getCurrentDuration());
+
+		if(wasRunning){
+			system->resumeChannel(seekChannel);
+		}
+
+		seekChannel = -1;
+		seekTime = 0;
+	}
+
 	bool update = false;
 	for(const auto& element : effectElements){
 		update |= element->needsUpdate();
@@ -312,17 +324,31 @@ void MixScreen::MixScreen::loop(uint micros){
 	}
 
 	if(system && system->getElapsed(0) != leftSeekBar->getCurrentDuration()){
-		leftSeekBar->setCurrentDuration(system->getElapsed(0));
-		update = true;
+		if(seekTime == 0 || seekChannel != 0){
+			leftSeekBar->setCurrentDuration(system->getElapsed(0));
+			update = true;
+		}
 	}
 
 	if(system && system->getElapsed(1) != rightSeekBar->getCurrentDuration()){
-		rightSeekBar->setCurrentDuration(system->getElapsed(1));
-		update = true;
+		if(seekTime == 0 || seekChannel != 1){
+			rightSeekBar->setCurrentDuration(system->getElapsed(1));
+			update = true;
+		}
 	}
 
 	if(system && system->isRecording() != isRecording){
 		isRecording = system->isRecording();
+		update = true;
+	}
+
+	if(system && system->isChannelPaused(0) != !leftSeekBar->isPlaying() && seekTime == 0){
+		leftSeekBar->setPlaying(!system->isChannelPaused(0));
+		update = true;
+	}
+
+	if(system && system->isChannelPaused(1) != !rightSeekBar->isPlaying() && seekTime == 0){
+		rightSeekBar->setPlaying(!system->isChannelPaused(0));
 		update = true;
 	}
 
@@ -414,8 +440,19 @@ void MixScreen::MixScreen::btnEnc(uint8_t i){
 void MixScreen::MixScreen::enc(uint8_t index, int8_t value){
 
 	if(index == 6){
-		uint16_t seekTime = constrain(system->getElapsed(selectedChannel) + value, 0, system->getDuration(selectedChannel));
-		system->seekChannel(selectedChannel, seekTime);
+		if(seekTime == 0){
+			seekChannel = selectedChannel;
+			wasRunning = !system->isChannelPaused(selectedChannel);
+			system->pauseChannel(selectedChannel);
+		}
+
+		seekTime = millis();
+
+		SongSeekBar* bar = seekChannel ? rightSeekBar : leftSeekBar;
+		uint16_t seekTime = constrain( bar->getCurrentDuration() + value, 0, system->getDuration(selectedChannel));
+		bar->setCurrentDuration(seekTime);
+
+		drawQueued = true;
 		return;
 	}
 

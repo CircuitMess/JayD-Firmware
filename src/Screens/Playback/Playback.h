@@ -59,6 +59,9 @@ namespace Playback {
 		uint32_t lastDraw = 0;
 		bool drawQueued = false;
 
+		uint32_t seekTime = 0;
+		bool wasRunning = false;
+
 		void potMove(uint8_t id, uint8_t value) override;
 		void encFour() override;
 		void btnEnc(uint8_t i) override;

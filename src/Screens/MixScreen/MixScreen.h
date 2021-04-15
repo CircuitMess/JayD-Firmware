@@ -68,6 +68,10 @@ namespace MixScreen {
 		uint32_t lastDraw = 0;
 		bool drawQueued = false;
 
+		uint32_t seekTime = 0;
+		bool wasRunning = false;
+		int8_t seekChannel = -1;
+
 		VuVisualizer leftVu;
 		VuVisualizer rightVu;
 		RoundVuVisualiser midVu;

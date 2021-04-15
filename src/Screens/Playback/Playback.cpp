@@ -27,9 +27,18 @@ Playback::Playback::~Playback(){
 }
 
 void Playback::Playback::loop(uint micros){
+	if(seekTime != 0 && millis() - seekTime >= 50){
+		seekTime = 0;
+		system->seek(trackCount->getCurrentDuration());
+
+		if(wasRunning){
+			system->start();
+		}
+	}
+
 	bool update = songName->checkScrollUpdate();
 
-	if(system->getElapsed() != trackCount->getCurrentDuration()){
+	if(system->getElapsed() != trackCount->getCurrentDuration() && seekTime == 0){
 		update = true;
 		trackCount->setCurrentDuration(system->getElapsed());
 	}
@@ -201,10 +210,17 @@ void Playback::Playback::btnEnc(uint8_t i) {
 
 void Playback::Playback::enc(uint8_t id, int8_t value) {
 	if(id == 6) {
-		uint16_t seekTime = max(0, trackCount->getCurrentDuration() + value);
-		if (seekTime >= 0 && seekTime <= trackCount->getTotalDuration()) {
-			system->seek(seekTime);
+		if(seekTime == 0){
+			wasRunning = system->isRunning();
+			system->stop();
 		}
+
+		seekTime = millis();
+
+		uint16_t seekTime = constrain(trackCount->getCurrentDuration() + value, 0, system->getDuration());
+		trackCount->setCurrentDuration(seekTime);
+
+		drawQueued = true;
 	}
 }
 
