@@ -60,6 +60,9 @@ namespace MixScreen {
 		uint8_t selectedChannel = 0;
 		bool isRecording = false;
 		bool doneRecording = false;
+		String saveFilename;
+		void saveRecording();
+
 
 		uint32_t lastDraw = 0;
 		bool drawQueued = false;

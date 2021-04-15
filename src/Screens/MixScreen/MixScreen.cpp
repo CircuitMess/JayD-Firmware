@@ -56,12 +56,52 @@ void MixScreen::MixScreen::unpack(){
 	bgFile.close();
 }
 
+void MixScreen::MixScreen::saveRecording(){
+	if(!SD.exists(MixSystem::recordPath)){
+		doneRecording = false;
+		return;
+	}
+
+	if(SD.exists(saveFilename)){
+		SD.remove(saveFilename);
+	}
+
+	Task saveTask("MixSave", [](Task* task){
+		File inFile = SD.open(MixSystem::recordPath);
+		File outFile = SD.open(* (String*) task->arg, "w");
+
+		SourceWAV input(inFile);
+		OutputAAC output(outFile);
+
+		output.setSource(&input);
+		output.start();
+
+		while(output.isRunning()){
+			output.loop(0);
+		}
+
+		output.stop();
+		input.close();
+
+		inFile.close();
+		outFile.close();
+	}, 8 * 1024, &saveFilename);
+
+	saveTask.start(1, 0);
+
+	while(!saveTask.isStopped()){
+		Sched.loop(0);
+	}
+
+	SD.remove(MixSystem::recordPath);
+	doneRecording = false;
+}
+
 void MixScreen::MixScreen::returned(void* data){
 	String* filename = (String*) data;
 
 	if(doneRecording){
-		doneRecording = false;
-		SD.rename(MixSystem::recordPath, String("/") + *filename + ".aac");
+		saveFilename = String("/") + *filename + ".aac";
 		delete filename;
 		return;
 	}
@@ -81,6 +121,13 @@ void MixScreen::MixScreen::setBigVuStarted(bool bigVuStarted){
 }
 
 void MixScreen::MixScreen::start(){
+	if(doneRecording){
+		draw();
+		screen.commit();
+		saveRecording();
+	}
+
+
 	if(!f1 || !f2){
 		(new SongList::SongList(*getScreen().getDisplay()))->push(this);
 		return;
@@ -176,6 +223,20 @@ void MixScreen::MixScreen::draw(){
 		screen.getSprite()->fillCircle(79, 64, 4, TFT_RED);
 	}
 	screen.draw();
+
+	if(doneRecording){
+		Sprite* canvas = screen.getSprite();
+
+		canvas->fillRoundRect((screen.getWidth() - 80) / 2, (screen.getHeight() - 40) / 2, 80, 40, 2, C_RGB(52, 204, 235));
+		canvas->drawRoundRect((screen.getWidth() - 80) / 2, (screen.getHeight() - 40) / 2, 80, 40, 2, TFT_BLACK);
+
+		auto font = canvas->startU8g2Fonts();
+		font.setForegroundColor(TFT_WHITE);
+		font.setFont(u8g2_font_DigitalDisco_tf);
+		font.setFontMode(1);
+		font.setCursor((screen.getWidth() - font.getUTF8Width("Saving...")) / 2, (screen.getHeight() - 40) / 2 + 25);
+		font.print("Saving...");
+	}
 }
 
 void MixScreen::MixScreen::buildUI(){
