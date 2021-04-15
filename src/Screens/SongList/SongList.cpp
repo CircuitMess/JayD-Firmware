@@ -119,7 +119,7 @@ void SongList::SongList::start(){
 
 		instance->songs[instance->selectedElement]->setSelected(true);
 
-		instance->scrollLayout->scrollIntoView(instance->selectedElement, 2);
+		instance->scrollLayout->scrollIntoView(instance->selectedElement, 6);
 		instance->draw();
 		instance->screen.commit();
 
@@ -177,6 +177,10 @@ void SongList::SongList::draw(){
 
 	canvas->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1);
 
+	screen.draw();
+
+	canvas->drawIcon(backgroundBuffer, 0, 0, 160, 19, 1);
+
 	u8f.setCursor((160 - u8f.getUTF8Width("SD card"))/2, 15);
 	u8f.printf("SD card");
 
@@ -195,7 +199,8 @@ void SongList::SongList::draw(){
 
 	}
 
-	screen.draw();
+
+
 }
 
 void SongList::SongList::buildUI(){
