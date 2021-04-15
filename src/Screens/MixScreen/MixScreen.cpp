@@ -316,7 +316,7 @@ void MixScreen::MixScreen::loop(uint micros){
 	update |= songNameUpdateL | songNameUpdateR;
 
 	uint32_t currentTime = millis();
-	if((update || drawQueued) && (currentTime - lastDraw) >= 50){
+	if((update || drawQueued) && (currentTime - lastDraw) >= (isRecording ? 200 : 50)){
 		drawQueued = false;
 		draw();
 		screen.commit();
@@ -399,12 +399,8 @@ void MixScreen::MixScreen::btnEnc(uint8_t i){
 void MixScreen::MixScreen::enc(uint8_t index, int8_t value){
 
 	if(index == 6){
-		SongSeekBar* bar = selectedChannel == 0 ? leftSeekBar : rightSeekBar;
-		uint16_t seekTime = max(0, bar->getCurrentDuration() + value);
-
-		if(seekTime >= 0 && seekTime <= bar->getTotalDuration()){
-			system->seekChannel(selectedChannel, seekTime);
-		}
+		uint16_t seekTime = constrain(system->getElapsed(selectedChannel) + value, 0, system->getDuration(selectedChannel));
+		system->seekChannel(selectedChannel, seekTime);
 		return;
 	}
 
