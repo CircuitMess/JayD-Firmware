@@ -100,8 +100,9 @@ void SongList::SongList::searchDirectories(File dir){
 }
 
 void SongList::SongList::loop(uint t){
-	if(millis() - prevSDCheck > checkInterval){
-		checkSD();
+	if(songs[selectedElement]->checkScrollUpdate()) {
+		draw();
+		screen.commit();
 	}
 }
 
@@ -157,6 +158,8 @@ void SongList::SongList::start(){
 	waiting = false;
 	checkSD();
 
+	LoopManager::addListener(this);
+
 	draw();
 	screen.commit();
 }
@@ -165,6 +168,7 @@ void SongList::SongList::stop(){
 	InputJayD::getInstance()->removeEncoderMovedCallback(ENC_MID);
 	InputJayD::getInstance()->removeBtnPressCallback(BTN_MID);
 	Input.removeListener(this);
+	LoopManager::removeListener(this);
 }
 
 void SongList::SongList::draw(){
