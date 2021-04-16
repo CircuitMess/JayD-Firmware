@@ -184,14 +184,12 @@ void MixScreen::MixScreen::start(){
 		effectElements[i]->setIntensity(0);
 	}
 
-	system->setChannelDoneCallback(0, [](){
-		instance->leftSeekBar->setPlaying(false);
-		Serial.println("left done");
+	/*system->setChannelDoneCallback(0, [](){
+		instance->system->resumeChannel(0);
 	});
 	system->setChannelDoneCallback(1, [](){
-		instance->rightSeekBar->setPlaying(false);
-		Serial.println("right done");
-	});
+		instance->system->resumeChannel(1);
+	});*/
 
 
 	Serial.printf("System constructed. Heap: %u B, PSRAM: %u B\n", ESP.getFreeHeap(), ESP.getFreePsram());
