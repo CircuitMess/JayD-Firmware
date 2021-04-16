@@ -1,11 +1,14 @@
 #include "HardwareTest.h"
 #include <SPI.h>
 #include <SD.h>
+#include <AudioLib/SourceAAC.h>
+#include <AudioLib/Systems/PlaybackSystem.h>
 #include "Wire.h"
 #include "JayD.hpp"
 #include "SPIFFS.h"
-#include "SPIFFSChecksums.hpp"
+#include "HWTestSPIFFS.hpp"
 #include "Devices/LEDmatrix/LEDmatrix.h"
+#include "HWTestSD.hpp"
 
 HardwareTest *HardwareTest::test = nullptr;
 
@@ -16,6 +19,7 @@ HardwareTest::HardwareTest(Display &_display) : canvas(_display.getBaseSprite())
 	tests.push_back({HardwareTest::psram, "PSRAM"});
 	tests.push_back({HardwareTest::nuvotonTest, "Nuvoton"});
 	tests.push_back({HardwareTest::sdTest, "SD Card"});
+	tests.push_back({HardwareTest::sdTest, "SD Data"});
 	tests.push_back({HardwareTest::matrixTest, "LED Matrix"});
 	tests.push_back({HardwareTest::SPIFFSTest, "SPIFFS"});
 
@@ -38,7 +42,7 @@ void HardwareTest::start(){
 	canvas->setTextSize(1);
 	canvas->setCursor(0, 0);
 	canvas->printCenter("JayD Hardware Test");
-	canvas->setCursor(0, 10);
+	canvas->setCursor(0, 8);
 	canvas->println();
 	canvas->setTextFont(1);
 	display->commit();
@@ -61,6 +65,8 @@ void HardwareTest::start(){
 		if(!(pass &= result)) break;
 	}
 
+	canvas->setCursor(0, 103);
+
 	if(pass){
 		Serial.println("TEST:pass");
 
@@ -73,6 +79,7 @@ void HardwareTest::start(){
 		auditorySoundTest();
 		visualMatrixTest();
 	}else{
+		canvas->setTextColor(TFT_RED);
 		Serial.printf("TEST:fail:%s\n", currentTest);
 	}
 
@@ -190,6 +197,29 @@ bool HardwareTest::sdTest(){
 	return true;
 }
 
+bool HardwareTest::sdData(){
+	for(const auto & check : SDSizes){
+		File f = SD.open(String("/") + check.name);
+		if(!f){
+			test->log("Failed opening", check.name);
+			f.close();
+			return false;
+		}
+
+		if(f.size() != check.size){
+			char logBuffer[100];
+			sprintf(logBuffer, "%s - expected %d, got %lu", check.name.c_str(), check.size, f.size());
+			test->log("Size mismatch", logBuffer);
+			f.close();
+			return false;
+		}
+
+		f.close();
+	}
+
+	return true;
+}
+
 bool HardwareTest::matrixTest(){
 
 	LEDmatrixImpl* ledMatrix = new LEDmatrixImpl(16, 9);
@@ -218,12 +248,12 @@ bool HardwareTest::SPIFFSTest(){
 		return false;
 	}
 
-	for(const auto & SPIFFSChecksum : SPIFFSChecksums){
+	for(const auto & check : SPIFFSChecksums){
 
-		file = SPIFFS.open(SPIFFSChecksum.name);
+		file = SPIFFS.open(check.name);
 
 		if(!file){
-			test->log("File open error",SPIFFSChecksum.name);
+			test->log("File open error", check.name);
 			return false;
 		}
 
@@ -235,17 +265,16 @@ bool HardwareTest::SPIFFSTest(){
 			fileBytesSum+=buff;
 		}
 
-		if(fileBytesSum != SPIFFSChecksum.sum){
+		if(fileBytesSum != check.sum){
 			char logBuffer[100];
-			sprintf(logBuffer, "Expected %d, got %d",SPIFFSChecksum.sum,fileBytesSum);
-			test->log("File size error",SPIFFSChecksum.sum);
+			sprintf(logBuffer, "%s - expected %d, got %d", check.name.c_str(), check.sum, fileBytesSum);
+			test->log("Checksum mismatch", logBuffer);
+			file.close();
 			return false;
 		}
 
 		file.close();
 	}
-
-	SPIFFS.end();
 
 	return true;
 }
@@ -253,56 +282,14 @@ bool HardwareTest::SPIFFSTest(){
 void HardwareTest::auditorySoundTest(){
 
 	File file;
-	if(!(file = SD.open("/Walter.wav"))){
+	if(!(file = SPIFFS.open("/intro.aac"))){
+		Serial.println("ffail");
 		for(;;);
 	}
 
-	auto *wav = new SourceWAV(file);
-
-	auto *i2s = new OutputI2S({
-									  .mode = i2s_mode_t(I2S_MODE_MASTER | I2S_MODE_TX),
-									  .sample_rate = 48000,
-									  .bits_per_sample = I2S_BITS_PER_SAMPLE_32BIT,
-									  .channel_format = I2S_CHANNEL_FMT_ONLY_LEFT,
-									  .communication_format = i2s_comm_format_t(
-											  I2S_COMM_FORMAT_I2S | I2S_COMM_FORMAT_I2S_MSB),
-									  .intr_alloc_flags = 0,
-									  .dma_buf_count = 32,
-									  .dma_buf_len = 512,
-									  .use_apll = false
-							  }, i2s_pin_config, I2S_NUM_0);
-
-	i2s->setSource(wav);
-
-	i2s->setGain(0.1);
-	i2s->start();
-
-	/* I2S running test*/
-	if(!i2s->isRunning()){
-		for(;;);
-	}
-
-	/* Audio Task -> Core 0*/
-	Task audioTask("Audio", [](Task *task){
-		auto *i2s = (OutputI2S *) task->arg;
-		uint32_t currTime = millis();
-
-		while(task->running){
-			Sched.loop(0);
-
-			if(i2s->isRunning() && (millis()-currTime) < 6000){
-				i2s->loop(0);
-			}
-			else{
-				i2s->stop();
-				task->running = false;
-			}
-		}
-	});
-
-	audioTask.arg = (void *) i2s;
-
-	audioTask.start(1, 0);
+	PlaybackSystem* system = new PlaybackSystem(file);
+	system->setVolume(100);
+	system->start();
 }
 
 void HardwareTest::visualMatrixTest(){
@@ -321,7 +308,7 @@ void HardwareTest::visualMatrixTest(){
 
 	/* Individual LED test */
 	for(int i = 0; i < 144; ++i){
-
+		Sched.loop(0);
 		ledMatrix->drawPixel(i, brightness / 2);
 		ledMatrix->push();
 		delay(5);

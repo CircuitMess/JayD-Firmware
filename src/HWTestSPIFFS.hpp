@@ -12,7 +12,7 @@ static const struct {
 		{ "/highpass.g565",  996},
 		{ "/highpassBlue.raw",  18048},
 		{ "/highpassRed.raw",  13848},
-		{"/intro.aac",12666490},
+		{"/intro.aac",6268909},
 		{ "/intro.g565.hs",  3752781},
 		{ "/jayD_logo.raw.hs",  23527},
 		{ "/lowpass.g565",  996},

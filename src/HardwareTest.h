@@ -37,13 +37,12 @@ private:
 	static bool psram();
 	static bool nuvotonTest();
 	static bool sdTest();
+	static bool sdData();
 	static bool matrixTest();
 	static bool SPIFFSTest();
 
 	void visualMatrixTest();
 	void auditorySoundTest();
-
-	void beeping();
 };
 
 
