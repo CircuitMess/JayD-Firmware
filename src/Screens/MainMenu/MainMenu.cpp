@@ -11,23 +11,12 @@
 MainMenu::MainMenu* MainMenu::MainMenu::instance = nullptr;
 
 MainMenu::MainMenu::MainMenu(Display& display) : Context(display), screenLayout(new LinearLayout(&screen, HORIZONTAL)){
-	for(int i = 0; i < 3; i++){
-		item.push_back(new MainMenuItem(screenLayout, static_cast<MenuItemType>(i)));
-	}
-
-	backgroundPicture = CompressedFile::open(SPIFFS.open("/mainMenuBackground.raw.hs"), 14, 10);
-	jayDlogo = CompressedFile::open(SPIFFS.open("/jayD_logo.raw.hs"), 8, 7);
-
 	instance = this;
-	instance->item[1]->isSelected(true);
 	buildUI();
-
-	pack();
+	MainMenu::pack();
 }
 
 MainMenu::MainMenu::~MainMenu(){
-	backgroundPicture.close();
-	jayDlogo.close();
 	instance = nullptr;
 	free(backgroundBuffer);
 	free(logoBuffer);
@@ -48,10 +37,10 @@ void MainMenu::MainMenu::start(){
 		if(instance->itemNum == newSelected) return;
 		instance->itemNum = newSelected;
 
-		for(MainMenuItem* i : instance->item){
+		for(MainMenuItem* i : instance->items){
 			i->isSelected(false);
 		}
-		instance->item[instance->itemNum]->isSelected(true);
+		instance->items[instance->itemNum]->isSelected(true);
 
 		instance->draw();
 		instance->screen.commit();
@@ -62,15 +51,19 @@ void MainMenu::MainMenu::start(){
 
 		Display& display = *instance->getScreen().getDisplay();
 		int8_t selected = instance->itemNum;
-
 		if(selected == 0){
 			Playback::Playback* playback = new Playback::Playback(display);
+			playback->setParent(instance);
+
 			SongList::SongList* songList = new SongList::SongList(display);
 			songList->push(instance);
 			songList->setParent(playback);
 		}else if(selected == 1){
 			MixScreen::MixScreen* mix = new MixScreen::MixScreen(display);
+			mix->setParent(instance);
+
 			SongList::SongList* songList = new SongList::SongList(display);
+			mix->setParent(instance);
 			songList->push(instance);
 			songList->setParent(mix);
 		}else if(selected == 2){
@@ -78,14 +71,12 @@ void MainMenu::MainMenu::start(){
 			settings->push(instance);
 		}
 	});
-
 	matrixManager.startRandom();
-
+	LoopManager::addListener(this);
 	jumpTime = 0;
+	items[itemNum]->isSelected(true);
 	draw();
 	screen.commit();
-
-	LoopManager::addListener(this);
 }
 
 void MainMenu::MainMenu::stop(){
@@ -107,8 +98,8 @@ void MainMenu::MainMenu::buildUI(){
 	screenLayout->setWHType(PARENT, PARENT);
 	screenLayout->setGutter(31);
 
-	for(int i = 0; i < item.size(); i++){
-		screenLayout->addChild(item[i]);
+	for(auto item : items){
+		screenLayout->addChild(item);
 	}
 
 	screenLayout->reflow();
@@ -130,25 +121,47 @@ void MainMenu::MainMenu::pack(){
 	free(logoBuffer);
 	backgroundBuffer = nullptr;
 	logoBuffer = nullptr;
+
+	for(auto item : items){
+		delete item;
+	}
+	screenLayout->getChildren().clear();
+	items.clear();
 }
 
 void MainMenu::MainMenu::unpack(){
 	Context::unpack();
+
+	fs::File backgroundPicture = CompressedFile::open(SPIFFS.open("/mainMenuBackground.raw.hs"), 14, 10);
+	fs::File jayDlogo = CompressedFile::open(SPIFFS.open("/jayD_logo.raw.hs"), 8, 7);
+
 	backgroundBuffer = static_cast<Color*>(ps_malloc(160 * 128 * 2));
 	if(backgroundBuffer == nullptr){
 		Serial.println("MainMenu background picture unpack error");
 		return;
 	}
-
-	backgroundPicture.seek(0);
 	backgroundPicture.read(reinterpret_cast<uint8_t*>(backgroundBuffer), (160 * 128 * 2));
+	backgroundPicture.close();
 
 	logoBuffer = static_cast<Color*>(ps_malloc(45 * 42 * 2));
 	if(logoBuffer == nullptr){
 		Serial.println("MainMenu background picture unpack error");
 		return;
 	}
-
-	jayDlogo.seek(0);
 	jayDlogo.read(reinterpret_cast<uint8_t*>(logoBuffer), (45 * 42 * 2));
+	jayDlogo.close();
+
+	for(int i = 0; i < 3; i++){
+		items.push_back(new MainMenuItem(screenLayout, static_cast<MenuItemType>(i)));
+		screenLayout->addChild(items.back());
+	}
+	screenLayout->reflow();
+	screenLayout->repos();
+
+	jumpTime = 0;
+	items[itemNum]->isSelected(true);
+}
+
+MainMenu::MainMenu* MainMenu::MainMenu::getInstance(){
+	return instance;
 }

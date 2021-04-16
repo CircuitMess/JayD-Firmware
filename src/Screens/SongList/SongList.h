@@ -8,9 +8,10 @@
 #include <UI/ScrollLayout.h>
 #include "ListItem.h"
 #include <Input/InputJayD.h>
+#include "../../InputKeys.h"
 
 namespace SongList {
-	class SongList : public Context, public LoopListener {
+	class SongList : public Context, public LoopListener, public InputListener {
 	public:
 
 		explicit SongList(Display &display);
@@ -36,23 +37,24 @@ namespace SongList {
 
 		int selectedElement = 0;
 
-		fs::File background;
 		Color *backgroundBuffer = nullptr;
 
 		std::vector<ListItem *> songs;
-		std::vector<Element*> listTemp;
 
 		void buildUI();
 
-		void populateList();
+		void checkSD();
 
-		void searchDirectories(File file);
+		void searchDirectories(File dir);
 
-		bool insertedSD = false;
+		void encTwoTop() override;
+		bool waiting = false;
+		bool insertedSD = true;
+		bool empty = true;
 
 		uint32_t prevSDCheck = 0;
 
-		static const uint16_t sdCardInterval = 500;
+		static const uint16_t checkInterval = 500;
 	};
 }
 #endif //JAYD_FIRMWARE_SONGLIST_H

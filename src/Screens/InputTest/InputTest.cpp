@@ -2,15 +2,17 @@
 #include "InputTest.h"
 #include "../IntroScreen/IntroScreen.h"
 #include <Settings.h>
+#include <U8g2_for_TFT_eSPI.h>
+
 
 InputTest::InputTest* InputTest::InputTest::instance = nullptr;
-
 
 InputTest::InputTest::InputTest(Display& display) : Context(display), screenLayout(new LinearLayout(&screen, HORIZONTAL)),
 													leftLayout(new LinearLayout(screenLayout, VERTICAL)),
 													midLayout(new LinearLayout(screenLayout, HORIZONTAL)),
 													rightLayout(new LinearLayout(screenLayout, VERTICAL)),
 													bottomLayout(new LinearLayout(screenLayout, HORIZONTAL)){
+
 
 	for(int i = 0; i < 3; i++){
 		leftEncBtnTest.push_back(new EncTestElement(leftLayout, false));
@@ -35,7 +37,7 @@ InputTest::InputTest::InputTest(Display& display) : Context(display), screenLayo
 	instance = this;
 	buildUI();
 
-	pack();
+	InputTest::pack();
 }
 
 
@@ -61,6 +63,7 @@ void InputTest::InputTest::start(){
 		if(instance->bottomBtnTest[1]->isBtnPressed()){
 			instance->doneCounter++;
 		}
+		Serial.println(instance->doneCounter);
 		instance->draw();
 		instance->screen.commit();
 		instance->checkIfDone();
@@ -217,9 +220,9 @@ void InputTest::InputTest::start(){
 	});
 	InputJayD::getInstance()->setEncoderMovedCallback(2, [](int8_t value){
 		if(instance == nullptr) return;
-		if(instance->leftEncBtnTest[2]->isEncValueDone()) return;
+		if(instance->rightEncBtnTest[2]->isEncValueDone()) return;
 		instance->rightEncBtnTest[2]->encoderMove(value);
-		if(instance->leftEncBtnTest[2]->isEncValueDone()){
+		if(instance->rightEncBtnTest[2]->isEncValueDone()){
 			instance->doneCounter++;
 		}
 		instance->draw();
@@ -290,13 +293,20 @@ void InputTest::InputTest::draw(){
 	screen.getSprite()->clear(TFT_BLACK);
 	screenLayout->draw();
 	screenLayout->getSprite()->setTextColor(TFT_GREEN);
-	screenLayout->getSprite()->setTextSize(3);
-	screenLayout->getSprite()->setTextFont(1);
-	screenLayout->getSprite()->setCursor(screenLayout->getTotalX() + 30, screenLayout->getTotalY() + 20);
+	FontWriter u8f = screen.getSprite()->startU8g2Fonts();
 
-	if(doneCounter >= 18){
+	if(doneCounter >= 19){
 		screenLayout->getSprite()->fillRect(screenLayout->getTotalX(), screenLayout->getTotalY(), 160, 128, TFT_BLACK);
-		screenLayout->getSprite()->println("ALL OK\n  PRESS\n ANY KEY TO EXIT");
+		u8f.setFont(u8g2_font_DigitalDisco_tf);
+		u8f.setForegroundColor(TFT_GREEN);
+		u8f.setFontMode(1);
+		u8f.setCursor(screenLayout->getTotalX() + 50, screenLayout->getTotalY() + 40);
+		u8f.println("ALL OK!");
+		u8f.setFont(u8g2_font_profont12_tf);
+		u8f.setForegroundColor(TFT_WHITE);
+		u8f.setFontMode(1);
+		u8f.setCursor(screenLayout->getTotalX() + 17, screenLayout->getTotalY() + 80);
+		u8f.println("Press any key to exit");
 
 	}
 
@@ -370,7 +380,7 @@ InputTest::InputTest::~InputTest(){
 }
 
 void InputTest::InputTest::checkIfDone(){
-	if(doneCounter >= 18){
+	if(doneCounter >= 19){
 		checkDone = true;
 	}
 }

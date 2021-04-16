@@ -21,7 +21,7 @@ namespace Playback {
 	private:
 		bool playing = false;
 
-		Color *playPauseBuffer[4]={nullptr};
+		Color *icons[4]={ nullptr};
 
 	};
 }

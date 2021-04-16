@@ -4,27 +4,28 @@
 
 
 Playback::PlayPause::PlayPause(ElementContainer *parent) : CustomElement(parent, 160, 10){
-	fs::File picture[4]={
-			SPIFFS.open("/fw.raw"),
-			SPIFFS.open("/rew.raw"),
-			SPIFFS.open("/play.raw"),
-			SPIFFS.open("/pause.raw")
-
+	const char* const iconPaths[] = {
+			"/fw.raw",
+			"/rew.raw",
+			"/play.raw",
+			"/pause.raw"
 	};
-	for(int i=0;i<4;i++){
 
-		playPauseBuffer[i] = static_cast<Color *>(ps_malloc((i==0 || i==1)?(10*8*2):(14*18*2)));
-		if(playPauseBuffer[i] == nullptr){
+	for(int i = 0; i < 4; i++){
+		icons[i] = static_cast<Color*>(ps_malloc((i == 0 || i == 1) ? (10 * 8 * 2) : (14 * 18 * 2)));
+		if(icons[i] == nullptr){
 			Serial.println("PlayPause picture unpack error");
 			return;
 		}
-		picture[i].seek(0);
-		picture[i].read(reinterpret_cast<uint8_t *>(playPauseBuffer[i]), (i==0 || i==1)?(10*8*2):(14*18*2));
+
+		fs::File iconFile = SPIFFS.open(iconPaths[i]);
+		iconFile.read(reinterpret_cast<uint8_t*>(icons[i]), (i == 0 || i == 1) ? (10 * 8 * 2) : (14 * 18 * 2));
+		iconFile.close();
 	}
 }
 Playback::PlayPause::~PlayPause(){
-	for(int i=0;i<4;i++){
-		free(playPauseBuffer[i]);
+	for(int i = 0; i < 4; i++){
+		free(icons[i]);
 	}
 }
 
@@ -38,12 +39,12 @@ void Playback::PlayPause::draw(){
 	getSprite()->setTextSize(2);
 	getSprite()->drawCircle(78, 93, 17, TFT_WHITE);
 	if(playing){
-		getSprite()->drawIcon(playPauseBuffer[2], getTotalX() + getWidth() / 2 - 7, getTotalY() + 19, 14, 18, 1, TFT_BLACK);
+		getSprite()->drawIcon(icons[2], getTotalX() + getWidth() / 2 - 7, getTotalY() + 19, 14, 18, 1, TFT_BLACK);
 	}else if(!playing){
-		getSprite()->drawIcon(playPauseBuffer[3], getTotalX() + getWidth() / 2 - 9, getTotalY() + 19, 14, 18, 1, TFT_BLACK);
+		getSprite()->drawIcon(icons[3], getTotalX() + getWidth() / 2 - 9, getTotalY() + 19, 14, 18, 1, TFT_BLACK);
 	}
-	getSprite()->drawIcon(playPauseBuffer[1], getTotalX() + getWidth() / 2 - 35, getTotalY() + 25, 10, 8, 1, TFT_BLACK);
-	getSprite()->drawIcon(playPauseBuffer[0], getTotalX() + getWidth() / 2 + 22, getTotalY() + 25, 10, 8, 1, TFT_BLACK);
+	getSprite()->drawIcon(icons[1], getTotalX() + getWidth() / 2 - 35, getTotalY() + 25, 10, 8, 1, TFT_BLACK);
+	getSprite()->drawIcon(icons[0], getTotalX() + getWidth() / 2 + 22, getTotalY() + 25, 10, 8, 1, TFT_BLACK);
 }
 
 void Playback::PlayPause::setPlaying(bool playing){

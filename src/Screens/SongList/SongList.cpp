@@ -1,114 +1,104 @@
 #include <SD.h>
 #include "SongList.h"
+#include "../MainMenu/MainMenu.h"
 #include <JayD.hpp>
 #include <Loop/LoopManager.h>
 #include <SPIFFS.h>
 #include <FS/CompressedFile.h>
 #include <U8g2_for_TFT_eSPI.h>
 
-SongList::SongList *SongList::SongList::instance = nullptr;
+SongList::SongList* SongList::SongList::instance = nullptr;
 
-SongList::SongList::SongList(Display &display) : Context(display){
-
+SongList::SongList::SongList(Display& display) : Context(display){
 	instance = this;
 
 	scrollLayout = new ScrollLayout(&getScreen());
 	list = new LinearLayout(scrollLayout, VERTICAL);
 
-	fs::File file = SPIFFS.open("/SongListBackground.raw.hs");
-
-	background = CompressedFile::open(file, 10, 9);
-
 	buildUI();
-	pack();
-
-	SD.end();
-	insertedSD = SD.begin(22, SPI);
-
-	if(insertedSD){
-		populateList();
-		if(!songs.empty()){
-			songs[selectedElement]->setSelected(true);
-		}
-	}
+	SongList::pack();
 }
 
 SongList::SongList::~SongList(){
 	instance = nullptr;
-	background.close();
 	free(backgroundBuffer);
 }
 
-void SongList::SongList::populateList(){
+void SongList::SongList::checkSD(){
+	for(auto song : songs){
+		delete song;
+	}
+	list->getChildren().clear();
+	songs.clear();
+	selectedElement = 0;
+	empty = true;
 
-	if(!songs.empty()){
-
-		for(int i = 0; i < songs.size(); i++){
-			delete songs[i];
-		}
-		list->getChildren().clear();
-		songs.clear();
+	if(!insertedSD){
+		insertedSD = SD.begin(22, SPI);
 	}
 
+	if(!insertedSD){
+		draw();
+		screen.commit();
+		return;
+	}
+
+	// TODO
+	// Empty card inserted, taken out, press refresh
+	// SD started, opened root returns true
 	File root = SD.open("/");
+	insertedSD = root;
+	if(!insertedSD){
+		root.close();
+		draw();
+		screen.commit();
+		return;
+	}
+
 	searchDirectories(root);
 	root.close();
+	empty = songs.empty();
 
-	for(int i = 0; i < songs.size(); i++){
-		list->addChild(songs[i]);
+	if(!empty){
+		list->reflow();
+		list->repos();
+		scrollLayout->scrollIntoView(0, 5);
+		songs.front()->setSelected(true);
 	}
 
-	list->reflow();
-	list->repos();
+	draw();
+	screen.commit();
 }
 
-void SongList::SongList::searchDirectories(File file){
+void SongList::SongList::searchDirectories(File dir){
+	if(!dir) return;
 
 	File f;
-
-	while(f = file.openNextFile()){
+	while(f = dir.openNextFile()){
 		if(f.isDirectory()){
-
 			searchDirectories(f);
 			f.close();
 			continue;
 		}
 
-		if(!String(f.name()).endsWith(".aac")) continue;
+		String name = f.name();
+		name.toLowerCase();
+		if(!name.endsWith(".aac") || name[name.lastIndexOf('/') + 1] == '.'){
+			f.close();
+			continue;
+		}
 
-		String fileName(f.name());
-		int idx = fileName.lastIndexOf('/');
-
-		songs.push_back(new ListItem(list, fileName.substring(idx)));
+		songs.push_back(new ListItem(list, f.name()));
+		list->addChild(songs.back());
 
 		f.close();
 	}
 }
 
 void SongList::SongList::loop(uint t){
-	if(millis() - prevSDCheck > sdCardInterval){
-
-		SD.end();
-		bool ins = SD.begin(22, SPI);
-
-		if(insertedSD != ins){
-			insertedSD = ins;
-
-			if(insertedSD){
-				populateList();
-				if(!songs.empty()){
-					selectedElement = 0;
-					songs[selectedElement]->setSelected(true);
-				}
-				//scrollLayout->setY(18);
-				scrollLayout->scrollIntoView(selectedElement, 2);
-			}
-
-			draw();
-			screen.commit();
-		}
-
-		prevSDCheck = millis();
+	if(songs[selectedElement]->checkScrollUpdate()) {
+		draw();
+		screen.commit();
 	}
 }
 
@@ -117,9 +107,7 @@ void SongList::SongList::start(){
 	InputJayD::getInstance()->setEncoderMovedCallback(ENC_MID, [](int8_t value){
 		if(instance == nullptr) return;
 
-		if(instance->songs.empty() || !instance->insertedSD ||
-		   instance->songs.size() <= instance->selectedElement)
-			return;
+		if(instance->empty || !instance->insertedSD) return;
 
 		instance->songs[instance->selectedElement]->setSelected(false);
 		instance->selectedElement += value;
@@ -131,7 +119,7 @@ void SongList::SongList::start(){
 
 		instance->songs[instance->selectedElement]->setSelected(true);
 
-		instance->scrollLayout->scrollIntoView(instance->selectedElement, 2);
+		instance->scrollLayout->scrollIntoView(instance->selectedElement, 6);
 		instance->draw();
 		instance->screen.commit();
 
@@ -141,12 +129,30 @@ void SongList::SongList::start(){
 	InputJayD::getInstance()->setBtnPressCallback(BTN_MID, [](){
 		if(instance == nullptr) return;
 
-		if(instance->songs.empty() || !instance->insertedSD ||
-		   instance->songs.size() <= instance->selectedElement)
+		if(!instance->insertedSD){
+			instance->checkSD();
 			return;
+		}
 
-		instance->pop(new String(instance->songs[instance->selectedElement]->getName()));
+		if(instance->empty || !instance->insertedSD || instance->songs.size() <= instance->selectedElement) return;
+
+		String path = instance->songs[instance->selectedElement]->getPath();
+		fs::File file = SD.open(path);
+		if(!file){
+			file.close();
+			SD.end();
+			instance->insertedSD = false;
+			instance->checkSD();
+			return;
+		}
+		file.close();
+
+		instance->pop(new String(path));
 	});
+
+	Input.addListener(this);
+	waiting = false;
+	checkSD();
 
 	LoopManager::addListener(this);
 
@@ -155,14 +161,15 @@ void SongList::SongList::start(){
 }
 
 void SongList::SongList::stop(){
-	InputJayD::getInstance()->removeEncoderMovedCallback(ENC_L1);
-	InputJayD::getInstance()->removeBtnPressCallback(BTN_L1);
+	InputJayD::getInstance()->removeEncoderMovedCallback(ENC_MID);
+	InputJayD::getInstance()->removeBtnPressCallback(BTN_MID);
+	Input.removeListener(this);
 	LoopManager::removeListener(this);
 }
 
 void SongList::SongList::draw(){
 
-	Sprite *canvas = screen.getSprite();
+	Sprite* canvas = screen.getSprite();
 
 	FontWriter u8f = canvas->startU8g2Fonts();
 
@@ -172,23 +179,26 @@ void SongList::SongList::draw(){
 
 	canvas->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1);
 
-	if(!insertedSD){
-		u8f.setCursor(30, 65);
-		u8f.printf("Not inserted!");
+	screen.draw();
 
-	}else if(songs.empty()){
-		u8f.setCursor(54, 65);
-		u8f.printf("Empty!");
+	canvas->drawIcon(backgroundBuffer, 0, 0, 160, 19, 1);
 
-	}else{
-		screen.draw();
-	}
-
-	//canvas->fillRect(0, 0, 160, 18, TFT_LIGHTGREY);
-
-	u8f.setCursor(50, 15);
+	u8f.setCursor((160 - u8f.getUTF8Width("SD card")) / 2, 15);
 	u8f.printf("SD card");
 
+	if(waiting){
+		u8f.setCursor((160 - u8f.getUTF8Width("Loading...")) / 2, 65);
+		u8f.printf("Loading...");
+		return;
+	}
+
+	if(!insertedSD){
+		u8f.setCursor((160 - u8f.getUTF8Width("Not inserted!")) / 2, 65);
+		u8f.printf("Not inserted!");
+	}else if(empty){
+		u8f.setCursor((160 - u8f.getUTF8Width("Empty!")) / 2, 65);
+		u8f.printf("Empty!");
+	}
 }
 
 void SongList::SongList::buildUI(){
@@ -199,12 +209,6 @@ void SongList::SongList::buildUI(){
 	list->setWHType(PARENT, CHILDREN);
 	list->setPadding(5);
 	list->setGutter(10);
-
-	if(!songs.empty()){
-		for(int i = 0; i < songs.size(); i++){
-			list->addChild(songs[i]);
-		}
-	}
 
 	scrollLayout->reflow();
 	list->reflow();
@@ -223,10 +227,22 @@ void SongList::SongList::pack(){
 void SongList::SongList::unpack(){
 	Context::unpack();
 
-	backgroundBuffer = static_cast<Color *>(ps_malloc(160 * 128 * 2));
+	waiting = true;
+
+	backgroundBuffer = static_cast<Color*>(ps_malloc(160 * 128 * 2));
 	if(backgroundBuffer == nullptr){
-		Serial.println("Error");
+		Serial.println("SongList bg buffer error");
 	}
-	background.seek(0);
-	background.read(reinterpret_cast<uint8_t *>(backgroundBuffer), 160 * 128 * 2);
+
+	fs::File bgFile = CompressedFile::open(SPIFFS.open("/SongListBackground.raw.hs"), 10, 9);
+	bgFile.read(reinterpret_cast<uint8_t*>(backgroundBuffer), 160 * 128 * 2);
+	bgFile.close();
+}
+
+void SongList::SongList::encTwoTop(){
+	delete parent;
+	stop();
+	delete this;
+	MainMenu::MainMenu::getInstance()->unpack();
+	MainMenu::MainMenu::getInstance()->start();
 }

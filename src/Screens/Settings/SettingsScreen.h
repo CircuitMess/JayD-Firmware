@@ -44,8 +44,6 @@ namespace SettingsScreen {
 		void buildUI();
 
 
-		fs::File background;
-
 		Color* backgroundBuffer= nullptr;
 
 		PlaybackSystem* playback = nullptr;

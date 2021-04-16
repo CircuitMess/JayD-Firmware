@@ -9,6 +9,7 @@
 #include <Loop/LoopManager.h>
 #include "src/Screens/IntroScreen/IntroScreen.h"
 #include "src/Screens/InputTest/InputTest.h"
+#include "src/InputKeys.h"
 #include <Input/InputJayD.h>
 #include <WiFi.h>
 #include <SD.h>
@@ -21,7 +22,7 @@
 Display display(160, 128, -1, -1);
 
 void launch(){
-	Context *introScreen = new IntroScreen::IntroScreen(display);
+	Context* introScreen = new IntroScreen::IntroScreen(display);
 	introScreen->unpack();
 	introScreen->start();
 }
@@ -66,20 +67,20 @@ void setup(){
 
 	Context::setDeleteOnPop(true);
 
+	LoopManager::addListener(&Sched);
 	LoopManager::addListener(&matrixManager);
 	LoopManager::addListener(new InputJayD());
 	InputJayD::getInstance()->begin();
+	InputJayD::getInstance()->addListener(&Input);
+	LoopManager::addListener(&Input);
 
 	if(!Settings.get().inputTested){
 		InputTest::InputTest* test = new InputTest::InputTest(display);
 		test->setDoneCallback([](InputTest::InputTest* test){
-			test->stop();
-			delete test;
-
 			Settings.get().inputTested = true;
 			Settings.store();
 
-			launch();
+			ESP.restart();
 		});
 
 		test->unpack();
@@ -89,7 +90,6 @@ void setup(){
 	}
 
 	digitalWrite(blPin, LOW);
-	LoopManager::addListener(&Sched);
 }
 
 void loop(){

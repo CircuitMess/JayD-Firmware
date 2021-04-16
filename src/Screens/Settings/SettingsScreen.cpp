@@ -19,15 +19,11 @@ SettingsScreen::SettingsScreen::SettingsScreen(Display &display) : Context(displ
 	volumeSlider->setIsSelected(true);
 	selectedSetting = 0;
 
-	fs::File file = SPIFFS.open("/settingsBackground.raw.hs");
-
-	background = CompressedFile::open(file, 14, 13);
-
 	volumeSlider->setSliderValue(Settings.get().volumeLevel);
 
 	brightnessSlider->setSliderValue(Settings.get().brightnessLevel);
 
-	pack();
+	SettingsScreen::pack();
 }
 
 void SettingsScreen::SettingsScreen::start(){
@@ -38,7 +34,7 @@ void SettingsScreen::SettingsScreen::start(){
 		if(instance->disableMainSelector && instance->selectedSetting == 0){
 			instance->volumeSlider->moveSliderValue(value);
 			Settings.get().volumeLevel = instance->volumeSlider->getSliderValue();
-			instance->playback->setVolume(instance->volumeSlider->getSliderValue());
+			instance->playback->updateGain();
 			instance->draw();
 			instance->screen.commit();
 			return;
@@ -95,10 +91,11 @@ void SettingsScreen::SettingsScreen::start(){
 			instance->draw();
 			instance->screen.commit();
 			if(instance->disableMainSelector) {
-				instance->playback->setVolume(instance->volumeSlider->getSliderValue());
-				instance->playback->resume();
+				Settings.get().volumeLevel = instance->volumeSlider->getSliderValue();
+				instance->playback->updateGain();
+				instance->playback->start();
 			}else{
-				instance->playback->pause();
+				instance->playback->stop();
 			}
 		}else if(instance->selectedSetting == 1){
 			instance->brightnessSlider->toggle();
@@ -124,10 +121,9 @@ void SettingsScreen::SettingsScreen::start(){
 	instance->screen.commit();
 	introSong = SPIFFS.open("/intro.aac");
 	playback = new PlaybackSystem(introSong);
-	playback->setVolume(Settings.get().volumeLevel);
+	Settings.get().volumeLevel = instance->volumeSlider->getSliderValue();
+	instance->playback->updateGain();
 	playback->setRepeat(true);
-	playback->start();
-	playback->pause();
 }
 
 void SettingsScreen::SettingsScreen::stop(){
@@ -170,14 +166,16 @@ void SettingsScreen::SettingsScreen::pack(){
 
 void SettingsScreen::SettingsScreen::unpack(){
 	Context::unpack();
+
 	backgroundBuffer = static_cast<Color*>(ps_malloc(160 * 128 * 2));
 	if(backgroundBuffer == nullptr){
 		Serial.println("SettingsScreen background unpack error");
 		return;
 	}
-	background.seek(0);
-	background.read(reinterpret_cast<uint8_t*>(backgroundBuffer), 160 * 128 * 2);
 
+	fs::File bgFile = CompressedFile::open(SPIFFS.open("/settingsBackground.raw.hs"), 14, 13);
+	bgFile.read(reinterpret_cast<uint8_t*>(backgroundBuffer), 160 * 128 * 2);
+	bgFile.close();
 }
 
 
@@ -196,7 +194,5 @@ void SettingsScreen::SettingsScreen::buildUI(){
 
 SettingsScreen::SettingsScreen::~SettingsScreen(){
 	instance = nullptr;
-	background.close();
 	free(backgroundBuffer);
-
 }

@@ -16,6 +16,8 @@ namespace Playback {
 
 		int getCurrentDuration() const;
 
+		int getTotalDuration() const;
+
 	private:
 		int totalDuration = 0;
 		int currentDuration = 0;

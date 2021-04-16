@@ -15,26 +15,37 @@ Playback::Playback::Playback(Display& display) : Context(display), screenLayout(
 												 trackCount(new TrackCounter(timeElapsedLayout)){
 
 
-	background = CompressedFile::open(SPIFFS.open("/playbackBackground.raw.hs"), 10, 9);
-
 	instance = this;
 	buildUI();
 
-	pack();
+	Playback::pack();
 }
 
 Playback::Playback::~Playback(){
-	background.close();
 	instance = nullptr;
 	free(backgroundBuffer);
 }
 
 void Playback::Playback::loop(uint micros){
+	if(seekTime != 0 && millis() - seekTime >= 50){
+		seekTime = 0;
+		system->seek(trackCount->getCurrentDuration());
+
+		if(wasRunning){
+			system->start();
+		}
+	}
+
 	bool update = songName->checkScrollUpdate();
 
-	if(system->getElapsed() != trackCount->getCurrentDuration()){
+	if(system->getElapsed() != trackCount->getCurrentDuration() && seekTime == 0){
 		update = true;
 		trackCount->setCurrentDuration(system->getElapsed());
+	}
+
+	if(system->getDuration() != trackCount->getTotalDuration()){
+		update = true;
+		trackCount->setTotalDuration(system->getDuration());
 	}
 
 	uint32_t currentTime = millis();
@@ -61,57 +72,41 @@ void Playback::Playback::start(){
 	}
 
 	String name = file.name();
-	songName->setSongName(name.substring(1, name.length() - 4));
+	songName->setSongName(name.substring(name.lastIndexOf('/') + 1, name.length() - 4));
 	trackCount->setTotalDuration(0);
 	trackCount->setCurrentDuration(0);
 	playOrPause->setPlaying(false);
+
 	draw();
 	screen.commit();
 
-	InputJayD::getInstance()->setBtnPressCallback(BTN_MID, [](){
-		if(instance == nullptr) return;
-
-		if(instance->playing){
-			instance->system->pause();
-			instance->playing = false;
-			LoopManager::removeListener(instance);
-		}else{
-			instance->system->resume();
-			instance->playing = true;
-			LoopManager::addListener(instance);
+	uint8_t potMidVal = InputJayD::getInstance()->getPotValue(POT_MID);
+	matrixManager.matrixMid.clear();
+	uint8_t total = ((float) potMidVal / 255.0f) * (float) (12);
+	for(int i = 0; i <= total + 1; i++){
+		for(int j = 0; j < 2; j++){
+			matrixManager.matrixMid.drawPixel(i, j, 255);
 		}
-
-		instance->playOrPause->setPlaying(instance->playing);
-
-		instance->draw();
-		instance->screen.commit();
-	});
-
-	InputJayD::getInstance()->setEncoderMovedCallback(ENC_MID, [](int8_t value){
-		if(instance == nullptr) return;
-	});
-
-	InputJayD::getInstance()->setPotMovedCallback(POT_L, [](uint8_t value){
-		if(instance && instance->system){
-			instance->system->setVolume(value);
-		}
-	});
+	}
+	matrixManager.matrixMid.push();
 
 	system = new PlaybackSystem(file);
-	system->setVolume(InputJayD::getInstance()->getPotValue(POT_L));
+	system->setVolume(InputJayD::getInstance()->getPotValue(POT_MID));
 	system->start();
 
 	playOrPause->setPlaying(true);
-	trackCount->setTotalDuration(system->getDuration());
 
+	Input.addListener(this);
+	InputJayD::getInstance()->addListener(this);
 	LoopManager::addListener(this);
 	lastDraw = 0;
 }
 
 void Playback::Playback::stop(){
-	InputJayD::getInstance()->removeBtnPressCallback(BTN_L1);
-	InputJayD::getInstance()->removeEncoderMovedCallback(ENC_L1);
+	Input.removeListener(this);
+	InputJayD::getInstance()->removeListener(this);
 
+	LoopManager::removeListener(this);
 
 	if(system){
 		system->stop();
@@ -160,6 +155,7 @@ void Playback::Playback::buildUI(){
 	screen.addChild(screenLayout);
 	screen.repos();
 
+	trackCount->setY(trackCount->getY() + 3);
 }
 
 void Playback::Playback::pack(){
@@ -170,12 +166,64 @@ void Playback::Playback::pack(){
 
 void Playback::Playback::unpack(){
 	Context::unpack();
+
 	backgroundBuffer = static_cast<Color *>(ps_malloc(160 * 128 * 2));
 	if(backgroundBuffer == nullptr){
 		Serial.println("Playback background unpack error");
 		return;
 	}
-	background.seek(0);
-	background.read(reinterpret_cast<uint8_t *>(backgroundBuffer), 160 * 128 * 2);
+
+	fs::File bgFile = CompressedFile::open(SPIFFS.open("/playbackBackground.raw.hs"), 10, 9);
+	bgFile.read(reinterpret_cast<uint8_t *>(backgroundBuffer), 160 * 128 * 2);
+	bgFile.close();
 }
 
+void Playback::Playback::potMove(uint8_t id, uint8_t value) {
+	if(id == POT_MID) {
+		if (system) {
+			system->setVolume(value);
+			matrixManager.matrixMid.clear();
+			uint8_t total = ((float) value / 255.0f) * (float) (12);
+			for (int i = 0; i <= total + 1; i++) {
+				for (int j = 0; j < 2; j++) {
+					matrixManager.matrixMid.drawPixel(i, j, 255);
+				}
+			}
+			matrixManager.matrixMid.push();
+		}
+	}
+}
+
+void Playback::Playback::btnEnc(uint8_t i) {
+	if(i == 6) {
+		if (playing) {
+			system->stop();
+			playing = false;
+		} else {
+			system->start();
+			playing = true;
+		}
+		playOrPause->setPlaying(playing);
+		drawQueued = true;
+	}
+}
+
+void Playback::Playback::enc(uint8_t id, int8_t value) {
+	if(id == 6) {
+		if(seekTime == 0){
+			wasRunning = system->isRunning();
+			system->stop();
+		}
+
+		seekTime = millis();
+
+		uint16_t seekTime = constrain(trackCount->getCurrentDuration() + value, 0, system->getDuration());
+		trackCount->setCurrentDuration(seekTime);
+
+		drawQueued = true;
+	}
+}
+
+void Playback::Playback::encTwoTop() {
+	(new SongList::SongList(*getScreen().getDisplay()))->push(this);
+}

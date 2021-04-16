@@ -18,7 +18,6 @@ IntroScreen::IntroScreen::IntroScreen(Display &display) : Context(display){
 	fs::File f = SPIFFS.open("/intro.g565.hs");
 	if(!f){
 		Serial.println("Error opening intro gif");
-		pack();
 		return;
 	}
 
@@ -26,7 +25,7 @@ IntroScreen::IntroScreen::IntroScreen(Display &display) : Context(display){
 	gif->setSwapBytes(true);
 	gif->setXY(0, 0);
 
-	pack();
+	IntroScreen::pack();
 }
 
 IntroScreen::IntroScreen::~IntroScreen(){
@@ -57,7 +56,6 @@ void IntroScreen::IntroScreen::start(){
 
 	introSong = SPIFFS.open("/intro.aac");
 	playback = new PlaybackSystem(introSong);
-	playback->setVolume(Settings.get().volumeLevel);
 	playback->start();
 
 	LoopManager::addListener(this);
@@ -69,9 +67,9 @@ void IntroScreen::IntroScreen::start(){
 
 void IntroScreen::IntroScreen::stop(){
 	LoopManager::removeListener(this);
-	introSong.close();
 	playback->stop();
 	delete playback;
+	introSong.close();
 }
 
 void IntroScreen::IntroScreen::loop(uint micros){
