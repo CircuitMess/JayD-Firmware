@@ -3,6 +3,7 @@
 #include <SD.h>
 #include <AudioLib/SourceAAC.h>
 #include <AudioLib/Systems/PlaybackSystem.h>
+#include <Settings.h>
 #include "Wire.h"
 #include "JayD.hpp"
 #include "SPIFFS.h"
@@ -287,8 +288,9 @@ void HardwareTest::auditorySoundTest(){
 		for(;;);
 	}
 
+	Settings.get().volumeLevel = 255;
 	PlaybackSystem* system = new PlaybackSystem(file);
-	system->setVolume(100);
+	system->setVolume(255);
 	system->start();
 }
 
