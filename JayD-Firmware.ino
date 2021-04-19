@@ -10,6 +10,7 @@
 #include "src/Screens/IntroScreen/IntroScreen.h"
 #include "src/Screens/InputTest/InputTest.h"
 #include "src/InputKeys.h"
+#include "src/HardwareTest.h"
 #include <Input/InputJayD.h>
 #include <WiFi.h>
 #include <SD.h>
@@ -20,6 +21,26 @@
 #define blPin 25
 
 Display display(160, 128, -1, -1);
+
+bool checkJig(){
+	if(Settings.get().hwTested) return false;
+
+	pinMode(blPin, INPUT_PULLUP);
+	return digitalRead(blPin) == LOW;
+
+	pinMode(25, OUTPUT);
+	pinMode(2, INPUT_PULLDOWN);
+
+	digitalWrite(25, HIGH);
+	delay(10);
+	if(digitalRead(2) != HIGH) return false;
+
+	digitalWrite(25, LOW);
+	delay(10);
+	if(digitalRead(2) != LOW) return false;
+
+	return true;
+}
 
 void launch(){
 	Context* introScreen = new IntroScreen::IntroScreen(display);
@@ -36,14 +57,24 @@ void setup(){
 		Serial.println("No PSRAM detected");
 	}
 
+	disableCore0WDT();
+	disableCore1WDT();
+
+	if(checkJig()){
+		pinMode(blPin, OUTPUT);
+		digitalWrite(blPin, LOW);
+		display.begin();
+		HardwareTest test(display);
+		test.start();
+
+		for(;;);
+	}
+
 	pinMode(blPin, OUTPUT);
 	digitalWrite(blPin, HIGH);
 
 	WiFi.mode(WIFI_OFF);
 	btStop();
-
-	disableCore0WDT();
-	disableCore1WDT();
 
 	SPI.begin(SPI_SCK, SPI_MISO, SPI_MOSI, SPI_SS);
 	SPI.setFrequency(60000000);
