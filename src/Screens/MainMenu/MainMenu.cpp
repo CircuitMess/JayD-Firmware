@@ -1,5 +1,5 @@
 #include <Input/InputJayD.h>
-#include <JayD.hpp>
+#include <JayD.h>
 #include "MainMenu.h"
 #include "../Playback/Playback.h"
 #include "../MixScreen/MixScreen.h"

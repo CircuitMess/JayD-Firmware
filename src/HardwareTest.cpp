@@ -5,7 +5,7 @@
 #include <AudioLib/Systems/PlaybackSystem.h>
 #include <Settings.h>
 #include "Wire.h"
-#include "JayD.hpp"
+#include <JayD.h>
 #include "SPIFFS.h"
 #include "HWTestSPIFFS.hpp"
 #include "Devices/LEDmatrix/LEDmatrix.h"

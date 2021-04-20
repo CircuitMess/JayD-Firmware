@@ -4,7 +4,7 @@
 #include <SPIFFS.h>
 #include <FS/CompressedFile.h>
 #include <Settings.h>
-#include <JayD.hpp>
+#include <JayD.h>
 #include <AudioLib/Systems/PlaybackSystem.h>
 
 SettingsScreen::SettingsScreen* SettingsScreen::SettingsScreen::instance = nullptr;

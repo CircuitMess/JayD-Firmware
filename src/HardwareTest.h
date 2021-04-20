@@ -4,7 +4,7 @@
 #include <Util/Vector.h>
 #include <Input/InputJayD.h>
 #include <FS.h>
-#include "JayD.hpp"
+#include <JayD.h>
 #include <Util/Task.h>
 #include "AudioLib/OutputI2S.h"
 #include "AudioLib/SourceWAV.h"

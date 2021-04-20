@@ -1,7 +1,7 @@
 #include <Input/InputJayD.h>
 #include <SD.h>
 #include <Loop/LoopManager.h>
-#include <JayD.hpp>
+#include <JayD.h>
 #include <FS/CompressedFile.h>
 #include "MixScreen.h"
 #include "../SongList/SongList.h"

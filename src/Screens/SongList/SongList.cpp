@@ -1,7 +1,7 @@
 #include <SD.h>
 #include "SongList.h"
 #include "../MainMenu/MainMenu.h"
-#include <JayD.hpp>
+#include <JayD.h>
 #include <Loop/LoopManager.h>
 #include <SPIFFS.h>
 #include <FS/CompressedFile.h>

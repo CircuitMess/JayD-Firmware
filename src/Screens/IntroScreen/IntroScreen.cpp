@@ -6,7 +6,7 @@
 #include <SPIFFS.h>
 #include <AudioLib/Systems/PlaybackSystem.h>
 #include <Settings.h>
-#include <JayD.hpp>
+#include <JayD.h>
 
 
 IntroScreen::IntroScreen *IntroScreen::IntroScreen::instance = nullptr;

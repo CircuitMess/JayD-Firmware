@@ -1,6 +1,6 @@
 #include <Input/InputJayD.h>
 #include <SD.h>
-#include <JayD.hpp>
+#include <JayD.h>
 #include <Loop/LoopManager.h>
 #include "Playback.h"
 #include <SPIFFS.h>
