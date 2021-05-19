@@ -79,6 +79,10 @@ void HardwareTest::start(){
 
 		auditorySoundTest();
 		visualMatrixTest();
+
+		for(;;){
+			Sched.loop(0);
+		}
 	}else{
 		canvas->setTextColor(TFT_RED);
 		Serial.printf("TEST:fail:%s\n", currentTest);
@@ -90,10 +94,10 @@ void HardwareTest::start(){
 bool HardwareTest::psram(){
 	if(!(psramFound() && psramInit())) return false;
 
-	uint32_t free = ESP.getFreePsram();
+	uint32_t total = ESP.getPsramSize();
 
-	if(free != 4194252){
-		test->log("free", free);
+	if(total != 4194236){
+		test->log("total", total);
 		return false;
 	}
 
@@ -283,7 +287,7 @@ bool HardwareTest::SPIFFSTest(){
 void HardwareTest::auditorySoundTest(){
 
 	File file;
-	if(!(file = SPIFFS.open("/intro.aac"))){
+	if(!(file = SD.open("/The Gears of Progress - Section 31 - Tech.aac"))){
 		Serial.println("ffail");
 		for(;;);
 	}
@@ -314,6 +318,7 @@ void HardwareTest::visualMatrixTest(){
 		ledMatrix->drawPixel(i, brightness / 2);
 		ledMatrix->push();
 		delay(5);
+		Sched.loop(0);
 	}
 
 	/* Brightness change test */
@@ -322,6 +327,7 @@ void HardwareTest::visualMatrixTest(){
 		ledMatrix->setBrightness(i);
 		ledMatrix->push();
 		delay(5);
+		Sched.loop(0);
 	}
 	/* Brightness change test */
 	for(int i = 0; i < brightness - 1; i += 5){
@@ -329,6 +335,7 @@ void HardwareTest::visualMatrixTest(){
 		ledMatrix->setBrightness(i);
 		ledMatrix->push();
 		delay(5);
+		Sched.loop(0);
 	}
 	/* Brightness change test */
 	for(int i = brightness - 1; i >= 0; i -= 5){
@@ -336,6 +343,7 @@ void HardwareTest::visualMatrixTest(){
 		ledMatrix->setBrightness(i);
 		ledMatrix->push();
 		delay(5);
+		Sched.loop(0);
 	}
 
 	ledMatrix->clear();
