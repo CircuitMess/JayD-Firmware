@@ -107,16 +107,17 @@ bool HardwareTest::psram(){
 bool HardwareTest::nuvotonTest(){
 
 	pinMode(JDNV_PIN_RESET, OUTPUT);
-	digitalWrite(JDNV_PIN_RESET, HIGH);
+	//digitalWrite(JDNV_PIN_RESET, HIGH);
 
 	/* Nuvoton reset */
 	digitalWrite(JDNV_PIN_RESET, LOW);
-	delay(5);
+	delay(50);
 	digitalWrite(JDNV_PIN_RESET, HIGH);
-	delay(10);
+	delay(500);
 
 	/* Test i2c transmission */
 	Wire.beginTransmission(JDNV_ADDR);
+	delay(5);
 	if(Wire.endTransmission() != 0){
 		test->log("Wire Transmission","Failed");
 		return false;
