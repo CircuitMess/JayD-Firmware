@@ -8,7 +8,8 @@
 #include <JayD.h>
 #include "SPIFFS.h"
 #include "HWTestSPIFFS.hpp"
-#include "Devices/LEDmatrix/LEDmatrix.h"
+#include <Devices/Matrix/Matrix.h>
+#include <Devices/Matrix/IS31FL3731.h>
 #include "HWTestSD.hpp"
 
 HardwareTest *HardwareTest::test = nullptr;
@@ -228,20 +229,13 @@ bool HardwareTest::sdData(){
 
 bool HardwareTest::matrixTest(){
 
-	LEDmatrixImpl* ledMatrix = new LEDmatrixImpl(16, 9);
+	Wire.beginTransmission(0x74);
 
-	/* Matrix begin test */
-	if(!ledMatrix->begin(26, 27)){
+	if(Wire.endTransmission() != 0){
 		test->log("Begin","Failed");
-		delete ledMatrix;
 		return false;
-	}else{
-		ledMatrix->clear();
-		ledMatrix->push();
-
-		delete ledMatrix;
-		return true;
 	}
+	return true;
 }
 
 bool HardwareTest::SPIFFSTest(){
@@ -301,12 +295,14 @@ void HardwareTest::auditorySoundTest(){
 
 void HardwareTest::visualMatrixTest(){
 
-	auto *ledMatrix = new LEDmatrixImpl(16, 9);
+	Wire.begin(I2C_SDA, I2C_SCL);
+	Wire.setClock(400000);
 
-	/* Matrix begin test */
-	if(!ledMatrix->begin(I2C_SDA, I2C_SCL)){
-		for(;;);
-	}
+	IS31FL3731 is31;
+	auto ledMatrix = new Matrix(is31);
+
+	is31.init();
+	ledMatrix->begin();
 
 	const int brightness = 255;
 
@@ -316,7 +312,7 @@ void HardwareTest::visualMatrixTest(){
 	/* Individual LED test */
 	for(int i = 0; i < 144; ++i){
 		Sched.loop(0);
-		ledMatrix->drawPixel(i, brightness / 2);
+		ledMatrix->drawPixel(i, {255, 255, 255, brightness / 2});
 		ledMatrix->push();
 		delay(5);
 		Sched.loop(0);
