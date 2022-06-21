@@ -120,17 +120,13 @@ void MixScreen::MatrixPopUpPicker::openGif(uint8_t gifNum){
 	gif = new GIFAnimatedSprite(screenLayout.getSprite(), SPIFFS.open(filename));
 	gif->setXY(screenLayout.getTotalX() + 19, screenLayout.getTotalY() + 19);
 	gif->setScale(8);
-	gif->setLoopDoneCallback([](){
-		if(instance == nullptr) return;
-		instance->gif->reset();
-	});
+	gif->setLoopMode(GIF::Infinite);
+	gif->start();
 
 }
 
 
 void MixScreen::MatrixPopUpPicker::loop(uint micros){
-	if(gif->newFrameReady()){
-		draw();
-		screen.commit();
-	}
+	draw();
+	screen.commit();
 }
