@@ -85,7 +85,7 @@ void Playback::Playback::start(){
 	uint8_t total = ((float) potMidVal / 255.0f) * (float) (12);
 	for(int i = 0; i <= total + 1; i++){
 		for(int j = 0; j < 2; j++){
-			matrixManager.matrixMid.drawPixel(i, j, 255);
+			matrixManager.matrixMid.drawPixel(i, j, MatrixPixel::White);
 		}
 	}
 	matrixManager.matrixMid.push();
@@ -186,7 +186,7 @@ void Playback::Playback::potMove(uint8_t id, uint8_t value) {
 			uint8_t total = ((float) value / 255.0f) * (float) (12);
 			for (int i = 0; i <= total + 1; i++) {
 				for (int j = 0; j < 2; j++) {
-					matrixManager.matrixMid.drawPixel(i, j, 255);
+					matrixManager.matrixMid.drawPixel(i, j, MatrixPixel::White);
 				}
 			}
 			matrixManager.matrixMid.push();

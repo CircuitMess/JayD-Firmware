@@ -3,6 +3,7 @@
 #include <Loop/LoopManager.h>
 #include <Input/InputJayD.h>
 #include "MixScreen.h"
+#include <Devices/Matrix/MatrixAnimGIF.h>
 
 MixScreen::MatrixPopUpPicker* MixScreen::MatrixPopUpPicker::instance = nullptr;
 
@@ -31,7 +32,7 @@ void MixScreen::MatrixPopUpPicker::btnEnc(uint8_t i){
 	delete this;
 
 	if(matrixAnimationNumber == 2){
-		matrixManager.matrixBig.stopAnimation();
+		delete anim;
 		parent->setBigVuStarted(true);
 	}
 	parent->unpack();
@@ -108,26 +109,24 @@ void MixScreen::MatrixPopUpPicker::buildUI(){
 
 void MixScreen::MatrixPopUpPicker::openGif(uint8_t gifNum){
 	delete gif;
+	delete anim;
 
 	char filename[25];
 	sprintf(filename, "/matrixGIF/big%d.gif", gifNum);
 
-	matrixManager.matrixBig.startAnimation(new Animation(new fs::File(SPIFFS.open(filename))), true);
+	anim = new MatrixAnimGIF(SPIFFS.open(filename));
+	matrixManager.matrixBig.startAnimation(anim);
 
 	gif = new GIFAnimatedSprite(screenLayout.getSprite(), SPIFFS.open(filename));
 	gif->setXY(screenLayout.getTotalX() + 19, screenLayout.getTotalY() + 19);
 	gif->setScale(8);
-	gif->setLoopDoneCallback([](){
-		if(instance == nullptr) return;
-		instance->gif->reset();
-	});
+	gif->setLoopMode(GIF::Infinite);
+	gif->start();
 
 }
 
 
 void MixScreen::MatrixPopUpPicker::loop(uint micros){
-	if(gif->newFrameReady()){
-		draw();
-		screen.commit();
-	}
+	draw();
+	screen.commit();
 }

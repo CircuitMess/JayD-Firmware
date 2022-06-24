@@ -166,7 +166,7 @@ void MixScreen::MixScreen::start(){
 
 	uint8_t potMidVal = InputJayD::getInstance()->getPotValue(POT_MID);
 	system->setMix(potMidVal);
-	matrixManager.matrixMid.vu(potMidVal);
+	matrixManager.fillMatrixMid(potMidVal);
 	matrixManager.matrixMid.push();
 
 	leftSeekBar->setTotalDuration(system->getDuration(0));
@@ -217,7 +217,13 @@ void MixScreen::MixScreen::stop(){
 	Input.removeListener(this);
 	InputJayD::getInstance()->removeListener(this);
 
-	stopBigVu();
+	if(bigVuStarted){
+		stopBigVu();
+	}else{
+		if(!matrixManager.matrixBig.getAnimations().empty()){
+			delete *matrixManager.matrixBig.getAnimations().begin();
+		}
+	}
 
 	if(system){
 		system->stop();
@@ -382,7 +388,7 @@ void MixScreen::MixScreen::loop(uint micros){
 void MixScreen::MixScreen::potMove(uint8_t id, uint8_t value){
 	if(id == POT_MID){
 		system->setMix(value);
-		matrixManager.matrixMid.vu(value);
+		matrixManager.fillMatrixMid(value);
 		matrixManager.matrixMid.push();
 	}else if(id == POT_L){
 		system->setVolume(0, value);

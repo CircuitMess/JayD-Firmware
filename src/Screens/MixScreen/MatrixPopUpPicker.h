@@ -8,6 +8,8 @@
 #include <UI/LinearLayout.h>
 #include "../../InputKeys.h"
 
+class MatrixAnimGIF;
+
 namespace MixScreen {
 	class MixScreen;
 
@@ -35,6 +37,7 @@ namespace MixScreen {
 		LinearLayout screenLayout;
 
 		GIFAnimatedSprite* gif = nullptr;
+		MatrixAnimGIF* anim = nullptr;
 
 		int8_t bigMatrixNumber = 2;
 
