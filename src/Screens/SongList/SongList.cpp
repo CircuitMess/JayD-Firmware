@@ -96,6 +96,7 @@ void SongList::SongList::searchDirectories(File dir){
 }
 
 void SongList::SongList::loop(uint t){
+	if(!insertedSD || empty) return;
 	if(songs[selectedElement]->checkScrollUpdate()) {
 		draw();
 		screen.commit();
