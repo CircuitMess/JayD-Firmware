@@ -5,7 +5,7 @@
 #include <Loop/LoopManager.h>
 #include <SPIFFS.h>
 #include <FS/CompressedFile.h>
-#include <U8g2_for_TFT_eSPI.h>
+#include "../../Fonts.h"
 
 SongList::SongList* SongList::SongList::instance = nullptr;
 
@@ -172,11 +172,8 @@ void SongList::SongList::draw(){
 
 	Sprite* canvas = screen.getSprite();
 
-	FontWriter u8f = canvas->startU8g2Fonts();
-
-	u8f.setFont(u8g2_font_DigitalDisco_tf);
-	u8f.setForegroundColor(TFT_WHITE);
-	u8f.setFontMode(1);
+	canvas->setFont(&u8g2_font_DigitalDisco_tf);
+	canvas->setTextColor(TFT_WHITE);
 
 	canvas->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1);
 
@@ -184,21 +181,21 @@ void SongList::SongList::draw(){
 
 	canvas->drawIcon(backgroundBuffer, 0, 0, 160, 19, 1);
 
-	u8f.setCursor((160 - u8f.getUTF8Width("SD card")) / 2, 15);
-	u8f.printf("SD card");
+	canvas->setTextDatum(BC_DATUM);
+	canvas->drawString("SD card", screen.getWidth()/2, 15);
 
 	if(waiting){
-		u8f.setCursor((160 - u8f.getUTF8Width("Loading...")) / 2, 65);
-		u8f.printf("Loading...");
+		canvas->drawString("Loading...", screen.getWidth()/2, 65);
+		canvas->setTextDatum(TL_DATUM);
 		return;
 	}
 
 	if(!insertedSD){
-		u8f.setCursor((160 - u8f.getUTF8Width("Not inserted!")) / 2, 65);
-		u8f.printf("Not inserted!");
+		canvas->drawString("Not inserted!", screen.getWidth()/2, 65);
+		canvas->setTextDatum(TL_DATUM);
 	}else if(empty){
-		u8f.setCursor((160 - u8f.getUTF8Width("Empty!")) / 2, 65);
-		u8f.printf("Empty!");
+		canvas->drawString("Empty!", screen.getWidth()/2, 65);
+		canvas->setTextDatum(TL_DATUM);
 	}
 }
 

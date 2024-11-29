@@ -1,8 +1,8 @@
 #include <Input/InputJayD.h>
 #include "InputTest.h"
 #include "../IntroScreen/IntroScreen.h"
+#include "../../Fonts.h"
 #include <Settings.h>
-#include <U8g2_for_TFT_eSPI.h>
 
 
 InputTest::InputTest* InputTest::InputTest::instance = nullptr;
@@ -293,21 +293,17 @@ void InputTest::InputTest::draw(){
 	screen.getSprite()->clear(TFT_BLACK);
 	screenLayout->draw();
 	screenLayout->getSprite()->setTextColor(TFT_GREEN);
-	FontWriter u8f = screen.getSprite()->startU8g2Fonts();
 
 	if(doneCounter >= 19){
 		screenLayout->getSprite()->fillRect(screenLayout->getTotalX(), screenLayout->getTotalY(), 160, 128, TFT_BLACK);
-		u8f.setFont(u8g2_font_DigitalDisco_tf);
-		u8f.setForegroundColor(TFT_GREEN);
-		u8f.setFontMode(1);
-		u8f.setCursor(screenLayout->getTotalX() + 50, screenLayout->getTotalY() + 40);
-		u8f.println("ALL OK!");
-		u8f.setFont(u8g2_font_profont12_tf);
-		u8f.setForegroundColor(TFT_WHITE);
-		u8f.setFontMode(1);
-		u8f.setCursor(screenLayout->getTotalX() + 17, screenLayout->getTotalY() + 80);
-		u8f.println("Press any key to exit");
 
+		auto canvas = screenLayout->getSprite();
+		canvas->setFont(&u8g2_font_DigitalDisco_tf);
+		canvas->setTextColor(TFT_GREEN);
+		canvas->drawString("ALL OK!", screenLayout->getTotalX() + 50, screenLayout->getTotalY() + 40);
+		canvas->setFont(&u8g2_font_profont12_tf);
+		canvas->setTextColor(TFT_WHITE);
+		canvas->drawString("Press any key to exit", screenLayout->getTotalX() + 17, screenLayout->getTotalY() + 80);
 	}
 
 }

@@ -23,27 +23,25 @@ else ()
 endif ()
 
 # Include directories
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.1/libraries/Wire/src)
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.1/libraries/FS/src)
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.1/libraries/SD/src)
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.1/libraries/SPI/src)
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.1/libraries/WiFi/src)
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.1/libraries/SPIFFS/src)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.7.3/libraries/Wire/src)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.7.3/libraries/FS/src)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.7.3/libraries/SD/src)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.7.3/libraries/SPI/src)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.7.3/libraries/WiFi/src)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.7.3/libraries/SPIFFS/src)
 
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.1/cores/esp32)
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.1/tools/sdk)
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.1/tools/sdk/include)
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.1/tools/sdk/include/esp32)
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.1/tools/sdk/include/freertos)
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.1/tools/sdk/include/driver)
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.1/tools/sdk/include/driver/driver)
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.1/tools/sdk/include/spi_flash)
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.1/libraries/CircuitOS/src)
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.1/libraries/TFT_eSPI)
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.1/libraries/TFT_eSPI/Extensions)
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.1/libraries/U8g2_for_TFT_eSPI/src)
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.1/libraries/FDK-AAC/src)
-include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.1/libraries/JayD-Library/src)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.7.3/cores/esp32)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.7.3/tools/sdk)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.7.3/tools/sdk/include)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.7.3/tools/sdk/include/esp32)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.7.3/tools/sdk/include/freertos)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.7.3/tools/sdk/include/driver)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.7.3/tools/sdk/include/driver/driver)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.7.3/tools/sdk/include/spi_flash)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.7.3/libraries/FDK-AAC/src)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.7.3/libraries/JayD-Library/src)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.7.3/libraries/LovyanGFX/src)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.7.3/libraries/CircuitOS/src)
 
 
 # Source directories
@@ -51,8 +49,12 @@ file(GLOB_RECURSE SOURCES "src/**.cpp" "src/**.c" "src/**.hpp" "src/**.h")
 
 
 # Defines
+add_definitions(-DARDUINO)
 add_definitions(-DDEBUG)
 add_definitions(-DESP32)
+add_definitions(-DCIRCUITOS_FREERTOS)
+add_definitions(-DCIRCUITOS_LOVYANGFX)
+add_definitions(-DLOVYAN_MANUAL)
 
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build)

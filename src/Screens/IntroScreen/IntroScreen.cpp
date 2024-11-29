@@ -22,7 +22,7 @@ IntroScreen::IntroScreen::IntroScreen(Display &display) : Context(display){
 	}
 
 	gif = new AnimatedSprite(screen.getSprite(), CompressedFile::open(f, 9, 8, 33734));
-	gif->setSwapBytes(true);
+	gif->setSwapBytes(false);
 	gif->setXY(0, 0);
 
 	IntroScreen::pack();

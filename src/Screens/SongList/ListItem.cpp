@@ -1,14 +1,15 @@
 #include "ListItem.h"
+#include "../../Fonts.h"
 
 SongList::ListItem::ListItem(ElementContainer *parent, String songName) : CustomElement(parent, 150, 15), songName(songName), path(songName){
 
 	this->songName = songName.substring(songName.lastIndexOf('/') + 1, songName.lastIndexOf('.'));
 
-	FontWriter u8f = getSprite()->startU8g2Fonts();
-	u8f.setFont(u8g2_font_profont12_tf);
-	u8f.setForegroundColor(TFT_WHITE);
-	u8f.setFontMode(1);
-	nameLength = u8f.getUTF8Width(this->songName.c_str());
+	auto canvas = getSprite();
+	canvas->setFont(&u8g2_font_profont12_tf);
+	canvas->setTextColor(TFT_WHITE);
+
+	nameLength = canvas->textWidth(this->songName.c_str());
 	scrollCursor = 2;
 	if(nameLength >= (getWidth() - 4)){
 		scrolling = true;
@@ -19,40 +20,39 @@ SongList::ListItem::ListItem(ElementContainer *parent, String songName) : Custom
 }
 
 void SongList::ListItem::draw(){
-	FontWriter u8f = getSprite()->startU8g2Fonts();
+	auto canvas = getSprite();
 
-	u8f.setFont(u8g2_font_profont12_tf);
-	u8f.setForegroundColor(TFT_WHITE);
-	u8f.setFontMode(1);
+	canvas->setFont(&u8g2_font_profont12_tf);
+	canvas->setTextColor(TFT_WHITE);
+	canvas->setTextDatum(CL_DATUM);
+
 	if(selected) {
 		getSprite()->drawRect(getTotalX() - 2, getTotalY() - 4, getWidth() + 4, getHeight() + 6, TFT_LIGHTGREY);//treba ubaciti ikonicu za scrolanje
 	}
 	if(scrolling && selected){
 		String temp = songName;
-		while(scrollCursor + (nameLength - u8f.getUTF8Width(temp.c_str())) < 2){
+		while(scrollCursor + (nameLength - canvas->textWidth(temp.c_str())) < 2){
 			temp.remove(0, 1);
 		}
-		int32_t correctedCursor = scrollCursor + (nameLength - u8f.getUTF8Width(temp.c_str()));
-		while(correctedCursor + u8f.getUTF8Width(temp.c_str()) >= (int)(getWidth() - 2)){
+		int32_t correctedCursor = scrollCursor + (nameLength - canvas->textWidth(temp.c_str()));
+		while(correctedCursor + canvas->textWidth(temp.c_str()) >= (int)(getWidth() - 2)){
 			temp.remove(temp.length() - 1);
 		}
-		u8f.setCursor(getTotalX() + correctedCursor, getTotalY() + 9);
-		u8f.print(temp);
+		canvas->drawString(temp, getTotalX() + correctedCursor, getTotalY() + 9);
 
 		temp = songName;
 		if(scrollCursor + scrollOffset + nameLength > getWidth() - 2) return;
-		while((scrollCursor + scrollOffset + nameLength) + (nameLength - u8f.getUTF8Width(temp.c_str())) < 2 && temp.length() > 0){
+		while((scrollCursor + scrollOffset + nameLength) + (nameLength - canvas->textWidth(temp.c_str())) < 2 && temp.length() > 0){
 			temp.remove(0, 1);
 		}
-		correctedCursor = (scrollCursor + scrollOffset + nameLength) + (nameLength - u8f.getUTF8Width(temp.c_str()));
-		while(correctedCursor + u8f.getUTF8Width(temp.c_str()) >= (int)(getWidth() - 2) && temp.length() > 0){
+		correctedCursor = (scrollCursor + scrollOffset + nameLength) + (nameLength - canvas->textWidth(temp.c_str()));
+		while(correctedCursor + canvas->textWidth(temp.c_str()) >= (int)(getWidth() - 2) && temp.length() > 0){
 			temp.remove(temp.length() - 1);
 		}
-		u8f.setCursor(getTotalX() + correctedCursor, getTotalY() + 9);
-		u8f.print(temp);
+
+		canvas->drawString(temp, getTotalX() + correctedCursor, getTotalY() + 9);
 	}else{
-		u8f.setCursor(getTotalX() + scrollCursor, getTotalY() + 9);
-		u8f.print(songName);
+		canvas->drawString(songName, getTotalX() + scrollCursor, getTotalY() + 9);
 	}
 }
 

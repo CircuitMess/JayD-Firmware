@@ -1,4 +1,5 @@
 #include "SongName.h"
+#include "../../Fonts.h"
 
 Playback::SongName::SongName(ElementContainer *parent) : CustomElement(parent,150,20){
 
@@ -6,38 +7,39 @@ Playback::SongName::SongName(ElementContainer *parent) : CustomElement(parent,15
 }
 
 void Playback::SongName::draw(){
-	FontWriter u8f = getSprite()->startU8g2Fonts();
-	u8f.setFont(u8g2_font_DigitalDisco_tf);
-	u8f.setForegroundColor(TFT_WHITE);
-	u8f.setFontMode(1);
+	auto canvas = getSprite();
+	canvas->setFont(&u8g2_font_DigitalDisco_tf);
+	canvas->setTextColor(TFT_WHITE);
+	canvas->setTextDatum(BL_DATUM);
+
 
 	if(scrolling){
 		String temp = songName;
-		while(scrollCursor + (nameLength - u8f.getUTF8Width(temp.c_str())) < 0){
+		while(scrollCursor + (nameLength - canvas->textWidth(temp.c_str())) < 0){
 			temp.remove(0, 1);
 		}
-		int32_t correctedCursor = scrollCursor + (nameLength - u8f.getUTF8Width(temp.c_str()));
-		while(correctedCursor + u8f.getUTF8Width(temp.c_str()) >= (int)(getWidth())){
+		int32_t correctedCursor = scrollCursor + (nameLength - canvas->textWidth(temp.c_str()));
+		while(correctedCursor + canvas->textWidth(temp.c_str()) >= (int)(getWidth())){
 			temp.remove(temp.length() - 1);
 		}
-		u8f.setCursor(getTotalX() + correctedCursor, getTotalY() + 23);
-		u8f.print(temp);
+		canvas->drawString(temp, getTotalX() + correctedCursor, getTotalY() + 23);
 
 		temp = songName;
 		if(scrollCursor + scrollOffset + nameLength > getWidth()) return;
-		while((scrollCursor + scrollOffset + nameLength) + (nameLength - u8f.getUTF8Width(temp.c_str())) < 0 && temp.length() > 0){
+		while((scrollCursor + scrollOffset + nameLength) + (nameLength - canvas->textWidth(temp.c_str())) < 0 && temp.length() > 0){
 			temp.remove(0, 1);
 		}
-		correctedCursor = (scrollCursor + scrollOffset + nameLength) + (nameLength - u8f.getUTF8Width(temp.c_str()));
-		while(correctedCursor + u8f.getUTF8Width(temp.c_str()) >= (int)(getWidth()) && temp.length() > 0){
+		correctedCursor = (scrollCursor + scrollOffset + nameLength) + (nameLength - canvas->textWidth(temp.c_str()));
+		while(correctedCursor + canvas->textWidth(temp.c_str()) >= (int)(getWidth()) && temp.length() > 0){
 			temp.remove(temp.length() - 1);
 		}
-		u8f.setCursor(getTotalX() + correctedCursor, getTotalY() + 23);
-		u8f.print(temp);
+
+		canvas->drawString(temp, getTotalX() + correctedCursor, getTotalY() + 23);
 	}else{
-		u8f.setCursor(getTotalX() + scrollCursor, getTotalY() + 23);
-		u8f.print(songName);
+		canvas->drawString(songName, getTotalX() + scrollCursor, getTotalY() + 23);
 	}
+
+	canvas->setTextDatum(TL_DATUM);
 }
 
 bool Playback::SongName::checkScrollUpdate(){
@@ -55,11 +57,11 @@ bool Playback::SongName::checkScrollUpdate(){
 
 void Playback::SongName::setSongName(const String &songName){
 	SongName::songName = songName;
-	FontWriter u8f = getSprite()->startU8g2Fonts();
-	u8f.setFont(u8g2_font_DigitalDisco_tf);
-	u8f.setForegroundColor(TFT_WHITE);
-	u8f.setFontMode(1);
-	nameLength = u8f.getUTF8Width(songName.c_str());
+	auto canvas = getSprite();
+	canvas->setFont(&u8g2_font_DigitalDisco_tf);
+	canvas->setTextColor(TFT_WHITE);
+
+	nameLength = canvas->textWidth(songName.c_str());
 	if(nameLength >= (getWidth() - 2)){
 		scrolling = true;
 		currentTime = millis();

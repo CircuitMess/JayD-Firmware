@@ -6,6 +6,7 @@
 #include "MixScreen.h"
 #include "../SongList/SongList.h"
 #include "../TextInputScreen/TextInputScreen.h"
+#include "../../Fonts.h"
 
 MixScreen::MixScreen* MixScreen::MixScreen::instance = nullptr;
 
@@ -260,12 +261,11 @@ void MixScreen::MixScreen::drawSaveStatus(){
 	canvas->fillRoundRect((screen.getWidth() - 80) / 2, (screen.getHeight() - 40) / 2, 80, 40, 2, C_RGB(52, 204, 235));
 	canvas->drawRoundRect((screen.getWidth() - 80) / 2, (screen.getHeight() - 40) / 2, 80, 40, 2, TFT_BLACK);
 
-	auto font = canvas->startU8g2Fonts();
-	font.setForegroundColor(TFT_WHITE);
-	font.setFont(u8g2_font_DigitalDisco_tf);
-	font.setFontMode(1);
-	font.setCursor((screen.getWidth() - font.getUTF8Width("Saving...")) / 2, (screen.getHeight() - 40) / 2 + 23);
-	font.print("Saving...");
+	canvas->setTextColor(TFT_WHITE);
+	canvas->setFont(&u8g2_font_DigitalDisco_tf);
+	canvas->setTextDatum(BC_DATUM);
+	canvas->drawString("Saving...", screen.getWidth() / 2, (screen.getHeight() - 40) / 2 + 23);
+	canvas->setTextDatum(TL_DATUM);
 
 	canvas->fillRoundRect((screen.getWidth() - 80) / 2 + 10 + (cos((float) millis() / 200.0f)+1) / 2.0f * 45.0f, (screen.getHeight() - 40) / 2 + 30, 15, 5, 2, TFT_WHITE);
 }

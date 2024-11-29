@@ -1,4 +1,5 @@
 #include "MainMenuItem.h"
+#include "../../Fonts.h"
 #include <SPIFFS.h>
 #include <FS/CompressedFile.h>
 
@@ -42,14 +43,13 @@ void MainMenu::MainMenuItem::draw(){
 		getSprite()->drawIcon(buffer, getTotalX()+7, getTotalY() + 46, 45, 42, 1, TFT_BLACK);
 	}
 
-	FontWriter u8f = getSprite()->startU8g2Fonts();
-	u8f.setFont(u8g2_font_HelvetiPixel_tr);
-	u8f.setForegroundColor(TFT_WHITE);
-	u8f.setFontMode(1);
+	auto canvas = getSprite();
+	canvas->setFont(&u8g2_font_HelvetiPixel_tr);
+	canvas->setTextColor(TFT_WHITE);
 
-	int16_t width = u8f.getUTF8Width(texts[type]);
-	u8f.setCursor(getTotalX() + 7 + 45/2 - width/ 2, yPos);
-	u8f.print(texts[type]);
+	canvas->setTextDatum(BC_DATUM);
+	canvas->drawString(texts[type], getTotalX() + 7 + 45/2, yPos);
+	canvas->setTextDatum(TL_DATUM);
 }
 
 void MainMenu::MainMenuItem::isSelected(bool selected){

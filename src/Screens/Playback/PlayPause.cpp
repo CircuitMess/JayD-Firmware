@@ -45,6 +45,7 @@ void Playback::PlayPause::draw(){
 	}
 	getSprite()->drawIcon(icons[1], getTotalX() + getWidth() / 2 - 35, getTotalY() + 25, 10, 8, 1, TFT_BLACK);
 	getSprite()->drawIcon(icons[0], getTotalX() + getWidth() / 2 + 22, getTotalY() + 25, 10, 8, 1, TFT_BLACK);
+	getSprite()->setTextSize(1);
 }
 
 void Playback::PlayPause::setPlaying(bool playing){
