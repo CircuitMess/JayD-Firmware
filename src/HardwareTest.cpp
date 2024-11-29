@@ -11,6 +11,7 @@
 #include <Devices/Matrix/Matrix.h>
 #include <Devices/Matrix/IS31FL3731.h>
 #include "HWTestSD.hpp"
+#include <Util/HWRevision.h>
 
 HardwareTest *HardwareTest::test = nullptr;
 
@@ -24,6 +25,7 @@ HardwareTest::HardwareTest(Display &_display) : canvas(_display.getBaseSprite())
 	tests.push_back({HardwareTest::sdTest, "SD Data"});
 	tests.push_back({HardwareTest::matrixTest, "LED Matrix"});
 	tests.push_back({HardwareTest::SPIFFSTest, "SPIFFS"});
+	tests.push_back({HardwareTest::hwRevision, "HW rev"});
 
 	SPI.begin(18, 19, 23);
 	SPI.setFrequency(60000000);
@@ -42,12 +44,14 @@ void HardwareTest::start(){
 	canvas->setTextColor(TFT_GOLD);
 	canvas->setTextFont(2);
 	canvas->setTextSize(1);
-	canvas->setCursor(0, 0);
+	canvas->setCursor(display->getWidth()/2, 0);
 	canvas->printCenter("JayD Hardware Test");
-	canvas->setCursor(0, 8);
+	canvas->setCursor(display->getWidth()/2, 8);
 	canvas->println();
 	canvas->setTextFont(1);
 	display->commit();
+	canvas->setTextDatum(textdatum_t::top_center);
+
 
 	bool pass = true;
 	for(const Test &test : tests){
@@ -67,7 +71,7 @@ void HardwareTest::start(){
 		if(!(pass &= result)) break;
 	}
 
-	canvas->setCursor(0, 103);
+	canvas->setCursor(display->getWidth()/2, 103);
 
 	if(pass){
 		Serial.println("TEST:pass");
@@ -76,6 +80,13 @@ void HardwareTest::start(){
 		canvas->printf("\n");
 		canvas->setTextFont(2);
 		canvas->printCenter("Test Successful!");
+
+//		canvas->setTextDatum(textdatum_t::top_left);
+//		canvas->setTextColor(TFT_BLACK);
+//		canvas->drawString("HW revision:", 35, 60);
+//		canvas->setTextColor(TFT_PURPLE);
+//		canvas->drawString(String(HWRevision::get()), 120, 60);
+
 		display->commit();
 
 		auditorySoundTest();
@@ -308,45 +319,63 @@ void HardwareTest::visualMatrixTest(){
 
 	ledMatrix->clear();
 	ledMatrix->setBrightness(150);
+	while(1){
 
-	/* Individual LED test */
-	for(int i = 0; i < 144; ++i){
-		Sched.loop(0);
-		ledMatrix->drawPixel(i, {255, 255, 255, brightness / 2});
-		ledMatrix->push();
-		delay(5);
-		Sched.loop(0);
-	}
+		/* Individual LED test */
+		for(int i = 0; i < 144; ++i){
+			Sched.loop(0);
+			ledMatrix->drawPixel(i, { 255, 255, 255, brightness / 2 });
+			ledMatrix->push();
+			delay(5);
+			Sched.loop(0);
+		}
 
-	/* Brightness change test */
-	for(int i = brightness - 1; i >= 0; i -= 5){
+		/* Brightness change test */
+		for(int i = brightness - 1; i >= 0; i -= 5){
 
-		ledMatrix->setBrightness(i);
-		ledMatrix->push();
-		delay(5);
-		Sched.loop(0);
-	}
-	/* Brightness change test */
-	for(int i = 0; i < brightness - 1; i += 5){
+			ledMatrix->setBrightness(i);
+			ledMatrix->push();
+			delay(5);
+			Sched.loop(0);
+		}
+		/* Brightness change test */
+		for(int i = 0; i < brightness - 1; i += 5){
 
-		ledMatrix->setBrightness(i);
-		ledMatrix->push();
-		delay(5);
-		Sched.loop(0);
-	}
-	/* Brightness change test */
-	for(int i = brightness - 1; i >= 0; i -= 5){
+			ledMatrix->setBrightness(i);
+			ledMatrix->push();
+			delay(5);
+			Sched.loop(0);
+		}
+		/* Brightness change test */
+		for(int i = brightness - 1; i >= 0; i -= 5){
 
-		ledMatrix->setBrightness(i);
-		ledMatrix->push();
-		delay(5);
-		Sched.loop(0);
+			ledMatrix->setBrightness(i);
+			ledMatrix->push();
+			delay(5);
+			Sched.loop(0);
+		}
 	}
 
 	ledMatrix->clear();
 	ledMatrix->push();
 }
 
+bool HardwareTest::hwRevision(){
+	const auto rev = HWRevision::get();
+	if(rev != 0){
+		test->canvas->printf("Fused: ");
+		test->canvas->setTextColor(TFT_GOLD);
+		test->canvas->printf("%d ", rev);
+		test->canvas->setTextColor(TFT_WHITE);
+
+		return rev == CurrentVersion;
+	}
+
+	HWRevision::write(CurrentVersion);
+	HWRevision::commit();
+
+	return true;
+}
 
 void HardwareTest::log(const char *property, char *value){
 	Serial.printf("\n%s:%s:%s\n", currentTest, property, value);

@@ -43,6 +43,9 @@ private:
 
 	void visualMatrixTest();
 	void auditorySoundTest();
+	static bool hwRevision();
+
+	static constexpr uint8_t CurrentVersion = 1;
 };
 
 
