@@ -65,7 +65,7 @@ void HardwareTest::start(){
 		bool result = test.test();
 
 		canvas->setTextColor(result ? TFT_GREEN : TFT_RED);
-		canvas->printf("%s\n\n", result ? "PASSED" : "FAILED");
+		canvas->printf("%s\n", result ? "PASSED" : "FAILED");
 		display->commit();
 
 		if(!(pass &= result)) break;
