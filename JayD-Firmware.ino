@@ -29,7 +29,7 @@ void setup(){
 		digitalWrite(PIN_BL, LOW);
 
 		Display display(160, 128, -1, -1);
-		display.getTft()->setPanel(JayDDisplay::panel2());
+		display.getTft()->setPanel(JayDDisplay::panel1());
 		display.begin();
 
 		HardwareTest test(display);
