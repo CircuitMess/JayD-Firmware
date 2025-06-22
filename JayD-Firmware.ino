@@ -74,16 +74,23 @@ void setup(){
 	Context::setDeleteOnPop(true);
 
 	if(!Settings.get().inputTested){
-		InputTest::InputTest* test = new InputTest::InputTest(JayD.getDisplay());
-		test->setDoneCallback([](InputTest::InputTest* test){
+		if(HWRevision::get() > 0){
 			Settings.get().inputTested = true;
 			Settings.store();
 
-			ESP.restart();
-		});
+			launch();
+		}else{
+			InputTest::InputTest* test = new InputTest::InputTest(JayD.getDisplay());
+			test->setDoneCallback([](InputTest::InputTest* test){
+				Settings.get().inputTested = true;
+				Settings.store();
 
-		test->unpack();
-		test->start();
+				ESP.restart();
+			});
+
+			test->unpack();
+			test->start();
+		}
 	}else{
 		launch();
 	}
