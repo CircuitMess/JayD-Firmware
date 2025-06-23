@@ -49,6 +49,9 @@ void setup(){
 	Serial.begin(115200);
 
 	if(checkJig()){
+		JayD.initVer(2);
+		JayD.begin();
+
 		pinMode(PIN_BL, OUTPUT);
 		digitalWrite(PIN_BL, LOW);
 

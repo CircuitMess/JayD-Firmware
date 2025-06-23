@@ -1,15 +1,11 @@
 #include "HardwareTest.h"
 #include <SPI.h>
 #include <SD.h>
-#include <AudioLib/SourceAAC.h>
-#include <AudioLib/Systems/PlaybackSystem.h>
 #include <Settings.h>
 #include "Wire.h"
 #include <JayD.h>
 #include "SPIFFS.h"
 #include "HWTestSPIFFS.hpp"
-#include <Devices/Matrix/Matrix.h>
-#include <Devices/Matrix/IS31FL3731.h>
 #include "HWTestSD.hpp"
 #include <Util/HWRevision.h>
 
@@ -64,43 +60,94 @@ void HardwareTest::start(){
 
 		bool result = test.test();
 
-		canvas->setTextColor(result ? TFT_GREEN : TFT_RED);
-		canvas->printf("%s\n", result ? "PASSED" : "FAILED");
+		canvas->setTextColor(result ? TFT_SILVER : TFT_ORANGE);
+		canvas->printf("%s\n", result ? "PASS" : "FAIL");
 		display->commit();
 
 		if(!(pass &= result)) break;
 	}
 
-	canvas->setCursor(display->getWidth()/2, 103);
+	canvas->print("\n\n");
+	canvas->setTextColor(pass ? TFT_BLUE : TFT_ORANGE);
+	canvas->printCenter(pass ? "All OK!" : "FAIL!");
+	display->commit();
 
 	if(pass){
 		Serial.println("TEST:pass");
-
-		canvas->setTextColor(TFT_CYAN);
-		canvas->printf("\n");
-		canvas->setTextFont(2);
-		canvas->printCenter("Test Successful!");
-
-//		canvas->setTextDatum(textdatum_t::top_left);
-//		canvas->setTextColor(TFT_BLACK);
-//		canvas->drawString("HW revision:", 35, 60);
-//		canvas->setTextColor(TFT_PURPLE);
-//		canvas->drawString(String(HWRevision::get()), 120, 60);
-
-		display->commit();
-
-		auditorySoundTest();
-		visualMatrixTest();
-
-		for(;;){
-			Sched.loop(0);
-		}
+		postTestPass();
 	}else{
-		canvas->setTextColor(TFT_RED);
 		Serial.printf("TEST:fail:%s\n", currentTest);
+		postTestFail();
 	}
+}
 
-	for(;;);
+void HardwareTest::postTestPass(){
+	File file = SPIFFS.open("/Test.aac");
+	Settings.get().volumeLevel = 255;
+
+	int ledVal = 255;
+	int ledDir = -1;
+	uint32_t ledTime = 0;
+
+	bool painted = false;
+	const auto color = TFT_GREEN;
+	uint32_t flashTime = 0;
+	for(;;){
+		if(millis() - flashTime >= 500){
+			for(int x = 0; x < canvas->width(); x++){
+				for(int y = 0; y <  canvas->height(); y++){
+					if(!painted && canvas->readPixel(x, y) == TFT_BLACK){
+						canvas->drawPixel(x, y, color);
+					}else if(painted && canvas->readPixel(x, y) == color){
+						canvas->drawPixel(x, y, TFT_BLACK);
+					}
+				}
+			}
+
+			flashTime = millis();
+			painted = !painted;
+			display->commit();
+		}
+
+		if(millis() - ledTime >= 15){
+			ledTime = millis();
+
+			LEDmatrix.clear({ 255, 255, 255, (uint8_t) ledVal });
+			LEDmatrix.push();
+
+			ledVal += ledDir;
+			if(ledVal == 255 || ledVal == 100){
+				ledDir *= -1;
+			}
+		}
+
+		LoopManager::loop();
+		Sched.loop(0);
+	}
+}
+
+void HardwareTest::postTestFail(){
+	bool painted = false;
+	const auto color = TFT_RED;
+	auto flashTime = 0;
+
+	for(;;){
+		if(millis() - flashTime < 500) continue;
+
+		for(int x = 0; x < canvas->width(); x++){
+			for(int y = 0; y <  canvas->height(); y++){
+				if(!painted && canvas->readPixel(x, y) == TFT_BLACK){
+					canvas->drawPixel(x, y, color);
+				}else if(painted && canvas->readPixel(x, y) == color){
+					canvas->drawPixel(x, y, TFT_BLACK);
+				}
+			}
+		}
+
+		flashTime = millis();
+		painted = !painted;
+		display->commit();
+	}
 }
 
 bool HardwareTest::psram(){
@@ -288,76 +335,6 @@ bool HardwareTest::SPIFFSTest(){
 	}
 
 	return true;
-}
-
-void HardwareTest::auditorySoundTest(){
-
-	File file;
-	if(!(file = SD.open("/The Gears of Progress - Section 31 - Tech.aac"))){
-		Serial.println("ffail");
-		for(;;);
-	}
-
-	Settings.get().volumeLevel = 255;
-	PlaybackSystem* system = new PlaybackSystem(file);
-	system->setVolume(255);
-	system->start();
-}
-
-void HardwareTest::visualMatrixTest(){
-
-	Wire.begin(I2C_SDA, I2C_SCL);
-	Wire.setClock(400000);
-
-	IS31FL3731 is31;
-	auto ledMatrix = new Matrix(is31);
-
-	is31.init();
-	ledMatrix->begin();
-
-	const int brightness = 255;
-
-	ledMatrix->clear();
-	ledMatrix->setBrightness(150);
-	while(1){
-
-		/* Individual LED test */
-		for(int i = 0; i < 144; ++i){
-			Sched.loop(0);
-			ledMatrix->drawPixel(i, { 255, 255, 255, brightness / 2 });
-			ledMatrix->push();
-			delay(5);
-			Sched.loop(0);
-		}
-
-		/* Brightness change test */
-		for(int i = brightness - 1; i >= 0; i -= 5){
-
-			ledMatrix->setBrightness(i);
-			ledMatrix->push();
-			delay(5);
-			Sched.loop(0);
-		}
-		/* Brightness change test */
-		for(int i = 0; i < brightness - 1; i += 5){
-
-			ledMatrix->setBrightness(i);
-			ledMatrix->push();
-			delay(5);
-			Sched.loop(0);
-		}
-		/* Brightness change test */
-		for(int i = brightness - 1; i >= 0; i -= 5){
-
-			ledMatrix->setBrightness(i);
-			ledMatrix->push();
-			delay(5);
-			Sched.loop(0);
-		}
-	}
-
-	ledMatrix->clear();
-	ledMatrix->push();
 }
 
 bool HardwareTest::hwRevision(){
