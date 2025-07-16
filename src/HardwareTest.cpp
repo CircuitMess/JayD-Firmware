@@ -83,7 +83,11 @@ void HardwareTest::start(){
 
 void HardwareTest::postTestPass(){
 	File file = SPIFFS.open("/Test.aac");
-	Settings.get().volumeLevel = 255;
+	PlaybackSystem playback(file);
+	playback.setVolume(255);
+	playback.start();
+
+	uint32_t beepTime = millis();
 
 	int ledVal = 255;
 	int ledDir = -1;
@@ -119,6 +123,12 @@ void HardwareTest::postTestPass(){
 			if(ledVal == 255 || ledVal == 100){
 				ledDir *= -1;
 			}
+		}
+
+		if(millis() - beepTime >= 1000){
+			beepTime = millis();
+			playback.stop();
+			playback.start();
 		}
 
 		LoopManager::loop();
