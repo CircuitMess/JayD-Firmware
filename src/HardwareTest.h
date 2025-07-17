@@ -40,12 +40,12 @@ private:
 	static bool sdData();
 	static bool matrixTest();
 	static bool SPIFFSTest();
-
-	void visualMatrixTest();
-	void auditorySoundTest();
 	static bool hwRevision();
 
-	static constexpr uint8_t CurrentVersion = 1;
+	static constexpr uint8_t CurrentVersion = 2;
+
+	void postTestPass();
+	void postTestFail();
 };
 
 
