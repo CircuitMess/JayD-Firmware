@@ -18,7 +18,7 @@ HardwareTest::HardwareTest(Display &_display) : canvas(_display.getBaseSprite())
 	tests.push_back({HardwareTest::psram, "PSRAM"});
 	tests.push_back({HardwareTest::nuvotonTest, "Nuvoton"});
 	tests.push_back({HardwareTest::sdTest, "SD Card"});
-	tests.push_back({HardwareTest::sdTest, "SD Data"});
+	tests.push_back({HardwareTest::sdData, "SD Data"});
 	tests.push_back({HardwareTest::matrixTest, "LED Matrix"});
 	tests.push_back({HardwareTest::SPIFFSTest, "SPIFFS"});
 	tests.push_back({HardwareTest::hwRevision, "HW rev"});
