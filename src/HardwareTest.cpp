@@ -23,7 +23,7 @@ HardwareTest::HardwareTest(Display &_display) : canvas(_display.getBaseSprite())
 	tests.push_back({HardwareTest::SPIFFSTest, "SPIFFS"});
 	tests.push_back({HardwareTest::hwRevision, "HW rev"});
 
-	SPI.begin(18, 19, 23);
+	SPI.begin(SPI_SCK, SPI_MISO, SPI_MOSI);
 	SPI.setFrequency(60000000);
 
 	Wire.begin(I2C_SDA, I2C_SCL);
@@ -212,7 +212,7 @@ bool HardwareTest::nuvotonTest(){
 bool HardwareTest::sdTest(){
 
 	/* SD begin test */
-	if(!SD.begin(22, SPI)){
+	if(!SD.begin(SD_CS, SPI)){
 		test->log("SD Card","Not Recognized");
 		return false;
 	}
@@ -257,7 +257,7 @@ bool HardwareTest::sdTest(){
 	}
 
 	/* Compare read-write */
-	if(!strcmp(writeBuff, readBuff)){
+	if(strcmp(writeBuff, readBuff) != 0){
 		char logBuffer[100];
 		sprintf(logBuffer, "Expected %s, got %s",writeBuff,readBuff);
 		test->log("Compare Error", logBuffer);
