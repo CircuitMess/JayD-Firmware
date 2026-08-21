@@ -34,6 +34,11 @@ MixScreen::MixScreen::MixScreen(Display& display) : Context(display),
 
 MixScreen::MixScreen::~MixScreen(){
 	instance = nullptr;
+	if(system){
+		system->stop();
+		delete system;
+		system = nullptr;
+	}
 	free(selectedBackgroundBuffer);
 }
 
@@ -115,13 +120,31 @@ void MixScreen::MixScreen::returned(void* data){
 		return;
 	}
 
-	if(!f1){
-		f1 = SD.open(*((String*) data));
-	}else if(!f2){
-		f2 = SD.open(*((String*) data));
+	fs::File file = SD.open(*filename);
+	loadChannel(loadingChannel, file);
+	delete filename;
+}
+
+bool MixScreen::MixScreen::loadChannel(uint8_t channel, const fs::File& file){
+	if(channel >= 2 || !file) return false;
+
+	if(system){
+		if(!system->openChannel(channel, file)) return false;
+
+		SongSeekBar* bar = channel == 0 ? leftSeekBar : rightSeekBar;
+		SongName* nameLabel = channel == 0 ? leftSongName : rightSongName;
+
+		String name = file.name();
+		nameLabel->setSongName(name.substring(name.lastIndexOf('/') + 1, name.length() - 4));
+		bar->setCurrentDuration(0);
+		bar->setPlaying(true);
+		nameLabel->checkScrollUpdate();
+		drawQueued = true;
 	}
 
-	delete filename;
+	fs::File& slot = channel == 0 ? f1 : f2;
+	slot = file;
+	return true;
 }
 
 void MixScreen::MixScreen::setBigVuStarted(bool bigVuStarted){
@@ -137,23 +160,42 @@ void MixScreen::MixScreen::start(){
 	}
 
 
-	if(!f1 || !f2){
+	if(!f1 && !f2){
+		loadingChannel = 0;
 		(new SongList::SongList(*getScreen().getDisplay()))->push(this);
 		return;
 	}
 
-	Serial.printf("F1: %s\n", f1.name());
-	Serial.printf("F2: %s\n", f2.name());
+	if(f1){
+		String name = f1.name();
+		leftSongName->setSongName(name.substring(name.lastIndexOf('/') + 1, name.length() - 4));
+	}
+	if(f2){
+		String name = f2.name();
+		rightSongName->setSongName(name.substring(name.lastIndexOf('/') + 1, name.length() - 4));
+	}
 
-	f1.seek(0);
-	f2.seek(0);
+	if(system){
+		leftSeekBar->setTotalDuration(system->getDuration(0));
+		rightSeekBar->setTotalDuration(system->getDuration(1));
+		leftSeekBar->setPlaying(!system->isChannelPaused(0));
+		rightSeekBar->setPlaying(!system->isChannelPaused(1));
 
-	String name = f1.name();
-	leftSongName->setSongName(name.substring(name.lastIndexOf('/') + 1, name.length() - 4));
-	name = f2.name();
-	rightSongName->setSongName(name.substring(name.lastIndexOf('/') + 1, name.length() - 4));
+		if(bigVuStarted) startBigVu();
+		LoopManager::addListener(&leftVu);
+		LoopManager::addListener(&rightVu);
+		LoopManager::addListener(this);
+		Input.addListener(this);
+		InputJayD::getInstance()->addListener(this);
 
-	system = new MixSystem(f1, f2);
+		draw();
+		screen.commit();
+		return;
+	}
+
+	system = new MixSystem();
+	if(f1) system->openChannel(0, f1);
+	if(f2) system->openChannel(1, f2);
 
 	system->setVolume(0, InputJayD::getInstance()->getPotValue(POT_L));
 	system->setVolume(1, InputJayD::getInstance()->getPotValue(POT_R));
@@ -165,7 +207,9 @@ void MixScreen::MixScreen::start(){
 		startBigVu();
 	}
 
-	uint8_t potMidVal = InputJayD::getInstance()->getPotValue(POT_MID);
+	uint8_t potMidVal = f1 && f2
+		? InputJayD::getInstance()->getPotValue(POT_MID)
+		: (f1 ? 0 : 255);
 	system->setMix(potMidVal);
 	matrixManager.fillMatrixMid(potMidVal);
 	matrixManager.matrixMid.push();
@@ -226,11 +270,12 @@ void MixScreen::MixScreen::stop(){
 		}
 	}
 
-	if(system){
+	if(system && !keepSystemOnStop){
 		system->stop();
 		delete system;
 		system = nullptr;
 	}
+	keepSystemOnStop = false;
 
 }
 
@@ -365,7 +410,7 @@ void MixScreen::MixScreen::loop(uint micros){
 	}
 
 	if(system && system->isChannelPaused(1) != !rightSeekBar->isPlaying() && seekTime == 0){
-		rightSeekBar->setPlaying(!system->isChannelPaused(0));
+		rightSeekBar->setPlaying(!system->isChannelPaused(1));
 		update = true;
 	}
 
@@ -457,6 +502,7 @@ void MixScreen::MixScreen::btnEnc(uint8_t i){
 void MixScreen::MixScreen::enc(uint8_t index, int8_t value){
 
 	if(index == 6){
+		if(!system->hasChannel(selectedChannel)) return;
 		if(seekTime == 0){
 			seekChannel = selectedChannel;
 			wasRunning = !system->isChannelPaused(selectedChannel);
@@ -538,15 +584,8 @@ void MixScreen::MixScreen::enc(uint8_t index, int8_t value){
 
 void MixScreen::MixScreen::encBtnHold(uint8_t i){
 	if(i == 6){
-		// system->stop();
-		stop();
-
-		if(selectedChannel == 0){
-			f1.close();
-		}else{
-			f2.close();
-		}
-
+		loadingChannel = selectedChannel;
+		keepSystemOnStop = true;
 		(new SongList::SongList(*getScreen().getDisplay()))->push(this);
 		return;
 	}

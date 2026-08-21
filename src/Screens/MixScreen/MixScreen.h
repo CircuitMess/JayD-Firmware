@@ -42,6 +42,10 @@ namespace MixScreen {
 		fs::File f2;
 		Color *selectedBackgroundBuffer = nullptr;
 		MixSystem* system = nullptr;
+		bool keepSystemOnStop = false;
+		uint8_t loadingChannel = 0;
+
+		bool loadChannel(uint8_t channel, const fs::File& file);
 
 		LinearLayout* screenLayout;
 		LinearLayout* leftLayout;
