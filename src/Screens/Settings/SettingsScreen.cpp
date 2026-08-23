@@ -9,10 +9,11 @@
 
 SettingsScreen::SettingsScreen* SettingsScreen::SettingsScreen::instance = nullptr;
 
-SettingsScreen::SettingsScreen::SettingsScreen(Display &display) : Context(display), screenLayout(new LinearLayout(&screen, VERTICAL)),
+SettingsScreen::SettingsScreen::SettingsScreen(Display &display, bool audioPreview) :
+																   Context(display), screenLayout(new LinearLayout(&screen, VERTICAL)),
 																   volumeSlider(new SliderElement(screenLayout, "Volume")), brightnessSlider(new SliderElement(screenLayout, "Brightness")),
 																   inputTest(new TextElement(screenLayout, "Input Test")),
-																   saveSettings(new TextElement(screenLayout, "Save")){
+																   saveSettings(new TextElement(screenLayout, "Save")), audioPreview(audioPreview){
 
 	instance = this;
 	buildUI();
@@ -34,7 +35,7 @@ void SettingsScreen::SettingsScreen::start(){
 		if(instance->disableMainSelector && instance->selectedSetting == 0){
 			instance->volumeSlider->moveSliderValue(value);
 			Settings.get().volumeLevel = instance->volumeSlider->getSliderValue();
-			instance->playback->updateGain();
+			if(instance->playback) instance->playback->updateGain();
 			instance->draw();
 			instance->screen.commit();
 			return;
@@ -92,10 +93,12 @@ void SettingsScreen::SettingsScreen::start(){
 			instance->screen.commit();
 			if(instance->disableMainSelector) {
 				Settings.get().volumeLevel = instance->volumeSlider->getSliderValue();
-				instance->playback->updateGain();
-				instance->playback->start();
+				if(instance->playback){
+					instance->playback->updateGain();
+					instance->playback->start();
+				}
 			}else{
-				instance->playback->stop();
+				if(instance->playback) instance->playback->stop();
 			}
 		}else if(instance->selectedSetting == 1){
 			instance->brightnessSlider->toggle();
@@ -119,11 +122,13 @@ void SettingsScreen::SettingsScreen::start(){
 	});
 	instance->draw();
 	instance->screen.commit();
-	introSong = SPIFFS.open("/intro.aac");
-	playback = new PlaybackSystem(introSong);
-	Settings.get().volumeLevel = instance->volumeSlider->getSliderValue();
-	instance->playback->updateGain();
-	playback->setRepeat(true);
+	if(audioPreview){
+		introSong = SPIFFS.open("/intro.aac");
+		playback = new PlaybackSystem(introSong);
+		Settings.get().volumeLevel = instance->volumeSlider->getSliderValue();
+		playback->updateGain();
+		playback->setRepeat(true);
+	}
 }
 
 void SettingsScreen::SettingsScreen::stop(){
@@ -131,9 +136,10 @@ void SettingsScreen::SettingsScreen::stop(){
 	InputJayD::getInstance()->removeBtnPressCallback(2);
 	matrixManager.stopRandom();
 	Settings.store();
-	playback->stop();
+	if(playback) playback->stop();
 	introSong.close();
 	delete playback;
+	playback = nullptr;
 }
 
 void SettingsScreen::SettingsScreen::draw(){

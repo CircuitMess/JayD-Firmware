@@ -150,3 +150,46 @@ and following the on-screen instructions.
 Copyright © 2025 CircuitMess
 
 Licensed under [MIT License](https://opensource.org/licenses/MIT).
+
+## Optional wireless semantic API v2
+
+Wireless support is compile-time gated with `JAYD_ENABLE_WIRELESS`; builds
+without that define do not initialize Wi-Fi or add work to the main loop. The
+wireless variant uses the ESP32 synchronous HTTP server with one bounded
+request in flight (512-byte body, 3 KiB response, 50 ms handler budget). It
+does not use WebSockets, SSE, BLE, SD directory handlers, or a browser
+performance UI.
+
+With no saved credentials, or after a 10-second station connection timeout,
+Jay-D starts its setup AP. Only `GET /setup` and `POST /setup/wifi` are usable
+in setup mode. Its random setup-AP password is shown on serial; the saved
+station password and API bearer tokens are never logged.
+`POST /api/v2/ota` remains disabled with
+`501 ota_requires_recovery_partition` because the board uses the single-app
+No-OTA partition.
+
+API v2 exposes authenticated capabilities, health, cached state, pairing
+state, writer lease state, recent command results, and semantic command
+submission. Load-by-path is intentionally omitted until the library can
+provide a bounded validated identifier without scanning SD in a handler.
+Physical controls bypass the writer lease and continue to use `DjSession`.
+
+Pairing is opened by the `DjSession::requestPairing` semantic action for 60
+seconds. The on-device display is not wired in this focused change; a
+`JAYD_WIRELESS_DEBUG` build accepts `P` on serial as the physical test hook
+and prints the one-time code. The resulting random 128-bit token is returned
+once over HTTP and stored in NVS. Up to four paired client identities are
+kept, with one renewable 15-second writer lease.
+
+Clients should poll cached state at most every second while active, every
+three seconds while idle, and every five seconds while hidden. After any
+reconnect, fetch state and recent results and **never replay commands**.
+Command retries use the same client command ID; the bounded recent-result
+cache returns the existing accepted/applied/failed/superseded/rejected result
+without reapplying while that ID remains cached.
+
+Security limits: v2 is unencrypted HTTP for trusted local networks, so an
+on-path peer can capture a bearer token despite same-origin enforcement.
+Tokens persist in unencrypted NVS until the same client identity pairs again,
+and the pairing code is available only through the debug serial hook until a
+device-display flow is added.

@@ -39,7 +39,13 @@ namespace MixScreen {
 		GIFAnimatedSprite* gif = nullptr;
 		MatrixAnimGIF* anim = nullptr;
 
+#if defined(JAYD_ENABLE_WIRELESS)
+		int8_t bigMatrixNumber = 0;
+		bool pairingRequested = false;
+		bool pairingWasOpen = false;
+#else
 		int8_t bigMatrixNumber = 2;
+#endif
 
 		MixScreen* parent = nullptr;
 

@@ -30,6 +30,7 @@ void InputListener::encTwoTop(){ }
 void InputListener::encTwoBot(){ }
 void InputListener::enc(uint8_t i, int8_t value){ }
 void InputListener::encBtnHold(uint8_t i){}
+bool InputListener::allowsEncoderChords() const{ return true; }
 
 void InputKeys::buttonPress(uint8_t id){
 	auto mapped = mapBtn.find(id);
@@ -37,6 +38,7 @@ void InputKeys::buttonPress(uint8_t id){
 		btnStates[id == BTN_R] = true;
 
 		if(btnStates[0] && btnStates[1]){
+			buttonChord = true;
 			for(auto listener : listeners){
 				if(listener == nullptr) continue;
 				listener->btnCombination();
@@ -61,23 +63,25 @@ void InputKeys::buttonPress(uint8_t id){
 	}
 
 	if(btnEncStates[0] && btnEncStates[3]){
-		twoTop = true;
-
+		bool handled = false;
 		for(auto listener : listeners){
-			if(listener == nullptr) continue;
+			if(listener == nullptr || !listener->allowsEncoderChords()) continue;
 			listener->encTwoTop();
-			return;
+			handled = true;
 		}
+		twoTop = handled;
+		if(handled) return;
 	}
 
 	if(btnEncStates[2] && btnEncStates[5]){
-		twoBot = true;
-
+		bool handled = false;
 		for(auto listener : listeners){
-			if(listener == nullptr) continue;
+			if(listener == nullptr || !listener->allowsEncoderChords()) continue;
 			listener->encTwoBot();
-			return;
+			handled = true;
 		}
+		twoBot = handled;
+		if(handled) return;
 	}
 }
 
@@ -85,6 +89,10 @@ void InputKeys::buttonRelease(uint8_t id){
 	auto mapped = mapBtn.find(id);
 	if(mapped == mapBtn.end()){
 		btnStates[id == BTN_R] = false;
+		if(buttonChord){
+			buttonChord = btnStates[0] || btnStates[1];
+			return;
+		}
 
 		if(!btnStates[id == BTN_L]){
 			for(auto listener : listeners){

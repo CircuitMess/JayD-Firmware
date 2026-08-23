@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Jay-D Control</title>
+<style id="app-style"><!-- STYLES --></style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to controls</a>
+<header>
+	<h1>Jay-D</h1>
+	<div id="offline-banner" role="status" hidden>Offline &mdash; waiting for connection&hellip;</div>
+	<button id="forget-device" type="button">Forget device</button>
+</header>
+
+<main id="main">
+	<section id="setup-section" hidden aria-labelledby="setup-heading">
+		<h2 id="setup-heading">Wi-Fi setup</h2>
+		<p>This Jay-D isn&rsquo;t on a Wi-Fi network yet. It&rsquo;s broadcasting its own network
+			(<strong id="setup-ssid">Jay-D</strong>) for this first step.</p>
+		<form id="setup-form">
+			<div class="field">
+				<label for="setup-ssid-input">Wi-Fi network name</label>
+				<input id="setup-ssid-input" name="ssid" type="text" autocomplete="off" maxlength="32" required>
+			</div>
+			<div class="field">
+				<label for="setup-password-input">Wi-Fi password (leave blank for an open network)</label>
+				<input id="setup-password-input" name="password" type="password" autocomplete="off" minlength="8" maxlength="63">
+			</div>
+			<button type="submit">Save and connect</button>
+		</form>
+		<p id="setup-status" role="status"></p>
+	</section>
+
+	<section id="pairing-section" hidden aria-labelledby="pairing-heading">
+		<h2 id="pairing-heading">Pair this browser</h2>
+		<ol>
+			<li>On the Jay-D, open <strong>Pair remote</strong>.</li>
+			<li>It shows a six-digit code with a one-minute countdown.</li>
+			<li>Enter that code below before it expires.</li>
+		</ol>
+		<form id="pairing-form">
+			<div class="field">
+				<label for="pairing-code-input">Six-digit code</label>
+				<input id="pairing-code-input" name="code" type="text" inputmode="numeric" pattern="[0-9]{6}"
+					minlength="6" maxlength="6" autocomplete="off" required>
+			</div>
+			<button type="submit">Pair</button>
+		</form>
+		<p id="pairing-status" role="status"></p>
+	</section>
+
+	<div id="app-section" hidden>
+		<div class="lease-bar">
+			<p id="lease-status" role="status">Read-only &mdash; you are viewing live status.</p>
+			<button id="lease-take" type="button">Take control</button>
+			<button id="lease-release" type="button" hidden>Release control</button>
+		</div>
+		<p id="session-status" role="status">Connecting&hellip;</p>
+
+		<div class="decks">
+			<section id="deck-0" class="deck" aria-labelledby="deck-0-heading">
+				<h2 id="deck-0-heading">Deck A</h2>
+				<p class="deck-track">No track loaded</p>
+				<button type="button" class="deck-play requires-control" aria-pressed="false">Play</button>
+				<div class="field">
+					<label for="deck-0-seek">Seek</label>
+					<input id="deck-0-seek" type="range" class="deck-seek requires-control" min="0" max="0" value="0">
+					<span class="deck-time">--:-- / --:--</span>
+				</div>
+				<div class="field">
+					<label for="deck-0-gain">Gain</label>
+					<input id="deck-0-gain" type="range" class="deck-gain requires-control" min="0" max="255" value="255">
+				</div>
+				<fieldset class="effects">
+					<legend>Effects</legend>
+					<div class="effect-row" data-slot="0">
+						<label for="deck-0-effect-0-type">Slot 1</label>
+						<select id="deck-0-effect-0-type" class="effect-type requires-control" data-slot="0">
+							<option value="0">None</option><option value="1">Speed</option>
+							<option value="2">Low-pass</option><option value="3">High-pass</option>
+							<option value="4">Reverb</option><option value="5">Bitcrusher</option>
+						</select>
+						<label for="deck-0-effect-0-intensity">Intensity</label>
+						<input id="deck-0-effect-0-intensity" type="range" class="effect-intensity requires-control"
+							data-slot="0" min="0" max="255" value="0" disabled>
+					</div>
+					<div class="effect-row" data-slot="1">
+						<label for="deck-0-effect-1-type">Slot 2</label>
+						<select id="deck-0-effect-1-type" class="effect-type requires-control" data-slot="1">
+							<option value="0">None</option><option value="1">Speed</option>
+							<option value="2">Low-pass</option><option value="3">High-pass</option>
+							<option value="4">Reverb</option><option value="5">Bitcrusher</option>
+						</select>
+						<label for="deck-0-effect-1-intensity">Intensity</label>
+						<input id="deck-0-effect-1-intensity" type="range" class="effect-intensity requires-control"
+							data-slot="1" min="0" max="255" value="0" disabled>
+					</div>
+					<div class="effect-row" data-slot="2">
+						<label for="deck-0-effect-2-type">Slot 3</label>
+						<select id="deck-0-effect-2-type" class="effect-type requires-control" data-slot="2">
+							<option value="0">None</option><option value="1">Speed</option>
+							<option value="2">Low-pass</option><option value="3">High-pass</option>
+							<option value="4">Reverb</option><option value="5">Bitcrusher</option>
+						</select>
+						<label for="deck-0-effect-2-intensity">Intensity</label>
+						<input id="deck-0-effect-2-intensity" type="range" class="effect-intensity requires-control"
+							data-slot="2" min="0" max="255" value="0" disabled>
+					</div>
+				</fieldset>
+			</section>
+
+			<section id="mixer" aria-labelledby="mixer-heading">
+				<h2 id="mixer-heading">Mixer</h2>
+				<div class="field crossfader">
+					<label for="mix-fader">Crossfader (A &harr; B)</label>
+					<input id="mix-fader" type="range" class="requires-control" min="0" max="255" value="127">
+					<span id="mix-value">50% B</span>
+				</div>
+				<button id="recording-toggle" type="button" class="requires-control" aria-pressed="false">Start recording</button>
+				<p id="recording-indicator" role="status">Not recording</p>
+			</section>
+
+			<section id="deck-1" class="deck" aria-labelledby="deck-1-heading">
+				<h2 id="deck-1-heading">Deck B</h2>
+				<p class="deck-track">No track loaded</p>
+				<button type="button" class="deck-play requires-control" aria-pressed="false">Play</button>
+				<div class="field">
+					<label for="deck-1-seek">Seek</label>
+					<input id="deck-1-seek" type="range" class="deck-seek requires-control" min="0" max="0" value="0">
+					<span class="deck-time">--:-- / --:--</span>
+				</div>
+				<div class="field">
+					<label for="deck-1-gain">Gain</label>
+					<input id="deck-1-gain" type="range" class="deck-gain requires-control" min="0" max="255" value="255">
+				</div>
+				<fieldset class="effects">
+					<legend>Effects</legend>
+					<div class="effect-row" data-slot="0">
+						<label for="deck-1-effect-0-type">Slot 1</label>
+						<select id="deck-1-effect-0-type" class="effect-type requires-control" data-slot="0">
+							<option value="0">None</option><option value="1">Speed</option>
+							<option value="2">Low-pass</option><option value="3">High-pass</option>
+							<option value="4">Reverb</option><option value="5">Bitcrusher</option>
+						</select>
+						<label for="deck-1-effect-0-intensity">Intensity</label>
+						<input id="deck-1-effect-0-intensity" type="range" class="effect-intensity requires-control"
+							data-slot="0" min="0" max="255" value="0" disabled>
+					</div>
+					<div class="effect-row" data-slot="1">
+						<label for="deck-1-effect-1-type">Slot 2</label>
+						<select id="deck-1-effect-1-type" class="effect-type requires-control" data-slot="1">
+							<option value="0">None</option><option value="1">Speed</option>
+							<option value="2">Low-pass</option><option value="3">High-pass</option>
+							<option value="4">Reverb</option><option value="5">Bitcrusher</option>
+						</select>
+						<label for="deck-1-effect-1-intensity">Intensity</label>
+						<input id="deck-1-effect-1-intensity" type="range" class="effect-intensity requires-control"
+							data-slot="1" min="0" max="255" value="0" disabled>
+					</div>
+					<div class="effect-row" data-slot="2">
+						<label for="deck-1-effect-2-type">Slot 3</label>
+						<select id="deck-1-effect-2-type" class="effect-type requires-control" data-slot="2">
+							<option value="0">None</option><option value="1">Speed</option>
+							<option value="2">Low-pass</option><option value="3">High-pass</option>
+							<option value="4">Reverb</option><option value="5">Bitcrusher</option>
+						</select>
+						<label for="deck-1-effect-2-intensity">Intensity</label>
+						<input id="deck-1-effect-2-intensity" type="range" class="effect-intensity requires-control"
+							data-slot="2" min="0" max="255" value="0" disabled>
+					</div>
+				</fieldset>
+			</section>
+		</div>
+
+		<section id="assist-section" aria-labelledby="assist-heading">
+			<h2 id="assist-heading">Assist</h2>
+			<p id="assist-mode" role="status">Assist: Off</p>
+			<button id="assist-coach-toggle" type="button" class="requires-control" aria-pressed="false">Enable Coach</button>
+
+			<div id="assist-advice" hidden>
+				<h3>Coach advice</h3>
+				<dl>
+					<dt>Suggested deck</dt><dd id="assist-advice-deck">&mdash;</dd>
+					<dt>Next boundary</dt><dd id="assist-advice-boundary">&mdash;</dd>
+					<dt>Target tempo</dt><dd id="assist-advice-rate">&mdash;</dd>
+					<dt>Crossfader direction</dt><dd id="assist-advice-direction">&mdash;</dd>
+				</dl>
+				<ul id="assist-advice-warnings" aria-label="Warnings"></ul>
+			</div>
+
+			<div id="assist-suggestions">
+				<h3>Suggested next tracks</h3>
+				<p class="follow-up">Ranked from the device&rsquo;s own indexed library metadata only &mdash; nothing
+					is invented. Load a track onto a deck using the device&rsquo;s own screen, then arm a transition
+					below once it&rsquo;s loaded.</p>
+				<ol id="assist-suggestion-list"></ol>
+			</div>
+
+			<form id="assist-arm-form">
+				<h3>One-shot transition</h3>
+				<div class="field">
+					<label for="assist-from-deck">From deck (currently playing)</label>
+					<select id="assist-from-deck" class="requires-control">
+						<option value="0">Deck A</option>
+						<option value="1">Deck B</option>
+					</select>
+				</div>
+				<div class="field">
+					<label for="assist-to-deck">To deck (target already loaded)</label>
+					<select id="assist-to-deck" class="requires-control">
+						<option value="0">Deck A</option>
+						<option value="1" selected>Deck B</option>
+					</select>
+				</div>
+				<div class="field">
+					<label for="assist-crossfade-beats">Crossfade length</label>
+					<select id="assist-crossfade-beats" class="requires-control">
+						<option value="4">4 beats</option>
+						<option value="8">8 beats</option>
+						<option value="16" selected>16 beats</option>
+						<option value="32">32 beats</option>
+					</select>
+				</div>
+				<div class="field checkbox">
+					<label><input id="assist-start-at-boundary" type="checkbox" class="requires-control" checked>
+						Start target deck at its next phrase/downbeat</label>
+				</div>
+				<div class="field checkbox">
+					<label><input id="assist-tempo-lock" type="checkbox" class="requires-control" checked>
+						Lock tempo/phase (enables Sync for this transition)</label>
+				</div>
+				<button id="assist-arm" type="submit" class="requires-control">Arm transition</button>
+				<button id="assist-cancel" type="button" class="requires-control" hidden>Cancel transition</button>
+			</form>
+
+			<div id="assist-transition" hidden>
+				<h3>Transition status</h3>
+				<p id="assist-transition-progress" role="status">&mdash;</p>
+			</div>
+		</section>
+
+		<section id="cues-section" aria-labelledby="cues-heading">
+			<h2 id="cues-heading">Cues</h2>
+			<p>Cue points aren&rsquo;t available from the browser yet &mdash; the wireless API doesn&rsquo;t expose cue
+				state or commands. This panel will switch on once the firmware adds cue support.</p>
+			<div class="cue-grid">
+				<button type="button" class="cue-button" data-cue="0" disabled>Cue 1</button>
+				<button type="button" class="cue-button" data-cue="1" disabled>Cue 2</button>
+				<button type="button" class="cue-button" data-cue="2" disabled>Cue 3</button>
+				<button type="button" class="cue-button" data-cue="3" disabled>Cue 4</button>
+				<button type="button" class="cue-button" data-cue="4" disabled>Cue 5</button>
+				<button type="button" class="cue-button" data-cue="5" disabled>Cue 6</button>
+				<button type="button" class="cue-button" data-cue="6" disabled>Cue 7</button>
+				<button type="button" class="cue-button" data-cue="7" disabled>Cue 8</button>
+			</div>
+		</section>
+
+		<section id="library-section" aria-labelledby="library-heading">
+			<h2 id="library-heading">Track library</h2>
+			<p>Browsing and loading tracks from this page isn&rsquo;t available yet. Load tracks using the
+				device&rsquo;s own screen and buttons.</p>
+			<p class="follow-up">Needed follow-up API: a bounded <code>GET /api/v2/library</code> (paged, stable
+				opaque track ids, no filesystem paths) plus a <code>load_by_id</code> action on
+				<code>POST /api/v2/command</code> that resolves the id to a track on-device. Until that exists, this
+				UI intentionally will not add an arbitrary path-based load.</p>
+		</section>
+
+		<details id="help">
+			<summary>Help &amp; status</summary>
+			<dl>
+				<dt>Read-only</dt><dd>You can see live status but commands are blocked until you take control.</dd>
+				<dt>Take control</dt><dd>Requests exclusive control. Only one browser may control the device at a time.</dd>
+				<dt>Control lost / expired</dt><dd>Another browser took over, or this tab was inactive too long. Take control again to continue.</dd>
+				<dt>Device restarted</dt><dd>State resets and any prior control is dropped; commands are never resent automatically.</dd>
+				<dt>Coach</dt><dd>Advice only &mdash; it never changes playback by itself. Enable it to see suggested
+					next tracks and mixing advice for the currently playing deck.</dd>
+				<dt>Arm transition</dt><dd>Starts a bounded, cancellable one-shot transition between two decks you
+					choose. The target deck must already have a track loaded on the device; this page never loads a
+					track by itself.</dd>
+				<dt>Keyboard</dt><dd>All controls are standard buttons, sliders and menus &mdash; Tab/Shift+Tab to move
+					between them, Space/Enter to activate buttons, and arrow keys to adjust sliders and menus.</dd>
+			</dl>
+		</details>
+	</div>
+
+	<p id="live-region" role="status" aria-live="polite" class="sr-only"></p>
+</main>
+<script id="app-script"><!-- SCRIPT --></script>
+</body>
+</html>

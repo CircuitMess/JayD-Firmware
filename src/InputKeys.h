@@ -19,6 +19,7 @@ private:
 	virtual void encTwoBot();
 	virtual void enc(uint8_t i, int8_t value);
 	virtual void encBtnHold(uint8_t i);
+	virtual bool allowsEncoderChords() const;
 
 };
 
@@ -39,6 +40,7 @@ private:
 
 	bool btnEncStates[7] = { false };
 	bool btnStates[2] = { false };
+	bool buttonChord = false;
 
 	static const uint32_t holdTime = 500;
 	uint32_t btnEncTime[7] = { 0 };

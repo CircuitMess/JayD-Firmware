@@ -60,12 +60,7 @@ void MainMenu::MainMenu::start(){
 			songList->setParent(playback);
 		}else if(selected == 1){
 			MixScreen::MixScreen* mix = new MixScreen::MixScreen(display);
-			mix->setParent(instance);
-
-			SongList::SongList* songList = new SongList::SongList(display);
-			mix->setParent(instance);
-			songList->push(instance);
-			songList->setParent(mix);
+			mix->push(instance);
 		}else if(selected == 2){
 			SettingsScreen::SettingsScreen* settings = new SettingsScreen::SettingsScreen(display);
 			settings->push(instance);

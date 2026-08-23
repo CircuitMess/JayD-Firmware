@@ -8,6 +8,9 @@
 #include <Util/HWRevision.h>
 #include "src/InputKeys.h"
 #include "src/HardwareTest.h"
+#if defined(JAYD_ENABLE_WIRELESS)
+#include "src/Wireless/WirelessBringup.h"
+#endif
 #include "src/Screens/IntroScreen/IntroScreen.h"
 #include "src/Screens/InputTest/InputTest.h"
 
@@ -108,8 +111,14 @@ void setup(){
 	}
 
 	digitalWrite(PIN_BL, LOW);
+#if defined(JAYD_ENABLE_WIRELESS)
+	WirelessBringup::begin();
+#endif
 }
 
 void loop(){
 	LoopManager::loop();
+#if defined(JAYD_ENABLE_WIRELESS)
+	WirelessBringup::loop();
+#endif
 }

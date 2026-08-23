@@ -14,7 +14,7 @@ namespace SettingsScreen {
 	class SettingsScreen : public Context {
 	public:
 
-		SettingsScreen(Display &display);
+		SettingsScreen(Display &display, bool audioPreview = true);
 
 		void start();
 
@@ -47,6 +47,7 @@ namespace SettingsScreen {
 		Color* backgroundBuffer= nullptr;
 
 		PlaybackSystem* playback = nullptr;
+		bool audioPreview = true;
 		fs::File introSong;
 	};
 }
