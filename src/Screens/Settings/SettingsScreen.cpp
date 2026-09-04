@@ -5,6 +5,7 @@
 #include <FS/CompressedFile.h>
 #include <Settings.h>
 #include <JayD.h>
+#include <Pins.h>
 #include <AudioLib/Systems/PlaybackSystem.h>
 
 SettingsScreen::SettingsScreen* SettingsScreen::SettingsScreen::instance = nullptr;
@@ -29,7 +30,7 @@ SettingsScreen::SettingsScreen::SettingsScreen(Display &display) : Context(displ
 void SettingsScreen::SettingsScreen::start(){
 	draw();
 	screen.commit();
-	InputJayD::getInstance()->setEncoderMovedCallback(ENC_MID, [](int8_t value){
+	InputJayD::getInstance()->setEncoderMovedCallback(PIN(ENC_MID), [](int8_t value){
 		if(instance == nullptr) return;
 		if(instance->disableMainSelector && instance->selectedSetting == 0){
 			instance->volumeSlider->moveSliderValue(value);
@@ -82,7 +83,7 @@ void SettingsScreen::SettingsScreen::start(){
 		instance->draw();
 		instance->screen.commit();
 	});
-	InputJayD::getInstance()->setBtnPressCallback(BTN_MID, [](){
+	InputJayD::getInstance()->setBtnPressCallback(PIN(BTN_MID), [](){
 		if(instance == nullptr) return;
 		if(instance->selectedSetting == 0){
 
@@ -142,7 +143,7 @@ void SettingsScreen::SettingsScreen::draw(){
 	screen.getSprite()->setTextSize(1);
 	screen.getSprite()->setTextFont(1);
 	screen.getSprite()->setCursor(screenLayout->getTotalX() + 42, screenLayout->getTotalY() + 115);
-	screen.getSprite()->println("Version 1.4");
+	screen.getSprite()->println("Version 1.5");
 
 	for(int i = 0; i < 4; i++){
 		if(!reinterpret_cast<SettingsElement *>(screenLayout->getChild(i))->isSelected()){

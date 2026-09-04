@@ -42,7 +42,7 @@ private:
 	static bool SPIFFSTest();
 	static bool hwRevision();
 
-	static constexpr uint8_t CurrentVersion = 2;
+	static constexpr uint8_t CurrentVersion = 3;
 
 	void postTestPass();
 	void postTestFail();

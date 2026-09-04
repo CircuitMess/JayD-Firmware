@@ -1,9 +1,9 @@
 #include <Input/InputJayD.h>
-#include <SD.h>
 #include <Loop/LoopManager.h>
 #include <JayD.h>
 #include <FS/CompressedFile.h>
 #include "MixScreen.h"
+#include <Pins.h>
 #include "../SongList/SongList.h"
 #include "../TextInputScreen/TextInputScreen.h"
 #include "../../Fonts.h"
@@ -58,7 +58,7 @@ void MixScreen::MixScreen::unpack(){
 }
 
 void MixScreen::MixScreen::saveRecording(){
-	if(!SD.exists(MixSystem::recordPath)){
+	if(!JayD.SD_exists(MixSystem::recordPath)){
 		doneRecording = false;
 		return;
 	}
@@ -66,12 +66,12 @@ void MixScreen::MixScreen::saveRecording(){
 	Task saveTask("MixSave", [](Task* task){
 		String saveFilename = * (String*) task->arg;
 
-		if(SD.exists(saveFilename)){
-			SD.remove(saveFilename);
+		if(JayD.SD_exists(saveFilename)){
+			JayD.SD_remove(saveFilename);
 		}
 
-		File inFile = SD.open(MixSystem::recordPath);
-		File outFile = SD.open(saveFilename, "w");
+		File inFile = JayD.SD_open(MixSystem::recordPath);
+		File outFile = JayD.SD_open(saveFilename, "w");
 
 		SourceWAV input(inFile);
 		OutputAAC output(outFile);
@@ -102,7 +102,7 @@ void MixScreen::MixScreen::saveRecording(){
 		Sched.loop(0);
 	}
 
-	SD.remove(MixSystem::recordPath);
+	JayD.SD_remove(MixSystem::recordPath);
 	doneRecording = false;
 }
 
@@ -116,9 +116,9 @@ void MixScreen::MixScreen::returned(void* data){
 	}
 
 	if(!f1){
-		f1 = SD.open(*((String*) data));
+		f1 = JayD.SD_open(*((String*) data));
 	}else if(!f2){
-		f2 = SD.open(*((String*) data));
+		f2 = JayD.SD_open(*((String*) data));
 	}
 
 	delete filename;
@@ -155,8 +155,8 @@ void MixScreen::MixScreen::start(){
 
 	system = new MixSystem(f1, f2);
 
-	system->setVolume(0, InputJayD::getInstance()->getPotValue(POT_L));
-	system->setVolume(1, InputJayD::getInstance()->getPotValue(POT_R));
+	system->setVolume(0, InputJayD::getInstance()->getPotValue(PIN(POT_L)));
+	system->setVolume(1, InputJayD::getInstance()->getPotValue(PIN(POT_R)));
 
 	system->setChannelInfo(0, leftVu.getInfoGenerator());
 	system->setChannelInfo(1, rightVu.getInfoGenerator());
@@ -165,7 +165,7 @@ void MixScreen::MixScreen::start(){
 		startBigVu();
 	}
 
-	uint8_t potMidVal = InputJayD::getInstance()->getPotValue(POT_MID);
+	uint8_t potMidVal = InputJayD::getInstance()->getPotValue(PIN(POT_MID));
 	system->setMix(potMidVal);
 	matrixManager.fillMatrixMid(potMidVal);
 	matrixManager.matrixMid.push();
@@ -386,13 +386,13 @@ void MixScreen::MixScreen::loop(uint micros){
 
 
 void MixScreen::MixScreen::potMove(uint8_t id, uint8_t value){
-	if(id == POT_MID){
+	if(id == PIN(POT_MID)){
 		system->setMix(value);
 		matrixManager.fillMatrixMid(value);
 		matrixManager.matrixMid.push();
-	}else if(id == POT_L){
+	}else if(id == PIN(POT_L)){
 		system->setVolume(0, value);
-	}else if(id == POT_R){
+	}else if(id == PIN(POT_R)){
 		system->setVolume(1, value);
 	}
 }

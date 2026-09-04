@@ -1,10 +1,12 @@
-#include <SD.h>
 #include "SongList.h"
 #include "../MainMenu/MainMenu.h"
 #include <JayD.h>
+#include <Pins.h>
 #include <Loop/LoopManager.h>
 #include <SPIFFS.h>
 #include <FS/CompressedFile.h>
+#include <Util/HWRevision.h>
+
 #include "../../Fonts.h"
 
 SongList::SongList* SongList::SongList::instance = nullptr;
@@ -34,7 +36,11 @@ void SongList::SongList::checkSD(){
 	empty = true;
 
 	if(!insertedSD){
-		insertedSD = SD.begin(22, SPI);
+		if (HWRevision::get() == 3){
+			insertedSD = JayD.SD_begin("/sdcard", true);
+		} else{
+			insertedSD = JayD.SD_begin(22, SPI);
+		}
 	}
 
 	if(!insertedSD){
@@ -46,7 +52,7 @@ void SongList::SongList::checkSD(){
 	// TODO
 	// Empty card inserted, taken out, press refresh
 	// SD started, opened root returns true
-	File root = SD.open("/");
+	File root = JayD.SD_open("/");
 	insertedSD = root;
 	if(!insertedSD){
 		root.close();
@@ -105,7 +111,7 @@ void SongList::SongList::loop(uint t){
 
 void SongList::SongList::start(){
 
-	InputJayD::getInstance()->setEncoderMovedCallback(ENC_MID, [](int8_t value){
+	InputJayD::getInstance()->setEncoderMovedCallback(PIN(ENC_MID), [](int8_t value){
 		if(instance == nullptr) return;
 
 		if(instance->empty || !instance->insertedSD) return;
@@ -127,7 +133,7 @@ void SongList::SongList::start(){
 
 	});
 
-	InputJayD::getInstance()->setBtnPressCallback(BTN_MID, [](){
+	InputJayD::getInstance()->setBtnPressCallback(PIN(BTN_MID), [](){
 		if(instance == nullptr) return;
 
 		if(!instance->insertedSD){
@@ -138,10 +144,10 @@ void SongList::SongList::start(){
 		if(instance->empty || !instance->insertedSD || instance->songs.size() <= instance->selectedElement) return;
 
 		String path = instance->songs[instance->selectedElement]->getPath();
-		fs::File file = SD.open(path);
+		fs::File file = JayD.SD_open(path);
 		if(!file){
 			file.close();
-			SD.end();
+			JayD.SD_end();
 			instance->insertedSD = false;
 			instance->checkSD();
 			return;
@@ -162,8 +168,8 @@ void SongList::SongList::start(){
 }
 
 void SongList::SongList::stop(){
-	InputJayD::getInstance()->removeEncoderMovedCallback(ENC_MID);
-	InputJayD::getInstance()->removeBtnPressCallback(BTN_MID);
+	InputJayD::getInstance()->removeEncoderMovedCallback(PIN(ENC_MID));
+	InputJayD::getInstance()->removeBtnPressCallback(PIN(BTN_MID));
 	Input.removeListener(this);
 	LoopManager::removeListener(this);
 }
