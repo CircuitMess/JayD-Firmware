@@ -155,8 +155,8 @@ void MixScreen::MixScreen::start(){
 
 	system = new MixSystem(f1, f2);
 
-	system->setVolume(0, InputJayD::getInstance()->getPotValue(PIN(POT_L)));
-	system->setVolume(1, InputJayD::getInstance()->getPotValue(PIN(POT_R)));
+	system->setVolume(0, InputJayD::getInstance()->getPotValue(POT_L));
+	system->setVolume(1, InputJayD::getInstance()->getPotValue(POT_R));
 
 	system->setChannelInfo(0, leftVu.getInfoGenerator());
 	system->setChannelInfo(1, rightVu.getInfoGenerator());
@@ -165,7 +165,7 @@ void MixScreen::MixScreen::start(){
 		startBigVu();
 	}
 
-	uint8_t potMidVal = InputJayD::getInstance()->getPotValue(PIN(POT_MID));
+	uint8_t potMidVal = InputJayD::getInstance()->getPotValue(POT_MID);
 	system->setMix(potMidVal);
 	matrixManager.fillMatrixMid(potMidVal);
 	matrixManager.matrixMid.push();
@@ -386,13 +386,13 @@ void MixScreen::MixScreen::loop(uint micros){
 
 
 void MixScreen::MixScreen::potMove(uint8_t id, uint8_t value){
-	if(id == PIN(POT_MID)){
+	if(id == POT_MID){
 		system->setMix(value);
 		matrixManager.fillMatrixMid(value);
 		matrixManager.matrixMid.push();
-	}else if(id == PIN(POT_L)){
+	}else if(id == POT_L){
 		system->setVolume(0, value);
-	}else if(id == PIN(POT_R)){
+	}else if(id == POT_R){
 		system->setVolume(1, value);
 	}
 }

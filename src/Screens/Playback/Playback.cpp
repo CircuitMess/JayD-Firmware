@@ -80,7 +80,7 @@ void Playback::Playback::start(){
 	draw();
 	screen.commit();
 
-	uint8_t potMidVal = InputJayD::getInstance()->getPotValue(PIN(POT_MID));
+	uint8_t potMidVal = InputJayD::getInstance()->getPotValue(POT_MID);
 	matrixManager.matrixMid.clear();
 	uint8_t total = ((float) potMidVal / 255.0f) * (float) (12);
 	for(int i = 0; i <= total + 1; i++){
@@ -91,7 +91,7 @@ void Playback::Playback::start(){
 	matrixManager.matrixMid.push();
 
 	system = new PlaybackSystem(file);
-	system->setVolume(InputJayD::getInstance()->getPotValue(PIN(POT_MID)));
+	system->setVolume(InputJayD::getInstance()->getPotValue(POT_MID));
 	system->start();
 
 	playOrPause->setPlaying(true);
@@ -179,7 +179,7 @@ void Playback::Playback::unpack(){
 }
 
 void Playback::Playback::potMove(uint8_t id, uint8_t value) {
-	if(id == PIN(POT_MID)) {
+	if(id == POT_MID) {
 		if (system) {
 			system->setVolume(value);
 			matrixManager.matrixMid.clear();

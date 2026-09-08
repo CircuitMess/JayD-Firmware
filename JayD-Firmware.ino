@@ -64,7 +64,7 @@ void setup(){
 		digitalWrite(PIN(PIN_BL), LOW);
 
 		Display display(160, 128, -1, -1);
-		display.getTft()->setPanel(JayDDisplay::panel4());
+		display.getTft()->setPanel(JayDDisplay::panel3());
 		display.begin();
 		CircuitOS::gd_set_old_transparency(true);
 

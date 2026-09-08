@@ -47,7 +47,7 @@ void MainMenu::MainMenu::start(){
 		instance->screen.commit();
 	});
 
-	InputJayD::getInstance()->setBtnPressCallback(PIN(BTN_MID), [](){
+	InputJayD::getInstance()->setBtnPressCallback(BTN_MID, [](){
 		if(instance == nullptr) return;
 
 		Display& display = *instance->getScreen().getDisplay();
@@ -82,7 +82,7 @@ void MainMenu::MainMenu::start(){
 
 void MainMenu::MainMenu::stop(){
 	InputJayD::getInstance()->removeEncoderMovedCallback(0);
-	InputJayD::getInstance()->removeBtnPressCallback(PIN(BTN_MID));
+	InputJayD::getInstance()->removeBtnPressCallback(BTN_MID);
 	LoopManager::removeListener(this);
 	matrixManager.stopRandom();
 }

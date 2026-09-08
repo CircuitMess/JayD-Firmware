@@ -30,7 +30,7 @@ SettingsScreen::SettingsScreen::SettingsScreen(Display &display) : Context(displ
 void SettingsScreen::SettingsScreen::start(){
 	draw();
 	screen.commit();
-	InputJayD::getInstance()->setEncoderMovedCallback(PIN(ENC_MID), [](int8_t value){
+	InputJayD::getInstance()->setEncoderMovedCallback(ENC_MID, [](int8_t value){
 		if(instance == nullptr) return;
 		if(instance->disableMainSelector && instance->selectedSetting == 0){
 			instance->volumeSlider->moveSliderValue(value);
@@ -83,7 +83,7 @@ void SettingsScreen::SettingsScreen::start(){
 		instance->draw();
 		instance->screen.commit();
 	});
-	InputJayD::getInstance()->setBtnPressCallback(PIN(BTN_MID), [](){
+	InputJayD::getInstance()->setBtnPressCallback(BTN_MID, [](){
 		if(instance == nullptr) return;
 		if(instance->selectedSetting == 0){
 

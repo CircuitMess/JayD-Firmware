@@ -36,11 +36,7 @@ void SongList::SongList::checkSD(){
 	empty = true;
 
 	if(!insertedSD){
-		if (HWRevision::get() == 3){
-			insertedSD = JayD.SD_begin("/sdcard", true);
-		} else{
-			insertedSD = JayD.SD_begin(22, SPI);
-		}
+		JayD.SD_begin();
 	}
 
 	if(!insertedSD){
@@ -111,7 +107,7 @@ void SongList::SongList::loop(uint t){
 
 void SongList::SongList::start(){
 
-	InputJayD::getInstance()->setEncoderMovedCallback(PIN(ENC_MID), [](int8_t value){
+	InputJayD::getInstance()->setEncoderMovedCallback(ENC_MID, [](int8_t value){
 		if(instance == nullptr) return;
 
 		if(instance->empty || !instance->insertedSD) return;
@@ -133,7 +129,7 @@ void SongList::SongList::start(){
 
 	});
 
-	InputJayD::getInstance()->setBtnPressCallback(PIN(BTN_MID), [](){
+	InputJayD::getInstance()->setBtnPressCallback(BTN_MID, [](){
 		if(instance == nullptr) return;
 
 		if(!instance->insertedSD){
@@ -168,8 +164,8 @@ void SongList::SongList::start(){
 }
 
 void SongList::SongList::stop(){
-	InputJayD::getInstance()->removeEncoderMovedCallback(PIN(ENC_MID));
-	InputJayD::getInstance()->removeBtnPressCallback(PIN(BTN_MID));
+	InputJayD::getInstance()->removeEncoderMovedCallback(ENC_MID);
+	InputJayD::getInstance()->removeBtnPressCallback(BTN_MID);
 	Input.removeListener(this);
 	LoopManager::removeListener(this);
 }

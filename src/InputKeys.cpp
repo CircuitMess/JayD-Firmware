@@ -5,23 +5,23 @@
 InputKeys Input;
 
 const std::unordered_map<uint8_t, uint8_t> InputKeys::mapBtn = {
-		{ PIN(BTN_L1), 0 },
-		{ PIN(BTN_L2), 1 },
-		{ PIN(BTN_L3), 2 },
-		{ PIN(BTN_R1), 3 },
-		{ PIN(BTN_R2), 4 },
-		{ PIN(BTN_R3), 5 },
-		{ PIN(BTN_MID), 6 }
+		{ BTN_L1, 0 },
+		{ BTN_L2, 1 },
+		{ BTN_L3, 2 },
+		{ BTN_R1, 3 },
+		{ BTN_R2, 4 },
+		{ BTN_R3, 5 },
+		{ BTN_MID, 6 }
 };
 
 const std::unordered_map<uint8_t, uint8_t> InputKeys::mapEnc = {
-		{ PIN(ENC_L1), 0 },
-		{ PIN(ENC_L2), 1 },
-		{ PIN(ENC_L3), 2 },
-		{ PIN(ENC_R1), 3 },
-		{ PIN(ENC_R2), 4 },
-		{ PIN(ENC_R3), 5 },
-		{ PIN(ENC_MID), 6 }
+		{ ENC_L1, 0 },
+		{ ENC_L2, 1 },
+		{ ENC_L3, 2 },
+		{ ENC_R1, 3 },
+		{ ENC_R2, 4 },
+		{ ENC_R3, 5 },
+		{ ENC_MID, 6 }
 };
 
 void InputListener::btnEnc(uint8_t i){ }
@@ -35,7 +35,7 @@ void InputListener::encBtnHold(uint8_t i){}
 void InputKeys::buttonPress(uint8_t id){
 	auto mapped = mapBtn.find(id);
 	if(mapped == mapBtn.end()){
-		btnStates[id == PIN(BTN_R)] = true;
+		btnStates[id == BTN_R] = true;
 
 		if(btnStates[0] && btnStates[1]){
 			for(auto listener : listeners){
@@ -85,12 +85,12 @@ void InputKeys::buttonPress(uint8_t id){
 void InputKeys::buttonRelease(uint8_t id){
 	auto mapped = mapBtn.find(id);
 	if(mapped == mapBtn.end()){
-		btnStates[id == PIN(BTN_R)] = false;
+		btnStates[id == BTN_R] = false;
 
-		if(!btnStates[id == PIN(BTN_L)]){
+		if(!btnStates[id == BTN_L]){
 			for(auto listener : listeners){
 				if(listener == nullptr) continue;
-				listener->btn(id == PIN(BTN_R));
+				listener->btn(id == BTN_R);
 			}
 		}
 
