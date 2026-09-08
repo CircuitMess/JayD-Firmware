@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <CircuitOS.h>
 #include <JayD.h>
+#include <Pins.h>
 #include <Display/Display.h>
 #include <Settings.h>
 #include <Loop/LoopManager.h>
@@ -56,11 +57,11 @@ void setup(){
 	if(checkJig()){
 		printf("Jig\n");
 
-		JayD.initVer(2);
+		JayD.initVer(3);
 		JayD.begin();
 
-		pinMode(PIN_BL, OUTPUT);
-		digitalWrite(PIN_BL, LOW);
+		pinMode(PIN(PIN_BL), OUTPUT);
+		digitalWrite(PIN(PIN_BL), LOW);
 
 		Display display(160, 128, -1, -1);
 		display.getTft()->setPanel(JayDDisplay::panel3());
@@ -75,8 +76,8 @@ void setup(){
 		printf("Hello\n");
 	}
 
-	pinMode(PIN_BL, OUTPUT);
-	digitalWrite(PIN_BL, HIGH);
+	pinMode(PIN(PIN_BL), OUTPUT);
+	digitalWrite(PIN(PIN_BL), HIGH);
 
 	JayD.begin();
 
@@ -107,7 +108,7 @@ void setup(){
 		launch();
 	}
 
-	digitalWrite(PIN_BL, LOW);
+	digitalWrite(PIN(PIN_BL), LOW);
 }
 
 void loop(){

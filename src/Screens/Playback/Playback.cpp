@@ -1,8 +1,8 @@
 #include <Input/InputJayD.h>
-#include <SD.h>
 #include <JayD.h>
 #include <Loop/LoopManager.h>
 #include "Playback.h"
+#include <Pins.h>
 #include <SPIFFS.h>
 #include <FS/CompressedFile.h>
 
@@ -60,7 +60,7 @@ void Playback::Playback::loop(uint micros){
 
 void Playback::Playback::returned(void *data){
 	String *name = static_cast<String *>(data);
-	file = SD.open(name->c_str());
+	file = JayD.SD_open(name->c_str());
 
 	delete name;
 }

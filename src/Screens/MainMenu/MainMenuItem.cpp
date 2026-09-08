@@ -2,6 +2,7 @@
 #include "../../Fonts.h"
 #include <SPIFFS.h>
 #include <FS/CompressedFile.h>
+#include <Util/HWRevision.h>
 
 const char* const MainMenu::MainMenuItem::gifIcons[] = {"/playbackGIF.g565", "/djGIF.g565", "/settingsGIF.g565"};
 const char* const MainMenu::MainMenuItem::icons[] = {"/playback.raw.hs", "/dj.raw.hs", "/settings.raw.hs"};

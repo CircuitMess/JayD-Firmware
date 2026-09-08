@@ -1,10 +1,12 @@
-#include <SD.h>
 #include "SongList.h"
 #include "../MainMenu/MainMenu.h"
 #include <JayD.h>
+#include <Pins.h>
 #include <Loop/LoopManager.h>
 #include <SPIFFS.h>
 #include <FS/CompressedFile.h>
+#include <Util/HWRevision.h>
+
 #include "../../Fonts.h"
 
 SongList::SongList* SongList::SongList::instance = nullptr;
@@ -34,7 +36,7 @@ void SongList::SongList::checkSD(){
 	empty = true;
 
 	if(!insertedSD){
-		insertedSD = SD.begin(22, SPI);
+		JayD.SD_begin();
 	}
 
 	if(!insertedSD){
@@ -46,7 +48,7 @@ void SongList::SongList::checkSD(){
 	// TODO
 	// Empty card inserted, taken out, press refresh
 	// SD started, opened root returns true
-	File root = SD.open("/");
+	File root = JayD.SD_open("/");
 	insertedSD = root;
 	if(!insertedSD){
 		root.close();
@@ -138,10 +140,10 @@ void SongList::SongList::start(){
 		if(instance->empty || !instance->insertedSD || instance->songs.size() <= instance->selectedElement) return;
 
 		String path = instance->songs[instance->selectedElement]->getPath();
-		fs::File file = SD.open(path);
+		fs::File file = JayD.SD_open(path);
 		if(!file){
 			file.close();
-			SD.end();
+			JayD.SD_end();
 			instance->insertedSD = false;
 			instance->checkSD();
 			return;

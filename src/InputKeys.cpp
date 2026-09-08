@@ -1,4 +1,5 @@
 #include <JayD.h>
+#include <Pins.h>
 #include "InputKeys.h"
 
 InputKeys Input;

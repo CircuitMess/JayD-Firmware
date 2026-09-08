@@ -5,6 +5,7 @@
 #include <FS/CompressedFile.h>
 #include <Settings.h>
 #include <JayD.h>
+#include <Pins.h>
 #include <AudioLib/Systems/PlaybackSystem.h>
 
 SettingsScreen::SettingsScreen* SettingsScreen::SettingsScreen::instance = nullptr;
@@ -142,7 +143,7 @@ void SettingsScreen::SettingsScreen::draw(){
 	screen.getSprite()->setTextSize(1);
 	screen.getSprite()->setTextFont(1);
 	screen.getSprite()->setCursor(screenLayout->getTotalX() + 42, screenLayout->getTotalY() + 115);
-	screen.getSprite()->println("Version 1.4");
+	screen.getSprite()->println("Version 1.5");
 
 	for(int i = 0; i < 4; i++){
 		if(!reinterpret_cast<SettingsElement *>(screenLayout->getChild(i))->isSelected()){

@@ -1,9 +1,10 @@
 #include "HardwareTest.h"
 #include <SPI.h>
-#include <SD.h>
+#include <SD_MMC.h>
 #include <Settings.h>
 #include "Wire.h"
 #include <JayD.h>
+#include <Pins.h>
 #include "SPIFFS.h"
 #include "HWTestSPIFFS.hpp"
 #include "HWTestSD.hpp"
@@ -23,10 +24,10 @@ HardwareTest::HardwareTest(Display &_display) : canvas(_display.getBaseSprite())
 	tests.push_back({HardwareTest::SPIFFSTest, "SPIFFS"});
 	tests.push_back({HardwareTest::hwRevision, "HW rev"});
 
-	SPI.begin(SPI_SCK, SPI_MISO, SPI_MOSI);
+	SPI.begin(PIN(SPI_SCK), PIN(SPI_MISO), PIN(SPI_MOSI));
 	SPI.setFrequency(60000000);
 
-	Wire.begin(I2C_SDA, I2C_SCL);
+	Wire.begin(PIN(I2C_SDA), PIN(I2C_SCL));
 }
 
 void HardwareTest::start(){
@@ -216,13 +217,13 @@ bool HardwareTest::nuvotonTest(){
 bool HardwareTest::sdTest(){
 
 	/* SD begin test */
-	if(!SD.begin(SD_CS, SPI)){
+	if(!SD_MMC.begin("/sdcard", true)){
 		test->log("SD Card","Not Recognized");
 		return false;
 	}
 
 	/* File opening test */
-	fs::File file = SD.open("/SDCardTest.txt", "w");
+	fs::File file = SD_MMC.open("/SDCardTest.txt", "w");
 	if(!file){
 		test->log("File Opening Error", file.name());
 		return false;
@@ -243,7 +244,7 @@ bool HardwareTest::sdTest(){
 	file.close();
 
 	/* File opening test */
-	file = SD.open("/SDCardTest.txt", "r");
+	file = SD_MMC.open("/SDCardTest.txt", "r");
 	if(!file){
 		test->log("File Opening Error", file.name());
 		return false;
@@ -270,15 +271,48 @@ bool HardwareTest::sdTest(){
 	}
 
 	file.close();
-	SD.remove("/SDCardTest.txt");
+	SD_MMC.remove("/SDCardTest.txt");
 
 	free(readBuff);
 	return true;
 }
 
+void listDir(fs::FS &fs, const char * dirname, uint8_t levels){
+	Serial.printf("Listing directory: %s\n", dirname);
+
+	File root = fs.open(dirname);
+	if(!root){
+		Serial.println("Failed to open directory");
+		return;
+	}
+	if(!root.isDirectory()){
+		Serial.println("Not a directory");
+		return;
+	}
+
+	File file = root.openNextFile();
+	while(file){
+		if(file.isDirectory()){
+			Serial.print("  DIR : ");
+			Serial.println(file.name());
+			if(levels){
+				listDir(fs, file.name(), levels -1);
+			}
+		} else {
+			Serial.print("  FILE: ");
+			Serial.print(file.name());
+			Serial.print("  SIZE: ");
+			Serial.println(file.size());
+		}
+		file = root.openNextFile();
+	}
+}
+
 bool HardwareTest::sdData(){
+	listDir(SD_MMC, "/", 1);
+
 	for(const auto & check : SDSizes){
-		File f = SD.open(String("/") + check.name);
+		File f = SD_MMC.open(String("/") + check.name);
 		if(!f){
 			test->log("Failed opening", check.name);
 			f.close();
